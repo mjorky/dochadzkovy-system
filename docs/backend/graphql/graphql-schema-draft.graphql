@@ -1,0 +1,141 @@
+# GraphQL SDL draft for core entities and operations (code-first target)
+
+scalar Date
+scalar Time
+scalar Byte
+
+enum OvertimeSumMode { POSITIVE_ONLY TOTAL }
+
+type Employee {
+  id: ID!
+  meno: String!
+  priezvisko: String!
+  titulPred: String
+  titulZa: String
+  dovolenka: Float!
+  isAdmin: Boolean!
+  typZamestnanca: String!
+  fondPracovnehoCasu: Int!
+  rocnyNadcasVPlate: Int
+  poslednyZaznam: Date
+  zamknuteK: Date
+  fullName: String!
+  signature: String # base64
+}
+
+type Project {
+  id: ID!
+  name: String!
+  number: String!
+  description: String!
+  allowAssignWorkingHours: Boolean!
+  countryCode: String!
+  managerId: ID!
+}
+
+type WorkRecord {
+  id: ID!
+  employeeId: ID! # used to resolve per-user table
+  cinnostTypId: Int!
+  startDate: Date!
+  projectId: ID
+  hourTypeId: Int
+  hourTypesId: Int
+  startTime: Time!
+  endTime: Time!
+  hours: Float! # derived (overnight-aware)
+  description: String
+  km: Int!
+  dlhodobaSC: Boolean!
+  lock: Boolean!
+}
+
+type OvertimeEntry {
+  zamestnanecId: ID!
+  datum: Date!
+  nadcasHours: Float! # from interval
+  schvalil: ID
+  poznamka: String
+  typ: String!
+  odpocet: Boolean!
+}
+
+input EmployeeInput {
+  meno: String!
+  priezvisko: String!
+  titulPred: String
+  titulZa: String
+  dovolenka: Float!
+  isAdmin: Boolean!
+  typZamestnanca: String!
+  rocnyNadcasVPlate: Int
+}
+
+input ProjectInput {
+  name: String!
+  number: String!
+  description: String!
+  allowAssignWorkingHours: Boolean!
+  countryCode: String!
+  managerId: ID!
+}
+
+input WorkRecordInput {
+  cinnostTypId: Int!
+  startDate: Date!
+  projectId: ID
+  hourTypeId: Int
+  hourTypesId: Int
+  startTime: Time!
+  endTime: Time!
+  description: String
+  km: Int!
+  dlhodobaSC: Boolean!
+}
+
+type Query {
+  employees: [Employee!]!
+  employee(id: ID!): Employee
+  projects(activeOnly: Boolean): [Project!]!
+  workRecords(employeeId: ID!, from: Date, to: Date, projectId: ID, hourTypeId: Int, hourTypesId: Int): [WorkRecord!]!
+  overtimeEntries(employeeId: ID!, from: Date!, to: Date!, typ: String, odpocet: Boolean): [OvertimeEntry!]!
+  overtimeSum(employeeId: ID!, from: Date!, to: Date!, typ: String!, mode: OvertimeSumMode!): Float!
+}
+
+type Mutation {
+  createEmployee(input: EmployeeInput!): Employee!
+  updateEmployee(id: ID!, input: EmployeeInput!): Employee!
+  deleteEmployee(id: ID!): Boolean!
+  setEmployeeSignature(id: ID!, base64Png: String!): Boolean!
+
+  createProject(input: ProjectInput!): Project!
+  updateProject(id: ID!, input: ProjectInput!): Project!
+
+  createWorkRecord(employeeId: ID!, input: WorkRecordInput!): WorkRecord!
+  updateWorkRecord(employeeId: ID!, id: ID!, input: WorkRecordInput!): WorkRecord!
+  deleteWorkRecord(employeeId: ID!, id: ID!): Boolean!
+
+  lockAttendance(employeeId: ID!, until: Date!): Boolean!
+
+  setOvertime(
+    employeeId: ID!
+    date: Date!
+    hours: Float!
+    typ: String!
+    schvalil: ID
+    poznamka: String
+    odpocet: Boolean
+  ): Boolean!
+  updateOvertime(
+    employeeId: ID!
+    date: Date!
+    typ: String!
+    hours: Float!
+    schvalil: ID
+    poznamka: String
+    odpocet: Boolean
+  ): Boolean!
+  removeOvertimeBulk(employeeId: ID!, dates: [Date!]!): Boolean!
+}
+
+
