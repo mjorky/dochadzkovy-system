@@ -14,7 +14,7 @@
 **Dependencies:** None
 **Estimated Time:** 30 minutes
 
-- [ ] 1.0 Complete workspace configuration
+- [x] 1.0 Complete workspace configuration
   - [ ] 1.1 Create root `pnpm-workspace.yaml`
     - Define workspace packages: `packages: ['backend', 'frontend']`
     - Reference: pnpm workspace documentation
@@ -56,7 +56,7 @@
 **Dependencies:** Task Group 1
 **Estimated Time:** 45 minutes
 
-- [ ] 2.0 Complete NestJS backend setup
+- [x] 2.0 Complete NestJS backend setup
   - [ ] 2.1 Initialize NestJS project at `/backend` directory
     - Run: `pnpm dlx @nestjs/cli@11 new backend --package-manager pnpm --strict`
     - Verify NestJS CLI version 11.x
@@ -104,7 +104,7 @@
 **Dependencies:** Task Group 2
 **Estimated Time:** 30 minutes
 
-- [ ] 3.0 Complete Prisma setup and schema generation
+- [x] 3.0 Complete Prisma setup and schema generation
   - [ ] 3.1 Initialize Prisma in backend
     - Run: `cd backend && pnpm prisma init`
     - Verify `prisma/schema.prisma` created
@@ -147,7 +147,7 @@
 **Dependencies:** Task Group 3
 **Estimated Time:** 60 minutes
 
-- [ ] 4.0 Complete GraphQL and REST health check implementation
+- [x] 4.0 Complete GraphQL and REST health check implementation
   - [ ] 4.1 Configure GraphQL module in `app.module.ts`
     - Import `GraphQLModule.forRoot(ApolloDriverConfig)`
     - Use `ApolloDriver` from `@nestjs/apollo`
@@ -226,7 +226,7 @@
 **Dependencies:** Task Group 1
 **Estimated Time:** 60 minutes
 
-- [ ] 5.0 Complete Next.js frontend setup
+- [x] 5.0 Complete Next.js frontend setup
   - [ ] 5.1 Initialize Next.js project at `/frontend` directory
     - Run: `pnpm create next-app@latest frontend --typescript --eslint --tailwind --app --src-dir --import-alias "@/*"`
     - Use App Router (not Pages Router)
@@ -295,7 +295,7 @@
 **Dependencies:** Task Group 4 and Task Group 5
 **Estimated Time:** 60 minutes
 
-- [ ] 6.0 Complete Apollo Client integration and landing page
+- [x] 6.0 Complete Apollo Client integration and landing page
   - [ ] 6.1 Create Apollo Client configuration
     - File: `src/lib/apollo-client.ts`
     - Configure `ApolloClient` with `HttpLink` to GraphQL endpoint
@@ -370,7 +370,7 @@
 **Dependencies:** All previous task groups (1-6)
 **Estimated Time:** 45 minutes
 
-- [ ] 7.0 Complete end-to-end integration and testing guide
+- [x] 7.0 Complete end-to-end integration and testing guide
   - [ ] 7.1 Test concurrent development workflow
     - Install root dependencies: `pnpm install` from root
     - Verify workspace links: backend and frontend
@@ -537,13 +537,13 @@
 
 Use this checklist to verify completion of each major task group:
 
-- [ ] **Task Group 1**: Root workspace configured, scripts work, .gitignore protects files
-- [ ] **Task Group 2**: NestJS project created, dependencies installed, server starts on port 4000
-- [ ] **Task Group 3**: Prisma schema generated from database, includes all tables/views, 2-4 tests pass
-- [ ] **Task Group 4**: GraphQL Playground accessible, REST /health works, CORS configured, 2-6 tests pass
-- [ ] **Task Group 5**: Next.js App Router initialized, Tangerine theme applied, fonts loaded, server starts on port 3000
-- [ ] **Task Group 6**: Apollo Client integrated, health check component displays status, landing page complete, 2-6 tests pass
-- [ ] **Task Group 7**: Both servers start concurrently, browser shows green health check, TESTING.md created, 12-22 total tests pass
+- [x] **Task Group 1**: Root workspace configured, scripts work, .gitignore protects files
+- [x] **Task Group 2**: NestJS project created, dependencies installed, server starts on port 4000
+- [x] **Task Group 3**: Prisma schema generated from database, includes all tables/views, 2-4 tests pass
+- [x] **Task Group 4**: GraphQL Playground accessible, REST /health works, CORS configured, 2-6 tests pass
+- [x] **Task Group 5**: Next.js App Router initialized, Tangerine theme applied, fonts loaded, server starts on port 3000
+- [x] **Task Group 6**: Apollo Client integrated, health check component displays status, landing page complete, 2-6 tests pass
+- [x] **Task Group 7**: Both servers start concurrently, browser shows green health check, TESTING.md created, 12-22 total tests pass
 
 ---
 
