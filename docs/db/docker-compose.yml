@@ -1,0 +1,19 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: dochadzka-postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER:-dochadzka}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-dochadzka}
+      - POSTGRES_DB=${POSTGRES_DB:-dochadzka}
+    ports:
+      - "5433:5432" # change to 5432:5432 if you prefer default port and it's free
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      # Run schema and data imports on first init
+      - ./schema.sql:/docker-entrypoint-initdb.d/01_schema.sql:ro
+      - ./schema_data.sql:/docker-entrypoint-initdb.d/02_data.sql:ro
+volumes:
+  db_data:
+
