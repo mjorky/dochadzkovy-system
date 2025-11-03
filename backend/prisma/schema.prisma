@@ -1,0 +1,703 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model CinnostTyp {
+  ID                 BigInt               @id @default(autoincrement())
+  Typ                String               @db.VarChar(20)
+  Alias              String               @db.VarChar(50)
+  Zmazane            Boolean              @default(false)
+  t_Anna_Lovasova    t_Anna_Lovasova[]
+  t_Branislav_Skrada t_Branislav_Skrada[]
+  t_David_Smotlak    t_David_Smotlak[]
+  t_Dominik_Kollar   t_Dominik_Kollar[]
+  t_Emilia_Curillova t_Emilia_Curillova[]
+  t_Ferko_Mrkvicka   t_Ferko_Mrkvicka[]
+  t_Gergely_Gondor   t_Gergely_Gondor[]
+  t_Jaroslav_Sobon   t_Jaroslav_Sobon[]
+  t_Jozef_Vlcek      t_Jozef_Vlcek[]
+  t_Jozef_Vybostok   t_Jozef_Vybostok[]
+  t_Karol_Jancik     t_Karol_Jancik[]
+  t_Krnac_Martin     t_Krnac_Martin[]
+  t_Lucia_Smotlakova t_Lucia_Smotlakova[]
+  t_Martin_Krnac     t_Martin_Krnac[]
+  t_Martin_Ostrihon  t_Martin_Ostrihon[]
+  t_Martin_Sipka     t_Martin_Sipka[]
+  t_Martina_Alaksova t_Martina_Alaksova[]
+  t_Michal_Scepka    t_Michal_Scepka[]
+  t_Michal_Valkovic  t_Michal_Valkovic[]
+  t_Milan_Smotlak    t_Milan_Smotlak[]
+  t_Miroslav_Boloz   t_Miroslav_Boloz[]
+  t_Peter_Fabik      t_Peter_Fabik[]
+  t_Richard_Prcek    t_Richard_Prcek[]
+  t_Robert_Polak     t_Robert_Polak[]
+  t_Roman_Szolik     t_Roman_Szolik[]
+  t_Smotlak_David    t_Smotlak_David[]
+}
+
+model Countries {
+  CountryCode String     @id @db.VarChar(3)
+  CountryName String     @db.VarChar(100)
+  Projects    Projects[]
+}
+
+model Holidays {
+  Den DateTime @id @db.Date
+}
+
+model HourType {
+  ID                 BigInt               @id @default(autoincrement())
+  HourType           String               @db.VarChar(50)
+  t_Anna_Lovasova    t_Anna_Lovasova[]
+  t_Branislav_Skrada t_Branislav_Skrada[]
+  t_David_Smotlak    t_David_Smotlak[]
+  t_Dominik_Kollar   t_Dominik_Kollar[]
+  t_Emilia_Curillova t_Emilia_Curillova[]
+  t_Ferko_Mrkvicka   t_Ferko_Mrkvicka[]
+  t_Gergely_Gondor   t_Gergely_Gondor[]
+  t_Jaroslav_Sobon   t_Jaroslav_Sobon[]
+  t_Jozef_Vlcek      t_Jozef_Vlcek[]
+  t_Jozef_Vybostok   t_Jozef_Vybostok[]
+  t_Karol_Jancik     t_Karol_Jancik[]
+  t_Krnac_Martin     t_Krnac_Martin[]
+  t_Lucia_Smotlakova t_Lucia_Smotlakova[]
+  t_Martin_Krnac     t_Martin_Krnac[]
+  t_Martin_Ostrihon  t_Martin_Ostrihon[]
+  t_Martin_Sipka     t_Martin_Sipka[]
+  t_Martina_Alaksova t_Martina_Alaksova[]
+  t_Michal_Scepka    t_Michal_Scepka[]
+  t_Michal_Valkovic  t_Michal_Valkovic[]
+  t_Milan_Smotlak    t_Milan_Smotlak[]
+  t_Miroslav_Boloz   t_Miroslav_Boloz[]
+  t_Peter_Fabik      t_Peter_Fabik[]
+  t_Richard_Prcek    t_Richard_Prcek[]
+  t_Robert_Polak     t_Robert_Polak[]
+  t_Roman_Szolik     t_Roman_Szolik[]
+  t_Smotlak_David    t_Smotlak_David[]
+}
+
+model HourTypes {
+  ID                 BigInt               @id @default(autoincrement())
+  HourType           String               @db.VarChar(50)
+  t_Anna_Lovasova    t_Anna_Lovasova[]
+  t_Branislav_Skrada t_Branislav_Skrada[]
+  t_David_Smotlak    t_David_Smotlak[]
+  t_Dominik_Kollar   t_Dominik_Kollar[]
+  t_Emilia_Curillova t_Emilia_Curillova[]
+  t_Ferko_Mrkvicka   t_Ferko_Mrkvicka[]
+  t_Gergely_Gondor   t_Gergely_Gondor[]
+  t_Jaroslav_Sobon   t_Jaroslav_Sobon[]
+  t_Jozef_Vlcek      t_Jozef_Vlcek[]
+  t_Jozef_Vybostok   t_Jozef_Vybostok[]
+  t_Karol_Jancik     t_Karol_Jancik[]
+  t_Krnac_Martin     t_Krnac_Martin[]
+  t_Lucia_Smotlakova t_Lucia_Smotlakova[]
+  t_Martin_Krnac     t_Martin_Krnac[]
+  t_Martin_Ostrihon  t_Martin_Ostrihon[]
+  t_Martin_Sipka     t_Martin_Sipka[]
+  t_Martina_Alaksova t_Martina_Alaksova[]
+  t_Michal_Scepka    t_Michal_Scepka[]
+  t_Michal_Valkovic  t_Michal_Valkovic[]
+  t_Milan_Smotlak    t_Milan_Smotlak[]
+  t_Miroslav_Boloz   t_Miroslav_Boloz[]
+  t_Peter_Fabik      t_Peter_Fabik[]
+  t_Richard_Prcek    t_Richard_Prcek[]
+  t_Robert_Polak     t_Robert_Polak[]
+  t_Roman_Szolik     t_Roman_Szolik[]
+  t_Smotlak_David    t_Smotlak_David[]
+}
+
+model Nadcasy {
+  ZamestnanecID                                  BigInt
+  Datum                                          DateTime                @db.Date
+  Nadcas                                         Unsupported("interval")
+  Schvalil                                       BigInt?
+  Poznamka                                       String?                 @db.VarChar(100)
+  Typ                                            String                  @default("Flexi") @db.VarChar
+  Odpocet                                        Boolean                 @default(false)
+  Zamestnanci_Nadcasy_SchvalilToZamestnanci      Zamestnanci?            @relation("Nadcasy_SchvalilToZamestnanci", fields: [Schvalil], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+  NadcasyTyp                                     NadcasyTyp              @relation(fields: [Typ], references: [TypNadcasu], onDelete: NoAction, onUpdate: NoAction)
+  Zamestnanci_Nadcasy_ZamestnanecIDToZamestnanci Zamestnanci             @relation("Nadcasy_ZamestnanecIDToZamestnanci", fields: [ZamestnanecID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([ZamestnanecID, Datum, Typ, Odpocet])
+}
+
+model NadcasyTyp {
+  TypNadcasu String    @id @db.VarChar
+  Nadcasy    Nadcasy[]
+}
+
+model Projects {
+  ID                      BigInt               @id @default(autoincrement())
+  Name                    String               @db.VarChar(100)
+  Number                  String               @unique @db.VarChar(12)
+  Description             String               @db.VarChar(255)
+  AllowAssignWorkingHours Boolean              @default(false)
+  CountryCode             String               @db.VarChar(3)
+  Manager                 BigInt
+  Countries               Countries            @relation(fields: [CountryCode], references: [CountryCode], onDelete: NoAction, onUpdate: NoAction)
+  Zamestnanci             Zamestnanci          @relation(fields: [Manager], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+  t_Anna_Lovasova         t_Anna_Lovasova[]
+  t_Branislav_Skrada      t_Branislav_Skrada[]
+  t_David_Smotlak         t_David_Smotlak[]
+  t_Dominik_Kollar        t_Dominik_Kollar[]
+  t_Emilia_Curillova      t_Emilia_Curillova[]
+  t_Ferko_Mrkvicka        t_Ferko_Mrkvicka[]
+  t_Gergely_Gondor        t_Gergely_Gondor[]
+  t_Jaroslav_Sobon        t_Jaroslav_Sobon[]
+  t_Jozef_Vlcek           t_Jozef_Vlcek[]
+  t_Jozef_Vybostok        t_Jozef_Vybostok[]
+  t_Karol_Jancik          t_Karol_Jancik[]
+  t_Krnac_Martin          t_Krnac_Martin[]
+  t_Lucia_Smotlakova      t_Lucia_Smotlakova[]
+  t_Martin_Krnac          t_Martin_Krnac[]
+  t_Martin_Ostrihon       t_Martin_Ostrihon[]
+  t_Martin_Sipka          t_Martin_Sipka[]
+  t_Martina_Alaksova      t_Martina_Alaksova[]
+  t_Michal_Scepka         t_Michal_Scepka[]
+  t_Michal_Valkovic       t_Michal_Valkovic[]
+  t_Milan_Smotlak         t_Milan_Smotlak[]
+  t_Miroslav_Boloz        t_Miroslav_Boloz[]
+  t_Peter_Fabik           t_Peter_Fabik[]
+  t_Richard_Prcek         t_Richard_Prcek[]
+  t_Robert_Polak          t_Robert_Polak[]
+  t_Roman_Szolik          t_Roman_Szolik[]
+  t_Smotlak_David         t_Smotlak_David[]
+}
+
+model Verzia {
+  Major    Int
+  Minor    Int
+  Build    Int
+  Revision Int
+
+  @@id([Major, Minor, Build, Revision])
+}
+
+model Zamestnanci {
+  ID                                         BigInt         @id @default(autoincrement())
+  Meno                                       String         @db.VarChar(20)
+  Priezvisko                                 String         @db.VarChar(50)
+  TitulPred                                  String?        @db.VarChar(10)
+  TitulZa                                    String?        @db.VarChar(10)
+  Dovolenka                                  Float          @default(20) @db.Real
+  IsAdmin                                    Boolean        @default(false)
+  TypZamestnanca                             String         @db.VarChar(20)
+  Podpis                                     Bytes?
+  RocnyNadcasVPlate                          Int?
+  PoslednyZaznam                             DateTime?      @db.Date
+  ZamknuteK                                  DateTime?      @db.Date
+  Nadcasy_Nadcasy_SchvalilToZamestnanci      Nadcasy[]      @relation("Nadcasy_SchvalilToZamestnanci")
+  Nadcasy_Nadcasy_ZamestnanecIDToZamestnanci Nadcasy[]      @relation("Nadcasy_ZamestnanecIDToZamestnanci")
+  Projects                                   Projects[]
+  ZamestnanecTyp                             ZamestnanecTyp @relation(fields: [TypZamestnanca], references: [Typ], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([Meno, Priezvisko])
+}
+
+model ZamestnanecTyp {
+  Typ                String        @id @db.VarChar(20)
+  FondPracovnehoCasu Int
+  Zamestnanci        Zamestnanci[]
+}
+
+model t_Anna_Lovasova {
+  ID           BigInt     @id @default(autoincrement())
+  CinnostTypID BigInt
+  StartDate    DateTime   @db.Date
+  ProjectID    BigInt?
+  HourTypeID   BigInt?
+  HourTypesID  BigInt?
+  StartTime    DateTime   @db.Time(6)
+  EndTime      DateTime   @db.Time(6)
+  Description  String?
+  km           Int?       @default(0)
+  Lock         Boolean    @default(false)
+  DlhodobaSC   Boolean    @default(false)
+  CinnostTyp   CinnostTyp @relation(fields: [CinnostTypID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+  HourType     HourType?  @relation(fields: [HourTypeID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+  HourTypes    HourTypes? @relation(fields: [HourTypesID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+  Projects     Projects?  @relation(fields: [ProjectID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model t_Branislav_Skrada {
+  ID           BigInt     @id @default(autoincrement())
+  CinnostTypID BigInt
+  StartDate    DateTime   @db.Date
+  ProjectID    BigInt?
+  HourTypeID   BigInt?
+  HourTypesID  BigInt?
+  StartTime    DateTime   @db.Time(6)
+  EndTime      DateTime   @db.Time(6)
+  Description  String?
+  km           Int?       @default(0)
+  Lock         Boolean    @default(false)
+  DlhodobaSC   Boolean    @default(false)
+  CinnostTyp   CinnostTyp @relation(fields: [CinnostTypID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+  HourType     HourType?  @relation(fields: [HourTypeID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+  HourTypes    HourTypes? @relation(fields: [HourTypesID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+  Projects     Projects?  @relation(fields: [ProjectID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model t_David_Smotlak {
+  ID           BigInt     @id @default(autoincrement())
+  CinnostTypID BigInt
+  StartDate    DateTime   @db.Date
+  ProjectID    BigInt?
+  HourTypeID   BigInt?
+  HourTypesID  BigInt?
+  StartTime    DateTime   @db.Time(6)
+  EndTime      DateTime   @db.Time(6)
+  Description  String?
+  km           Int?       @default(0)
+  Lock         Boolean    @default(false)
+  DlhodobaSC   Boolean    @default(false)
+  CinnostTyp   CinnostTyp @relation(fields: [CinnostTypID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+  HourType     HourType?  @relation(fields: [HourTypeID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+  HourTypes    HourTypes? @relation(fields: [HourTypesID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+  Projects     Projects?  @relation(fields: [ProjectID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([CinnostTypID], map: "fki_t_David_Smotlak_CinnostTypID_fkey")
+}
+
+model t_Dominik_Kollar {
+  ID           BigInt     @id @default(autoincrement())
+  CinnostTypID BigInt
+  StartDate    DateTime   @db.Date
+  ProjectID    BigInt?
+  HourTypeID   BigInt?
+  HourTypesID  BigInt?
+  StartTime    DateTime   @db.Time(6)
+  EndTime      DateTime   @db.Time(6)
+  Description  String?
+  km           Int?       @default(0)
+  Lock         Boolean    @default(false)
+  DlhodobaSC   Boolean    @default(false)
+  CinnostTyp   CinnostTyp @relation(fields: [CinnostTypID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+  HourType     HourType?  @relation(fields: [HourTypeID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+  HourTypes    HourTypes? @relation(fields: [HourTypesID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+  Projects     Projects?  @relation(fields: [ProjectID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model t_Emilia_Curillova {
+  ID           BigInt     @id @default(autoincrement())
+  CinnostTypID BigInt
+  StartDate    DateTime   @db.Date
+  ProjectID    BigInt?
+  HourTypeID   BigInt?
+  HourTypesID  BigInt?
+  StartTime    DateTime   @db.Time(6)
+  EndTime      DateTime   @db.Time(6)
+  Description  String?
+  km           Int?       @default(0)
+  Lock         Boolean    @default(false)
+  DlhodobaSC   Boolean    @default(false)
+  CinnostTyp   CinnostTyp @relation(fields: [CinnostTypID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+  HourType     HourType?  @relation(fields: [HourTypeID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+  HourTypes    HourTypes? @relation(fields: [HourTypesID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+  Projects     Projects?  @relation(fields: [ProjectID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model t_Ferko_Mrkvicka {
+  ID           BigInt     @id @default(autoincrement())
+  CinnostTypID BigInt
+  StartDate    DateTime   @db.Date
+  ProjectID    BigInt?
+  HourTypeID   BigInt?
+  HourTypesID  BigInt?
+  StartTime    DateTime   @db.Time(6)
+  EndTime      DateTime   @db.Time(6)
+  Description  String?
+  km           Int?       @default(0)
+  Lock         Boolean    @default(false)
+  DlhodobaSC   Boolean    @default(false)
+  CinnostTyp   CinnostTyp @relation(fields: [CinnostTypID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+  HourType     HourType?  @relation(fields: [HourTypeID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+  HourTypes    HourTypes? @relation(fields: [HourTypesID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+  Projects     Projects?  @relation(fields: [ProjectID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model t_Gergely_Gondor {
+  ID           BigInt     @id @default(autoincrement())
+  CinnostTypID BigInt
+  StartDate    DateTime   @db.Date
+  ProjectID    BigInt?
+  HourTypeID   BigInt?
+  HourTypesID  BigInt?
+  StartTime    DateTime   @db.Time(6)
+  EndTime      DateTime   @db.Time(6)
+  Description  String?
+  km           Int?       @default(0)
+  Lock         Boolean    @default(false)
+  DlhodobaSC   Boolean    @default(false)
+  CinnostTyp   CinnostTyp @relation(fields: [CinnostTypID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+  HourType     HourType?  @relation(fields: [HourTypeID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+  HourTypes    HourTypes? @relation(fields: [HourTypesID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+  Projects     Projects?  @relation(fields: [ProjectID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model t_Jaroslav_Sobon {
+  ID           BigInt     @id @default(autoincrement())
+  CinnostTypID BigInt
+  StartDate    DateTime   @db.Date
+  ProjectID    BigInt?
+  HourTypeID   BigInt?
+  HourTypesID  BigInt?
+  StartTime    DateTime   @db.Time(6)
+  EndTime      DateTime   @db.Time(6)
+  Description  String?
+  km           Int?       @default(0)
+  Lock         Boolean    @default(false)
+  DlhodobaSC   Boolean    @default(false)
+  CinnostTyp   CinnostTyp @relation(fields: [CinnostTypID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+  HourType     HourType?  @relation(fields: [HourTypeID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+  HourTypes    HourTypes? @relation(fields: [HourTypesID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+  Projects     Projects?  @relation(fields: [ProjectID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model t_Jozef_Vlcek {
+  ID           BigInt     @id @default(autoincrement())
+  CinnostTypID BigInt
+  StartDate    DateTime   @db.Date
+  ProjectID    BigInt?
+  HourTypeID   BigInt?
+  HourTypesID  BigInt?
+  StartTime    DateTime   @db.Time(6)
+  EndTime      DateTime   @db.Time(6)
+  Description  String?
+  km           Int?       @default(0)
+  Lock         Boolean    @default(false)
+  DlhodobaSC   Boolean    @default(false)
+  CinnostTyp   CinnostTyp @relation(fields: [CinnostTypID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+  HourType     HourType?  @relation(fields: [HourTypeID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+  HourTypes    HourTypes? @relation(fields: [HourTypesID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+  Projects     Projects?  @relation(fields: [ProjectID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model t_Jozef_Vybostok {
+  ID           BigInt     @id @default(autoincrement())
+  CinnostTypID BigInt
+  StartDate    DateTime   @db.Date
+  ProjectID    BigInt?
+  HourTypeID   BigInt?
+  HourTypesID  BigInt?
+  StartTime    DateTime   @db.Time(6)
+  EndTime      DateTime   @db.Time(6)
+  Description  String?
+  km           Int?       @default(0)
+  Lock         Boolean    @default(false)
+  DlhodobaSC   Boolean    @default(false)
+  CinnostTyp   CinnostTyp @relation(fields: [CinnostTypID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+  HourType     HourType?  @relation(fields: [HourTypeID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+  HourTypes    HourTypes? @relation(fields: [HourTypesID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+  Projects     Projects?  @relation(fields: [ProjectID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model t_Karol_Jancik {
+  ID           BigInt     @id @default(autoincrement())
+  CinnostTypID BigInt
+  StartDate    DateTime   @db.Date
+  ProjectID    BigInt?
+  HourTypeID   BigInt?
+  HourTypesID  BigInt?
+  StartTime    DateTime   @db.Time(6)
+  EndTime      DateTime   @db.Time(6)
+  Description  String?
+  km           Int?       @default(0)
+  Lock         Boolean    @default(false)
+  DlhodobaSC   Boolean    @default(false)
+  CinnostTyp   CinnostTyp @relation(fields: [CinnostTypID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+  HourType     HourType?  @relation(fields: [HourTypeID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+  HourTypes    HourTypes? @relation(fields: [HourTypesID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+  Projects     Projects?  @relation(fields: [ProjectID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model t_Krnac_Martin {
+  ID           BigInt     @id @default(autoincrement())
+  CinnostTypID BigInt
+  StartDate    DateTime   @db.Date
+  ProjectID    BigInt?
+  HourTypeID   BigInt?
+  HourTypesID  BigInt?
+  StartTime    DateTime   @db.Time(6)
+  EndTime      DateTime   @db.Time(6)
+  Description  String?
+  km           Int?       @default(0)
+  Lock         Boolean    @default(false)
+  DlhodobaSC   Boolean    @default(false)
+  CinnostTyp   CinnostTyp @relation(fields: [CinnostTypID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+  HourType     HourType?  @relation(fields: [HourTypeID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+  HourTypes    HourTypes? @relation(fields: [HourTypesID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+  Projects     Projects?  @relation(fields: [ProjectID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model t_Lucia_Smotlakova {
+  ID           BigInt     @id @default(autoincrement())
+  CinnostTypID BigInt
+  StartDate    DateTime   @db.Date
+  ProjectID    BigInt?
+  HourTypeID   BigInt?
+  HourTypesID  BigInt?
+  StartTime    DateTime   @db.Time(6)
+  EndTime      DateTime   @db.Time(6)
+  Description  String?
+  km           Int?       @default(0)
+  Lock         Boolean    @default(false)
+  DlhodobaSC   Boolean    @default(false)
+  CinnostTyp   CinnostTyp @relation(fields: [CinnostTypID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+  HourType     HourType?  @relation(fields: [HourTypeID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+  HourTypes    HourTypes? @relation(fields: [HourTypesID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+  Projects     Projects?  @relation(fields: [ProjectID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model t_Martin_Krnac {
+  ID           BigInt     @id @default(autoincrement())
+  CinnostTypID BigInt
+  StartDate    DateTime   @db.Date
+  ProjectID    BigInt?
+  HourTypeID   BigInt?
+  HourTypesID  BigInt?
+  StartTime    DateTime   @db.Time(6)
+  EndTime      DateTime   @db.Time(6)
+  Description  String?
+  km           Int?       @default(0)
+  Lock         Boolean    @default(false)
+  DlhodobaSC   Boolean    @default(false)
+  CinnostTyp   CinnostTyp @relation(fields: [CinnostTypID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+  HourType     HourType?  @relation(fields: [HourTypeID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+  HourTypes    HourTypes? @relation(fields: [HourTypesID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+  Projects     Projects?  @relation(fields: [ProjectID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model t_Martin_Ostrihon {
+  ID           BigInt     @id @default(autoincrement())
+  CinnostTypID BigInt
+  StartDate    DateTime   @db.Date
+  ProjectID    BigInt?
+  HourTypeID   BigInt?
+  HourTypesID  BigInt?
+  StartTime    DateTime   @db.Time(6)
+  EndTime      DateTime   @db.Time(6)
+  Description  String?
+  km           Int?       @default(0)
+  Lock         Boolean    @default(false)
+  DlhodobaSC   Boolean    @default(false)
+  CinnostTyp   CinnostTyp @relation(fields: [CinnostTypID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+  HourType     HourType?  @relation(fields: [HourTypeID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+  HourTypes    HourTypes? @relation(fields: [HourTypesID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+  Projects     Projects?  @relation(fields: [ProjectID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model t_Martin_Sipka {
+  ID           BigInt     @id @default(autoincrement())
+  CinnostTypID BigInt
+  StartDate    DateTime   @db.Date
+  ProjectID    BigInt?
+  HourTypeID   BigInt?
+  HourTypesID  BigInt?
+  StartTime    DateTime   @db.Time(6)
+  EndTime      DateTime   @db.Time(6)
+  Description  String?
+  km           Int?       @default(0)
+  Lock         Boolean    @default(false)
+  DlhodobaSC   Boolean    @default(false)
+  CinnostTyp   CinnostTyp @relation(fields: [CinnostTypID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+  HourType     HourType?  @relation(fields: [HourTypeID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+  HourTypes    HourTypes? @relation(fields: [HourTypesID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+  Projects     Projects?  @relation(fields: [ProjectID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model t_Martina_Alaksova {
+  ID           BigInt     @id(map: "t_Martin_Alaksova_pkey") @default(autoincrement())
+  CinnostTypID BigInt
+  StartDate    DateTime   @db.Date
+  ProjectID    BigInt?
+  HourTypeID   BigInt?
+  HourTypesID  BigInt?
+  StartTime    DateTime   @db.Time(6)
+  EndTime      DateTime   @db.Time(6)
+  Description  String?
+  km           Int?       @default(0)
+  Lock         Boolean    @default(false)
+  DlhodobaSC   Boolean    @default(false)
+  CinnostTyp   CinnostTyp @relation(fields: [CinnostTypID], references: [ID], onDelete: NoAction, onUpdate: NoAction, map: "t_Martin_Alaksova_CinnostTypID_fkey")
+  HourType     HourType?  @relation(fields: [HourTypeID], references: [ID], onDelete: NoAction, onUpdate: NoAction, map: "t_Martin_Alaksova_HourTypeID_fkey")
+  HourTypes    HourTypes? @relation(fields: [HourTypesID], references: [ID], onDelete: NoAction, onUpdate: NoAction, map: "t_Martin_Alaksova_HourTypesID_fkey")
+  Projects     Projects?  @relation(fields: [ProjectID], references: [ID], onDelete: NoAction, onUpdate: NoAction, map: "t_Martin_Alaksova_ProjectID_fkey")
+}
+
+model t_Michal_Scepka {
+  ID           BigInt     @id @default(autoincrement())
+  CinnostTypID BigInt
+  StartDate    DateTime   @db.Date
+  ProjectID    BigInt?
+  HourTypeID   BigInt?
+  HourTypesID  BigInt?
+  StartTime    DateTime   @db.Time(6)
+  EndTime      DateTime   @db.Time(6)
+  Description  String?
+  km           Int?       @default(0)
+  Lock         Boolean    @default(false)
+  DlhodobaSC   Boolean    @default(false)
+  CinnostTyp   CinnostTyp @relation(fields: [CinnostTypID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+  HourType     HourType?  @relation(fields: [HourTypeID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+  HourTypes    HourTypes? @relation(fields: [HourTypesID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+  Projects     Projects?  @relation(fields: [ProjectID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model t_Michal_Valkovic {
+  ID           BigInt     @id @default(autoincrement())
+  CinnostTypID BigInt
+  StartDate    DateTime   @db.Date
+  ProjectID    BigInt?
+  HourTypeID   BigInt?
+  HourTypesID  BigInt?
+  StartTime    DateTime   @db.Time(6)
+  EndTime      DateTime   @db.Time(6)
+  Description  String?
+  km           Int?       @default(0)
+  Lock         Boolean    @default(false)
+  DlhodobaSC   Boolean    @default(false)
+  CinnostTyp   CinnostTyp @relation(fields: [CinnostTypID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+  HourType     HourType?  @relation(fields: [HourTypeID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+  HourTypes    HourTypes? @relation(fields: [HourTypesID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+  Projects     Projects?  @relation(fields: [ProjectID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model t_Milan_Smotlak {
+  ID           BigInt     @id @default(autoincrement())
+  CinnostTypID BigInt
+  StartDate    DateTime   @db.Date
+  ProjectID    BigInt?
+  HourTypeID   BigInt?
+  HourTypesID  BigInt?
+  StartTime    DateTime   @db.Time(6)
+  EndTime      DateTime   @db.Time(6)
+  Description  String?
+  km           Int?       @default(0)
+  Lock         Boolean    @default(false)
+  DlhodobaSC   Boolean    @default(false)
+  CinnostTyp   CinnostTyp @relation(fields: [CinnostTypID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+  HourType     HourType?  @relation(fields: [HourTypeID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+  HourTypes    HourTypes? @relation(fields: [HourTypesID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+  Projects     Projects?  @relation(fields: [ProjectID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model t_Miroslav_Boloz {
+  ID           BigInt     @id @default(autoincrement())
+  CinnostTypID BigInt
+  StartDate    DateTime   @db.Date
+  ProjectID    BigInt?
+  HourTypeID   BigInt?
+  HourTypesID  BigInt?
+  StartTime    DateTime   @db.Time(6)
+  EndTime      DateTime   @db.Time(6)
+  Description  String?
+  km           Int?       @default(0)
+  Lock         Boolean    @default(false)
+  DlhodobaSC   Boolean    @default(false)
+  CinnostTyp   CinnostTyp @relation(fields: [CinnostTypID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+  HourType     HourType?  @relation(fields: [HourTypeID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+  HourTypes    HourTypes? @relation(fields: [HourTypesID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+  Projects     Projects?  @relation(fields: [ProjectID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model t_Peter_Fabik {
+  ID           BigInt     @id @default(autoincrement())
+  CinnostTypID BigInt
+  StartDate    DateTime   @db.Date
+  ProjectID    BigInt?
+  HourTypeID   BigInt?
+  HourTypesID  BigInt?
+  StartTime    DateTime   @db.Time(6)
+  EndTime      DateTime   @db.Time(6)
+  Description  String?
+  km           Int?       @default(0)
+  Lock         Boolean    @default(false)
+  DlhodobaSC   Boolean    @default(false)
+  CinnostTyp   CinnostTyp @relation(fields: [CinnostTypID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+  HourType     HourType?  @relation(fields: [HourTypeID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+  HourTypes    HourTypes? @relation(fields: [HourTypesID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+  Projects     Projects?  @relation(fields: [ProjectID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model t_Richard_Prcek {
+  ID           BigInt     @id @default(autoincrement())
+  CinnostTypID BigInt
+  StartDate    DateTime   @db.Date
+  ProjectID    BigInt?
+  HourTypeID   BigInt?
+  HourTypesID  BigInt?
+  StartTime    DateTime   @db.Time(6)
+  EndTime      DateTime   @db.Time(6)
+  Description  String?
+  km           Int?       @default(0)
+  Lock         Boolean    @default(false)
+  DlhodobaSC   Boolean    @default(false)
+  CinnostTyp   CinnostTyp @relation(fields: [CinnostTypID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+  HourType     HourType?  @relation(fields: [HourTypeID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+  HourTypes    HourTypes? @relation(fields: [HourTypesID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+  Projects     Projects?  @relation(fields: [ProjectID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model t_Robert_Polak {
+  ID           BigInt     @id @default(autoincrement())
+  CinnostTypID BigInt
+  StartDate    DateTime   @db.Date
+  ProjectID    BigInt?
+  HourTypeID   BigInt?
+  HourTypesID  BigInt?
+  StartTime    DateTime   @db.Time(6)
+  EndTime      DateTime   @db.Time(6)
+  Description  String?
+  km           Int?       @default(0)
+  Lock         Boolean    @default(false)
+  DlhodobaSC   Boolean    @default(false)
+  CinnostTyp   CinnostTyp @relation(fields: [CinnostTypID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+  HourType     HourType?  @relation(fields: [HourTypeID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+  HourTypes    HourTypes? @relation(fields: [HourTypesID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+  Projects     Projects?  @relation(fields: [ProjectID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model t_Roman_Szolik {
+  ID           BigInt     @id @default(autoincrement())
+  CinnostTypID BigInt
+  StartDate    DateTime   @db.Date
+  ProjectID    BigInt?
+  HourTypeID   BigInt?
+  HourTypesID  BigInt?
+  StartTime    DateTime   @db.Time(6)
+  EndTime      DateTime   @db.Time(6)
+  Description  String?
+  km           Int?       @default(0)
+  Lock         Boolean    @default(false)
+  DlhodobaSC   Boolean    @default(false)
+  CinnostTyp   CinnostTyp @relation(fields: [CinnostTypID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+  HourType     HourType?  @relation(fields: [HourTypeID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+  HourTypes    HourTypes? @relation(fields: [HourTypesID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+  Projects     Projects?  @relation(fields: [ProjectID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model t_Smotlak_David {
+  ID           BigInt     @id @default(autoincrement())
+  CinnostTypID BigInt
+  StartDate    DateTime   @db.Date
+  ProjectID    BigInt?
+  HourTypeID   BigInt?
+  HourTypesID  BigInt?
+  StartTime    DateTime   @db.Time(6)
+  EndTime      DateTime   @db.Time(6)
+  Description  String?
+  km           Int?       @default(0)
+  Lock         Boolean    @default(false)
+  DlhodobaSC   Boolean    @default(false)
+  CinnostTyp   CinnostTyp @relation(fields: [CinnostTypID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+  HourType     HourType?  @relation(fields: [HourTypeID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+  HourTypes    HourTypes? @relation(fields: [HourTypesID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+  Projects     Projects?  @relation(fields: [ProjectID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+}

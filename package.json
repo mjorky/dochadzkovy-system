@@ -1,0 +1,21 @@
+{
+  "name": "dochadzkovy-system",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Modern attendance system - Monorepo workspace",
+  "scripts": {
+    "dev:backend": "pnpm --filter backend dev",
+    "dev:frontend": "pnpm --filter frontend dev",
+    "dev:all": "concurrently \"pnpm dev:backend\" \"pnpm dev:frontend\" --names \"backend,frontend\" --prefix-colors \"blue,green\"",
+    "build:backend": "pnpm --filter backend build",
+    "build:frontend": "pnpm --filter frontend build",
+    "build:all": "pnpm build:backend && pnpm build:frontend"
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.0"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0"
+  }
+}
