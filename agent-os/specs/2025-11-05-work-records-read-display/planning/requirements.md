@@ -766,12 +766,6 @@ function useInfiniteScroll(
   - Loader2 for loading states
   - XCircle for error states
 
-**Responsive Considerations:**
-- Table should scroll horizontally on mobile
-- Filter controls should wrap on smaller screens
-- Date pickers should be mobile-friendly
-- Multi-select dropdowns should work well on touch devices
-
 ## Readiness Confirmation
 
 All requirements are now fully clarified and comprehensive enough for the spec-writer agent to create a detailed specification document:
