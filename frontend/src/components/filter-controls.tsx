@@ -1,0 +1,113 @@
+'use client';
+
+import { useEffect, useDeferredValue, useState } from 'react';
+import { Search, X } from 'lucide-react';
+
+export interface FilterState {
+  searchText: string;
+  adminFilter: 'all' | 'admin' | 'non-admin';
+  employeeTypeFilter: string;
+}
+
+interface FilterControlsProps {
+  onFilterChange: (filters: FilterState) => void;
+}
+
+export function FilterControls({ onFilterChange }: FilterControlsProps) {
+  const [searchText, setSearchText] = useState('');
+  const [adminFilter, setAdminFilter] = useState<FilterState['adminFilter']>('all');
+  const [employeeTypeFilter, setEmployeeTypeFilter] = useState('all');
+
+  // Debounce search text
+  const deferredSearchText = useDeferredValue(searchText);
+
+  // Update filters when deferred search text changes
+  useEffect(() => {
+    onFilterChange({
+      searchText: deferredSearchText,
+      adminFilter,
+      employeeTypeFilter,
+    });
+  }, [deferredSearchText, adminFilter, employeeTypeFilter, onFilterChange]);
+
+  // Notify parent of filter changes
+  const handleSearchChange = (value: string) => {
+    setSearchText(value);
+  };
+
+  const handleClearSearch = () => {
+    setSearchText('');
+  };
+
+  const handleAdminFilterChange = (value: FilterState['adminFilter']) => {
+    setAdminFilter(value);
+  };
+
+  const handleTypeFilterChange = (value: string) => {
+    setEmployeeTypeFilter(value);
+  };
+
+  return (
+    <div className="flex flex-wrap gap-4 p-4 bg-card rounded-lg border border-border mb-6">
+      {/* Text Search */}
+      <div className="flex-1 min-w-[250px]">
+        <label className="block text-sm font-medium text-foreground mb-1">
+          Search
+        </label>
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <input
+            type="text"
+            placeholder="Search by name..."
+            value={searchText}
+            onChange={(e) => handleSearchChange(e.target.value)}
+            className="w-full pl-10 pr-10 py-2 text-sm border border-input bg-background rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+          />
+          {searchText && (
+            <button
+              onClick={handleClearSearch}
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+              aria-label="Clear search"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Admin Status Filter */}
+      <div className="min-w-[180px]">
+        <label className="block text-sm font-medium text-foreground mb-1">
+          Admin Status
+        </label>
+        <select
+          value={adminFilter}
+          onChange={(e) => handleAdminFilterChange(e.target.value as FilterState['adminFilter'])}
+          className="w-full px-3 py-2 text-sm border border-input bg-background rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent cursor-pointer"
+        >
+          <option value="all">All</option>
+          <option value="admin">Admin Only</option>
+          <option value="non-admin">Non-Admin Only</option>
+        </select>
+      </div>
+
+      {/* Employee Type Filter */}
+      <div className="min-w-[180px]">
+        <label className="block text-sm font-medium text-foreground mb-1">
+          Employee Type
+        </label>
+        <select
+          value={employeeTypeFilter}
+          onChange={(e) => handleTypeFilterChange(e.target.value)}
+          className="w-full px-3 py-2 text-sm border border-input bg-background rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent cursor-pointer"
+        >
+          <option value="all">All</option>
+          <option value="Zamestnanec">Zamestnanec</option>
+          <option value="SZCO">SZCO</option>
+          <option value="Študent">Študent</option>
+          <option value="Brigádnik">Brigádnik</option>
+        </select>
+      </div>
+    </div>
+  );
+}
