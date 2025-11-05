@@ -180,6 +180,86 @@ However, the following theme reference files are available:
 - Follow the established pattern from Employee Overview screen (similar table layout, filter controls positioning)
 - Match existing UI patterns: search fields, dropdown selects, table styling, loading/error states
 
+## Database Schema Clarification
+
+### CRITICAL: Conditional Field Nullability Based on Activity Type
+
+The database schema has been fully analyzed with screenshots from the live database, revealing critical requirements for NULL handling:
+
+**Field Requirements Depend on Activity Type (CinnostTyp):**
+
+**For Work Records (CinnostTypID = 1 "Prítomnosť" - Present at Work):**
+- `CinnostTypID`: REQUIRED (always = 1)
+- `ProjectID`: REQUIRED (always has value - references actual project)
+- `HourTypeID`: REQUIRED (always has value - productivity type: Productive/Non-Productive)
+- `HourTypesID`: REQUIRED (always has value - work type: Development/Meeting/etc.)
+- `StartTime`: Actual work start time (e.g., 09:15:00)
+- `EndTime`: Actual work end time (e.g., 17:30:00)
+- Hours calculated from actual times
+
+**For Absence Records (Vacation, Sick Leave, Doctor, etc. - CinnostTypID != 1):**
+- `CinnostTypID`: REQUIRED (references absence type: Vacation=2, Sick Leave=3, etc.)
+- `ProjectID`: **NULL** (no project assigned for absences)
+- `HourTypeID`: **NULL** (no productivity type for absences)
+- `HourTypesID`: **NULL** (no work type for absences)
+- `StartTime`: Dummy time `08:00:00` (fixed)
+- `EndTime`: Dummy time `16:00:00` (fixed for 8-hour day)
+- Hours calculated as 8.0 (dummy calculation from 08:00-16:00)
+
+### UI Display Rules for NULL Values
+
+**Critical Display Requirement:**
+When `ProjectID`, `HourTypeID`, or `HourTypesID` are NULL (absence records), the table MUST display:
+- **"—"** (em dash Unicode character U+2014) in those columns
+- NOT "null", "N/A", "-", or empty string
+- Em dash visually communicates "not applicable" vs missing data
+
+**Column-Specific Rules:**
+- **Project column**: Show project number if present, "—" if NULL
+- **Productivity Type column**: Show productivity type if present, "—" if NULL
+- **Work Type column**: Show work type if present, "—" if NULL
+- **All other columns**: Never NULL (always have values)
+
+### Database Schema Documentation
+
+**Comprehensive Reference Available:**
+Complete relational schema documentation has been created at:
+`/docs/db/RELATIONAL_SCHEMA_GUIDE.md`
+
+This guide includes:
+- All catalog tables (CinnostTyp, HourType, HourTypes, Projects)
+- Per-employee work record table structure
+- Field nullability rules by activity type
+- Hour calculation logic
+- Lock status computation
+- GraphQL query patterns
+- Real-world data examples
+
+**GraphQL Query Implications:**
+- LEFT JOIN with Projects, HourType, HourTypes tables (to handle NULLs gracefully)
+- Field resolvers must handle NULL foreign keys
+- Return NULL for joined data when FK is NULL, display layer converts to "—"
+
+### Updated Field Requirements Summary
+
+**Always Required (Never NULL):**
+1. `ID` - Primary key
+2. `StartDate` - Record date
+3. `CinnostTypID` - Activity type (work vs absence)
+4. `StartTime` - Work/dummy start time
+5. `EndTime` - Work/dummy end time
+6. `Lock` - Boolean flag
+7. `DlhodobaSC` - Trip flag boolean
+8. `km` - Kilometers (defaults to 0 if not set)
+
+**Conditionally NULL (Based on Activity Type):**
+1. `ProjectID` - Required for work records, NULL for absences
+2. `HourTypeID` - Required for work records, NULL for absences
+3. `HourTypesID` - Required for work records, NULL for absences
+
+**Always Optional:**
+1. `Description` - Work description (can be NULL or empty for any record type)
+
 ## Requirements Summary
 
 ### Functional Requirements
@@ -189,6 +269,7 @@ However, the following theme reference files are available:
 - Show columns: ID, Date, Absence Type (CinnostTyp), Project, Productivity Type (HourType), Work Type (HourTypes), Start Time, End Time, Hours (calculated), Description, KM, Trip Flag (DlhodobaSC), Lock Status
 - Calculate hours correctly including overnight spans (EndTime < StartTime: add 24 hours)
 - Display hours in decimal format (e.g., 8.5 hours)
+- **Display "—" (em dash) for NULL Project, Productivity Type, and Work Type columns (absence records)**
 - Default view shows last 31 days of records
 - Default sort by Date (oldest first)
 - Support sorting on all columns with visual indicators
@@ -227,7 +308,7 @@ However, the following theme reference files are available:
 
 **Data Fetching:**
 - Fetch ALL fields upfront in GraphQL query (no row expansion)
-- JOIN with catalog tables: Projects, CinnostTyp, HourType, HourTypes
+- LEFT JOIN with catalog tables: Projects, CinnostTyp, HourType, HourTypes (to handle NULLs)
 - Include calculated hours field
 - GraphQL query from NestJS backend using Prisma ORM
 
@@ -263,8 +344,9 @@ However, the following theme reference files are available:
 - Visual indicators (lock, overnight, grayed rows)
 - Infinite scroll pagination
 - Employee context switching for managers/admins
-- GraphQL query with joined catalog data
+- GraphQL query with LEFT JOINed catalog data
 - Hours calculation including overnight logic
+- **NULL value handling with "—" display for absence records**
 - Default "last 31 days" filter
 - "Show whole month" date expansion
 - Responsive table layout with shadcn/ui Tangerine theme
@@ -283,23 +365,24 @@ However, the following theme reference files are available:
 **Database Schema:**
 - Per-user tables: `t_{FirstName}_{LastName}` with columns:
   - ID (BigInt, primary key)
-  - CinnostTypID (BigInt, FK to CinnostTyp) - MANDATORY
-  - StartDate (DateTime/Date) - MANDATORY
-  - ProjectID (BigInt?, FK to Projects) - MANDATORY
-  - HourTypeID (BigInt?, FK to HourType) - MANDATORY
-  - HourTypesID (BigInt?, FK to HourTypes) - MANDATORY
-  - StartTime (DateTime/Time) - MANDATORY (dummy 8:00 for absence records)
-  - EndTime (DateTime/Time) - MANDATORY (dummy 16:00 for absence records)
-  - Description (String?)
+  - CinnostTypID (BigInt, FK to CinnostTyp) - ALWAYS REQUIRED
+  - StartDate (DateTime/Date) - ALWAYS REQUIRED
+  - ProjectID (BigInt?, FK to Projects) - **NULL for absences, REQUIRED for work**
+  - HourTypeID (BigInt?, FK to HourType) - **NULL for absences, REQUIRED for work**
+  - HourTypesID (BigInt?, FK to HourTypes) - **NULL for absences, REQUIRED for work**
+  - StartTime (DateTime/Time) - ALWAYS REQUIRED (dummy 08:00 for absences, actual for work)
+  - EndTime (DateTime/Time) - ALWAYS REQUIRED (dummy 16:00 for absences, actual for work)
+  - Description (String?) - ALWAYS OPTIONAL
   - km (Int?, default 0)
   - Lock (Boolean, default false)
   - DlhodobaSC (Boolean, default false - this is the Trip Flag)
 
-**Catalog Tables to JOIN:**
-- `CinnostTyp`: Alias field for display (Absence Type)
-- `Projects`: Number field for display (Project) - filter by AllowAssignWorkingHours=true
-- `HourType`: HourType field for display (Productivity Type)
-- `HourTypes`: HourType field for display (Work Type)
+**Catalog Tables to LEFT JOIN:**
+- `CinnostTyp`: Alias field for display (Absence Type) - ALWAYS joined
+- `Projects`: Number field for display (Project) - LEFT JOIN (can be NULL)
+- `HourType`: HourType field for display (Productivity Type) - LEFT JOIN (can be NULL)
+- `HourTypes`: HourType field for display (Work Type) - LEFT JOIN (can be NULL)
+- Filter Projects by `AllowAssignWorkingHours=true` in dropdown options
 
 **Employee Table:**
 - `Zamestnanci`: ZamknuteK field (DateTime?) - records with StartDate <= ZamknuteK are locked
@@ -335,21 +418,21 @@ However, the following theme reference files are available:
 1. `ID` (BigInt) - Primary key
 2. `StartDate` (Date) - Record date (MANDATORY)
 3. `CinnostTypID` (BigInt) - FK to CinnostTyp (MANDATORY)
-4. `ProjectID` (BigInt) - FK to Projects (MANDATORY)
-5. `HourTypeID` (BigInt) - FK to HourType (MANDATORY)
-6. `HourTypesID` (BigInt) - FK to HourTypes (MANDATORY)
-7. `StartTime` (Time) - Shift start time (MANDATORY, dummy 8:00 for absences)
+4. `ProjectID` (BigInt?) - FK to Projects (NULLABLE - NULL for absences)
+5. `HourTypeID` (BigInt?) - FK to HourType (NULLABLE - NULL for absences)
+6. `HourTypesID` (BigInt?) - FK to HourTypes (NULLABLE - NULL for absences)
+7. `StartTime` (Time) - Shift start time (MANDATORY, dummy 08:00 for absences)
 8. `EndTime` (Time) - Shift end time (MANDATORY, dummy 16:00 for absences)
-9. `Description` (String) - Work description (OPTIONAL)
+9. `Description` (String?) - Work description (OPTIONAL for all record types)
 10. `km` (Int) - Kilometers traveled (OPTIONAL, default 0)
 11. `Lock` (Boolean) - Manual lock flag (default false)
 12. `DlhodobaSC` (Boolean) - Trip flag (default false)
 
-**Joined Catalog Data:**
-- `CinnostTyp.Alias` - Absence Type display name
-- `Projects.Number` - Project number for display
-- `HourType.HourType` - Productivity Type display name
-- `HourTypes.HourType` - Work Type display name
+**Joined Catalog Data (with NULL handling):**
+- `CinnostTyp.Alias` - Absence Type display name (ALWAYS present)
+- `Projects.Number` - Project number for display (NULL for absences → display "—")
+- `HourType.HourType` - Productivity Type display name (NULL for absences → display "—")
+- `HourTypes.HourType` - Work Type display name (NULL for absences → display "—")
 
 **Computed Fields:**
 - `Hours` (Decimal) - Calculated from StartTime/EndTime with overnight logic
@@ -371,13 +454,14 @@ However, the following theme reference files are available:
 1. Determine user table name: `t_{employee.FirstName}_{employee.LastName}`
 2. Query records with `StartDate BETWEEN fromDate AND toDate`
 3. JOIN with:
-   - `CinnostTyp ON CinnostTypID = CinnostTyp.ID`
-   - `Projects ON ProjectID = Projects.ID WHERE Projects.AllowAssignWorkingHours = true`
-   - `HourType ON HourTypeID = HourType.ID`
-   - `HourTypes ON HourTypesID = HourTypes.ID`
+   - `CinnostTyp ON CinnostTypID = CinnostTyp.ID` (INNER JOIN - always present)
+   - `Projects ON ProjectID = Projects.ID WHERE Projects.AllowAssignWorkingHours = true` (LEFT JOIN - can be NULL)
+   - `HourType ON HourTypeID = HourType.ID` (LEFT JOIN - can be NULL)
+   - `HourTypes ON HourTypesID = HourTypes.ID` (LEFT JOIN - can be NULL)
 4. Fetch employee's `ZamknuteK` value for lock calculation
 5. Calculate hours using resolver logic
 6. Return paginated results with total count
+7. Field resolvers return NULL for missing joined data, frontend displays "—"
 
 **GraphQL Response Type:**
 ```graphql
@@ -385,9 +469,9 @@ type WorkRecord {
   id: ID!
   date: Date!
   absenceType: String!
-  project: String!
-  productivityType: String!
-  workType: String!
+  project: String              # Can be null (for absences)
+  productivityType: String     # Can be null (for absences)
+  workType: String             # Can be null (for absences)
   startTime: Time!
   endTime: Time!
   hours: Float!
@@ -617,9 +701,9 @@ function useInfiniteScroll(
     │   ├── ID Column
     │   ├── Date Column
     │   ├── Absence Type Column
-    │   ├── Project Column
-    │   ├── Productivity Type Column
-    │   ├── Work Type Column
+    │   ├── Project Column (displays "—" if NULL)
+    │   ├── Productivity Type Column (displays "—" if NULL)
+    │   ├── Work Type Column (displays "—" if NULL)
     │   ├── Start Time Column
     │   ├── End Time Column (with moon icon if overnight)
     │   ├── Hours Column (decimal format)
@@ -656,7 +740,7 @@ function useInfiniteScroll(
 - Column sorting state: `sortColumn` and `sortDirection`
 - Sort indicators: ChevronUp/ChevronDown icons
 - Sort toggle logic: same column toggles direction, new column resets to 'asc'
-- Null value handling in sort comparator
+- **Null value handling in sort comparator and display (use "—" for NULL values)**
 - Responsive table with shadcn/ui styling classes
 
 **From `/frontend/src/app/employees/page.tsx`:**
@@ -694,15 +778,20 @@ All requirements are now fully clarified and comprehensive enough for the spec-w
 
 - Data fetching strategy confirmed (Option A: fetch all fields upfront)
 - Date picker UI clarified (two separate pickers, not range picker)
-- Absence record handling clarified (dummy times 8:00-16:00)
+- Absence record handling clarified (dummy times 08:00-16:00)
 - Employee selector scope clarified (managers see ALL employees)
 - Multi-filter logic clarified (OR within category, AND between categories)
+- **Database schema nullability fully documented (conditional based on activity type)**
+- **NULL value display rules specified ("—" em dash for absence records)**
+- **Comprehensive schema reference guide available at `/docs/db/RELATIONAL_SCHEMA_GUIDE.md`**
 - Complete data model documented
-- GraphQL query structure defined
+- GraphQL query structure defined with LEFT JOINs
 - Hour calculation algorithm specified
 - Filter implementation detailed
 - Infinite scroll approach outlined
 - UI component breakdown provided
 - Existing code patterns identified for reuse
 
-Ready to proceed to `/write-spec`.
+**CONFIRMED READY TO PROCEED TO `/write-spec`**
+
+All critical database schema clarifications have been incorporated, including conditional field nullability based on activity type and proper NULL value display rules. The comprehensive relational schema guide provides complete technical reference for implementation.
