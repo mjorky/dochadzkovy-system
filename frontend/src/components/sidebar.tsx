@@ -2,10 +2,11 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Users, Database, Clock, FileText, Settings } from 'lucide-react';
+import { Users, Database, Clock, FileText, Settings, CalendarCheck } from 'lucide-react';
 
 const menuItems = [
   { name: 'Employees', href: '/employees', icon: Users },
+  { name: 'Work Records', href: '/work-records', icon: CalendarCheck },
   { name: 'Data', href: '/data', icon: Database },
   { name: 'Overtime', href: '/overtime', icon: Clock },
   { name: 'Reports', href: '/reports', icon: FileText },

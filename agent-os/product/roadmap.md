@@ -59,14 +59,14 @@ This roadmap prioritizes quick delivery of legacy application functionality usin
 
 **Goal:** Users can view their work records in a table, filter by date, and see the data they're used to from the legacy app.
 
-### 6. [ ] Work Records Read Query — Create GraphQL query that reads from per-user tables (t_{Name}_{Surname}), joins with Projects, CinnostTyp, HourType, HourTypes catalog tables, calculates hours (including overnight spans), and returns formatted work records. `M`
+### 6. [x] Work Records Read Query — Create GraphQL query that reads from per-user tables (t_{Name}_{Surname}), joins with Projects, CinnostTyp, HourType, HourTypes catalog tables, calculates hours (including overnight spans), and returns formatted work records. `M`
 
 **Testing Guide (Non-Technical):**
 - Your developer will test this in GraphQL Playground first
 - They'll show you a list of your recent work records in the browser
 - Check: do you recognize your recent entries from the desktop app?
 
-### 7. [ ] Data Screen - Table Display — Build "Data" screen with table showing work records: date, absence type, project, productivity type, work type, start time, end time, hours, description, km, trip flag. Default filter: last 31 days. Display lock icon for locked records. `M`
+### 7. [x] Data Screen - Table Display — Build "Data" screen with table showing work records: date, absence type, project, productivity type, work type, start time, end time, hours, description, km, trip flag. Default filter: last 31 days. Display lock icon for locked records. `M`
 
 **Testing Guide (Non-Technical):**
 - Open `http://localhost:3000` and click "Data" (or Dáta)
@@ -81,7 +81,7 @@ This roadmap prioritizes quick delivery of legacy application functionality usin
 - Do overnight shifts (e.g., 22:00-06:00) show 8 hours, not negative?
 - Can you scroll through the table easily?
 
-### 8. [ ] Date Range Filter — Add date picker filter (from date, to date) above table with "Last 31 days" default and "Show whole month" checkbox toggle that expands to full calendar month of start date. Filter updates table without page reload. `S`
+### 8. [x] Date Range Filter — Add date picker filter (from date, to date) above table with "Last 31 days" default and "Show whole month" checkbox toggle that expands to full calendar month of start date. Filter updates table without page reload. `S`
 
 **Testing Guide (Non-Technical):**
 - On the Data screen, look for date filter controls at the top
