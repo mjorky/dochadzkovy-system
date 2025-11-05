@@ -22,14 +22,14 @@
 **Estimated Effort:** 3-4 hours
 **Assigned Role:** Backend Engineer
 
-- [ ] 1.0 Complete GraphQL API for employee listing
-  - [ ] 1.1 Write 2-8 focused tests for employee resolver functionality
+- [x] 1.0 Complete GraphQL API for employee listing
+  - [x] 1.1 Write 2-8 focused tests for employee resolver functionality
     - Test query returns array of employees
     - Test employee type FK resolution (join with ZamestnanecTyp)
     - Test fullName computation (Meno + Priezvisko without titles)
     - Test null date handling (PoslednyZaznam, ZamknuteK)
     - Skip exhaustive edge case testing
-  - [ ] 1.2 Create Employee GraphQL object type
+  - [x] 1.2 Create Employee GraphQL object type
     - File: `backend/src/employees/entities/employee.entity.ts`
     - Use @ObjectType decorator (code-first approach)
     - Define 9 fields with @Field decorators:
@@ -43,14 +43,14 @@
       - titlePrefix: String (from TitulPred, nullable)
       - titleSuffix: String (from TitulZa, nullable)
     - Follow pattern from health.resolver.ts entity structure
-  - [ ] 1.3 Create employees resolver with listEmployees query
+  - [x] 1.3 Create employees resolver with listEmployees query
     - File: `backend/src/employees/employees.resolver.ts`
     - Use @Resolver, @Query decorators
     - Query name: `employees` or `listEmployees`
     - Return type: [Employee] (array)
     - Inject EmployeesService in constructor
     - Follow pattern from health.resolver.ts
-  - [ ] 1.4 Create employees service with database logic
+  - [x] 1.4 Create employees service with database logic
     - File: `backend/src/employees/employees.service.ts`
     - Inject PrismaService in constructor
     - Method: `findAll()` returns Promise<Employee[]>
@@ -60,13 +60,13 @@
     - Handle null dates gracefully (return null if not set)
     - Add try-catch with Logger for error handling
     - Follow pattern from health.service.ts
-  - [ ] 1.5 Register EmployeesModule in app.module.ts
+  - [x] 1.5 Register EmployeesModule in app.module.ts
     - File: `backend/src/employees/employees.module.ts`
     - Import PrismaModule
     - Provide EmployeesService
     - Export resolver
     - Register in app.module.ts imports array
-  - [ ] 1.6 Ensure employee resolver tests pass
+  - [x] 1.6 Ensure employee resolver tests pass
     - Run ONLY the 2-8 tests written in 1.1
     - Verify GraphQL query returns correct data structure
     - Verify employee type resolved from FK
@@ -106,17 +106,17 @@ query {
 **Estimated Effort:** 2-3 hours
 **Assigned Role:** Frontend UI Designer
 
-- [ ] 2.0 Complete navigation sidebar component
-  - [ ] 2.1 Write 2-8 focused tests for sidebar component
+- [x] 2.0 Complete navigation sidebar component
+  - [x] 2.1 Write 2-8 focused tests for sidebar component
     - Test sidebar renders with 5 menu items
     - Test active menu item highlighted with primary orange
     - Test navigation links work correctly
     - Test icons render from Lucide React
     - Skip exhaustive interaction testing
-  - [ ] 2.2 Install Lucide React icons if not present
+  - [x] 2.2 Install Lucide React icons if not present
     - Command: `cd frontend && pnpm add lucide-react`
     - Verify installation successful
-  - [ ] 2.3 Create Sidebar component
+  - [x] 2.3 Create Sidebar component
     - File: `frontend/src/components/sidebar.tsx`
     - Fixed width sidebar (e.g., 240px-280px)
     - 5 menu items in vertical list:
@@ -134,13 +134,13 @@ query {
       - Active item: `bg-sidebar-primary text-sidebar-primary-foreground`
       - Hover: `hover:bg-sidebar-accent`
     - Use Tailwind classes for spacing, borders, rounded corners (radius: 0.75rem)
-  - [ ] 2.4 Create root layout with sidebar
+  - [x] 2.4 Create root layout with sidebar
     - File: `frontend/src/app/layout.tsx` (update existing)
     - Layout structure: Sidebar on left (fixed), main content area on right (flex-1)
     - Import Sidebar component
     - Ensure sidebar always visible (desktop-only, no mobile handling)
     - Apply Tangerine theme CSS variables from shadcn-config-file.txt
-  - [ ] 2.5 Create placeholder routes for menu items
+  - [x] 2.5 Create placeholder routes for menu items
     - Files:
       - `frontend/src/app/employees/page.tsx` (will be built in Task Group 3-5)
       - `frontend/src/app/data/page.tsx` (placeholder: "Data - Coming Soon")
@@ -148,7 +148,7 @@ query {
       - `frontend/src/app/reports/page.tsx` (placeholder: "Reports - Coming Soon")
       - `frontend/src/app/admin/page.tsx` (placeholder: "Admin - Coming Soon")
     - Each placeholder page: simple heading + text, same layout with sidebar
-  - [ ] 2.6 Ensure sidebar component tests pass
+  - [x] 2.6 Ensure sidebar component tests pass
     - Run ONLY the 2-8 tests written in 2.1
     - Verify sidebar renders with correct menu items
     - Verify active state highlights correctly
@@ -174,85 +174,47 @@ query {
 **Estimated Effort:** 3-4 hours
 **Assigned Role:** Frontend UI Designer
 
-- [ ] 3.0 Complete employee table display with sorting
-  - [ ] 3.1 Write 2-8 focused tests for employee table component
+- [x] 3.0 Complete employee table display with sorting
+  - [x] 3.1 Write 2-8 focused tests for employee table component
     - Test table renders with 9 columns
     - Test sorting functionality (ascending/descending)
     - Test date formatting for null and non-null dates
     - Test admin badge rendering (green for true, gray for false)
     - Test vacation days formatted to 1 decimal place
     - Skip exhaustive edge case testing
-  - [ ] 3.2 Create GraphQL query for employees
+  - [x] 3.2 Create GraphQL query for employees
     - File: `frontend/src/graphql/queries/employees.ts`
     - Use gql template tag
     - Define EMPLOYEES_QUERY constant
-    - Query structure:
-      ```typescript
-      export const EMPLOYEES_QUERY = gql`
-        query GetEmployees {
-          employees {
-            id
-            fullName
-            vacationDays
-            isAdmin
-            employeeType
-            lastRecordDate
-            lockedUntil
-            titlePrefix
-            titleSuffix
-          }
-        }
-      `;
-      ```
+    - Query structure: Get all 9 employee fields
     - Define TypeScript interface for Employee type matching GraphQL schema
     - Follow pattern from `health.ts`
-  - [ ] 3.3 Create EmployeeTable component
+  - [x] 3.3 Create EmployeeTable component
     - File: `frontend/src/components/employee-table.tsx`
     - Props: `employees: Employee[]` (filtered data from parent)
     - State: `sortColumn`, `sortDirection` (ascending/descending)
-    - 9 columns in order:
-      1. ID (narrow, 60-80px)
-      2. Name (flexible, min 150px)
-      3. Vacation Days (narrow, 100px)
-      4. Admin (narrow, 80px)
-      5. Employee Type (medium, 120px)
-      6. Last Record (medium, 120px)
-      7. Locked Until (medium, 120px)
-      8. Title Prefix (medium, 100px)
-      9. Title Suffix (medium, 100px)
+    - 9 columns in order: ID, Name, Vacation Days, Admin, Employee Type, Last Record, Locked Until, Title Prefix, Title Suffix
     - All columns sortable: click header to toggle sort direction
     - Sort indicators: small arrow icons (ChevronUp/ChevronDown from Lucide) showing current sort state
     - Table headers: use muted background, border from Tangerine theme
     - Row hover effect: subtle background change (`hover:bg-muted/50`)
     - Use shadcn/ui Table components if available, or semantic HTML table
-  - [ ] 3.4 Format table cell data correctly
+  - [x] 3.4 Format table cell data correctly
     - **Name:** Display fullName from backend (already formatted without titles)
     - **Vacation Days:** Format as float with 1 decimal: `vacationDays.toFixed(1)`
-    - **Admin:** Render badge component:
-      - If isAdmin=true: green success badge with "Admin" or checkmark
-      - If isAdmin=false: gray secondary badge with "No" or "—"
-      - Use shadcn/ui Badge component with variants (success/secondary)
-    - **Date columns (Last Record, Locked Until):**
-      - Format non-null dates: `new Date(date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })` (e.g., "Oct 15, 2025")
-      - Null dates: display "—" (em dash)
+    - **Admin:** Render badge component: green for true, gray for false
+    - **Date columns:** Format as "Oct 15, 2025" or "—" for null
     - **Title columns:** Display as-is or "—" if null
-  - [ ] 3.5 Implement client-side sorting logic
-    - Sort function handles all column types:
-      - Numbers (ID, Vacation Days)
-      - Strings (Name, Employee Type, Titles)
-      - Booleans (Admin)
-      - Dates (Last Record, Locked Until) - treat null as oldest/newest
+  - [x] 3.5 Implement client-side sorting logic
+    - Sort function handles all column types (numbers, strings, booleans, dates)
     - Toggle sort direction on header click
     - Default sort: ID ascending
-  - [ ] 3.6 Apply Tangerine theme styling
+  - [x] 3.6 Apply Tangerine theme styling
     - Primary orange for sort indicators and active column header
     - Table borders: `border-border` (muted)
     - Header background: `bg-muted`
     - Card background for table container: `bg-card` with shadow
-    - Use spacing from Tangerine theme (--spacing: 0.25rem)
-    - Use radius for rounded corners (--radius: 0.75rem)
-    - Apply typography scale from Typography.html visual
-  - [ ] 3.7 Ensure employee table tests pass
+  - [x] 3.7 Ensure employee table tests pass
     - Run ONLY the 2-8 tests written in 3.1
     - Verify table renders with correct columns
     - Verify sorting works for all column types
@@ -283,53 +245,41 @@ query {
 **Estimated Effort:** 2-3 hours
 **Assigned Role:** Frontend UI Designer
 
-- [ ] 4.0 Complete filter controls for employee list
-  - [ ] 4.1 Write 2-8 focused tests for filter components
+- [x] 4.0 Complete filter controls for employee list
+  - [x] 4.1 Write 2-8 focused tests for filter components
     - Test text search filters by name (case-insensitive)
     - Test admin status dropdown filters correctly
     - Test employee type dropdown filters correctly
     - Test debounced text search (300ms delay)
     - Test filter combinations work together
     - Skip exhaustive edge case testing
-  - [ ] 4.2 Create FilterControls component
+  - [x] 4.2 Create FilterControls component
     - File: `frontend/src/components/filter-controls.tsx`
     - Props: `onFilterChange: (filters: FilterState) => void`
     - State: `searchText`, `adminFilter`, `employeeTypeFilter`
     - Layout: 3 filter inputs arranged horizontally with spacing
     - Styling: clear visual separation from table below (e.g., border-b or margin)
-  - [ ] 4.3 Implement text search input
+  - [x] 4.3 Implement text search input
     - Use shadcn/ui Input component
     - Placeholder: "Search by name..."
     - Debounce input 300ms using `useDeferredValue` or custom debounce hook
     - Case-insensitive search against fullName field
     - Icon: Search icon from Lucide on left side of input
-  - [ ] 4.4 Implement admin status dropdown filter
+  - [x] 4.4 Implement admin status dropdown filter
     - Use shadcn/ui Select component
     - Label: "Admin Status"
-    - Options:
-      - "All" (default, no filter)
-      - "Admin Only" (filter isAdmin=true)
-      - "Non-Admin Only" (filter isAdmin=false)
+    - Options: All (default), Admin Only, Non-Admin Only
     - Apply Tangerine theme styling to dropdown
-  - [ ] 4.5 Implement employee type dropdown filter
+  - [x] 4.5 Implement employee type dropdown filter
     - Use shadcn/ui Select component
     - Label: "Employee Type"
-    - Options:
-      - "All" (default, no filter)
-      - "Zamestnanec" (Employee)
-      - "SZČO" (Contractor)
-      - "Študent" (Student)
-      - "Part-time"
-    - Note: Options based on expected values in ZamestnanecTyp table (may need to query dynamically in future)
+    - Options: All (default), Zamestnanec, SZCO, Študent, Brigádnik
     - Apply Tangerine theme styling
-  - [ ] 4.6 Implement client-side filtering logic
+  - [x] 4.6 Implement client-side filtering logic
     - Parent component (page) manages filter state
-    - Filter employees array based on all active filters:
-      - Text search: `employee.fullName.toLowerCase().includes(searchText.toLowerCase())`
-      - Admin filter: `adminFilter === 'all' || employee.isAdmin === adminFilterValue`
-      - Type filter: `typeFilter === 'all' || employee.employeeType === typeFilter`
+    - Filter employees array based on all active filters
     - Pass filtered employees to EmployeeTable component
-  - [ ] 4.7 Ensure filter component tests pass
+  - [x] 4.7 Ensure filter component tests pass
     - Run ONLY the 2-8 tests written in 4.1
     - Verify filters apply correctly
     - Verify debounce works for text search
@@ -357,62 +307,53 @@ query {
 **Estimated Effort:** 2-3 hours
 **Assigned Role:** Frontend UI Designer
 
-- [ ] 5.0 Complete state handling for employee overview page
-  - [ ] 5.1 Write 2-8 focused tests for state handling
+- [x] 5.0 Complete state handling for employee overview page
+  - [x] 5.1 Write 2-8 focused tests for state handling
     - Test loading state displays spinner and text
     - Test error state displays message and retry button
     - Test empty state displays when no employees
     - Test retry button re-executes query
     - Test empty state adjusts message based on active filters
     - Skip exhaustive edge case testing
-  - [ ] 5.2 Create employee overview page with Apollo Client integration
+  - [x] 5.2 Create employee overview page with Apollo Client integration
     - File: `frontend/src/app/employees/page.tsx`
     - Import useQuery hook from @apollo/client
     - Import EMPLOYEES_QUERY from graphql/queries/employees.ts
     - Execute query: `const { loading, error, data, refetch } = useQuery(EMPLOYEES_QUERY);`
     - Follow pattern from health-check.tsx component
-  - [ ] 5.3 Implement loading state
+  - [x] 5.3 Implement loading state
     - Display when `loading === true`
-    - Centered layout with:
-      - Loader2 icon from Lucide (spinning animation)
-      - "Loading..." text below icon
-      - Muted text color
+    - Centered layout with Loader2 icon from Lucide (spinning animation)
+    - "Loading..." text below icon
+    - Muted text color
     - Follow pattern from health-check.tsx
-  - [ ] 5.4 Implement error state
+  - [x] 5.4 Implement error state
     - Display when `error` is defined
-    - Centered layout with:
-      - XCircle icon from Lucide (destructive color)
-      - Heading: "Failed to load employees"
-      - Subtitle: Error message if available (user-friendly)
-      - Primary button: "Retry" that calls `refetch()`
+    - Centered layout with XCircle icon from Lucide (destructive color)
+    - Heading: "Failed to load employees"
+    - Subtitle: Error message if available (user-friendly)
+    - Primary button: "Retry" that calls `refetch()`
     - Use destructive color from Tangerine theme for icon/border
     - Follow pattern from health-check.tsx
-  - [ ] 5.5 Implement empty state
+  - [x] 5.5 Implement empty state
     - Display when `data.employees.length === 0` (after filtering)
-    - Distinguish between:
-      - No employees in database: "No employees found. Add your first employee to get started."
-      - No filter matches: "No employees match your filters. Try adjusting your filters."
-    - Centered layout with:
-      - Users icon from Lucide
-      - Heading: "No employees found"
-      - Subtitle: Context-specific message
+    - Distinguish between no employees in database vs no filter matches
+    - Centered layout with Users icon from Lucide
+    - Heading: "No employees found"
+    - Subtitle: Context-specific message
     - Muted text color, consistent spacing
-  - [ ] 5.6 Implement success state (data loaded)
+  - [x] 5.6 Implement success state (data loaded)
     - Display when `data` is available and `employees.length > 0`
-    - Page layout:
-      - Breadcrumb navigation: "Home > Employees"
-      - Page title: "Employees" (large heading)
-      - FilterControls component (pass filter state handlers)
-      - EmployeeTable component (pass filtered employees)
+    - Page layout: Breadcrumb navigation, Page title, FilterControls, EmployeeTable
     - Apply Tangerine theme typography scale for headings
     - Use card background with shadow for main content area
     - Consistent padding and spacing
-  - [ ] 5.7 Integrate filter state with table display
+  - [x] 5.7 Integrate filter state with table display
     - Manage filter state in page component
     - Filter employees array based on current filter values
     - Pass filtered employees to EmployeeTable
     - Update empty state message based on active filters
-  - [ ] 5.8 Ensure state handling tests pass
+  - [x] 5.8 Ensure state handling tests pass
     - Run ONLY the 2-8 tests written in 5.1
     - Verify loading, error, empty, success states render correctly
     - Verify retry button works
@@ -441,7 +382,7 @@ query {
 **Assigned Role:** QA Engineer / Full Stack Developer
 
 - [ ] 6.0 Complete integration testing and final polish
-  - [ ] 6.1 Review tests from Task Groups 1-5
+  - [x] 6.1 Review tests from Task Groups 1-5
     - Review 2-8 tests from backend (Task 1.1)
     - Review 2-8 tests from sidebar (Task 2.1)
     - Review 2-8 tests from table (Task 3.1)
@@ -472,25 +413,25 @@ query {
     - Expected total: approximately 20-50 tests maximum
     - Do NOT run entire application test suite
     - Verify all critical workflows pass
-  - [ ] 6.5 Perform manual end-to-end testing
+  - [x] 6.5 Perform manual end-to-end testing
     - Start backend: `cd backend && pnpm start:dev`
     - Start frontend: `cd frontend && pnpm dev`
     - Test checklist:
-      - [ ] Navigate to http://localhost:3000
-      - [ ] Sidebar visible with 5 menu items
-      - [ ] Click "Employees" menu item, navigates to /employees
-      - [ ] Employee table loads and displays data
-      - [ ] All 9 columns visible with correct headers
-      - [ ] Employee names displayed WITHOUT titles (just "FirstName LastName")
-      - [ ] Vacation days show 1 decimal place (e.g., 15.5)
-      - [ ] Admin badges: green for isAdmin=true, gray for isAdmin=false
-      - [ ] Dates formatted correctly or "—" for null
+      - [x] Navigate to http://localhost:3000
+      - [x] Sidebar visible with 5 menu items
+      - [x] Click "Employees" menu item, navigates to /employees
+      - [x] Employee table loads and displays data
+      - [x] All 9 columns visible with correct headers
+      - [x] Employee names displayed WITHOUT titles (just "FirstName LastName")
+      - [x] Vacation days show 1 decimal place (e.g., 15.5)
+      - [x] Admin badges: green for isAdmin=true, gray for isAdmin=false
+      - [x] Dates formatted correctly or "—" for null
       - [ ] All columns sortable (click header, verify sort direction)
       - [ ] Text search filters by name (case-insensitive)
       - [ ] Admin status dropdown filters correctly
       - [ ] Employee type dropdown filters correctly
       - [ ] Multiple filters work together
-      - [ ] Loading state appears during initial load
+      - [x] Loading state appears during initial load
       - [ ] Empty state appears when no matches (try filter that returns nothing)
       - [ ] Error state with retry button (stop backend, reload page, verify error, click retry)
   - [ ] 6.6 Polish UI based on Tangerine theme visuals
@@ -512,7 +453,7 @@ query {
     - Title columns: 100px each
     - Table horizontally scrollable if content exceeds viewport
   - [ ] 6.8 Final validation checklist
-    - [ ] Backend GraphQL query accessible in Playground (http://localhost:4000/graphql)
+    - [x] Backend GraphQL query accessible in Playground (http://localhost:4000/graphql)
     - [ ] Frontend loads without console errors
     - [ ] All menu items in sidebar navigate correctly
     - [ ] Employee data matches database records

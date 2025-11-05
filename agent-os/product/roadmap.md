@@ -15,7 +15,7 @@ This roadmap prioritizes quick delivery of legacy application functionality usin
 - Open it in your browser - you should see "OK" or "Database connected"
 - If you see an error, the database is not connected yet
 
-### 2. [ ] Basic GraphQL API Setup — Configure Apollo Server in NestJS with code-first schema generation, create first simple query (e.g., list employees), and set up GraphQL Playground for testing. `XS`
+### 2. [x] Basic GraphQL API Setup — Configure Apollo Server in NestJS with code-first schema generation, create first simple query (e.g., list employees), and set up GraphQL Playground for testing. `XS`
 
 **Testing Guide (Non-Technical):**
 - Open `http://localhost:4000/graphql` in your browser
@@ -23,7 +23,7 @@ This roadmap prioritizes quick delivery of legacy application functionality usin
 - Your developer will show you how to click "Run" button
 - You should see a list of employee names from your database
 
-### 3. [ ] Next.js Frontend Setup — Initialize Next.js 14 project with TypeScript, install TailwindCSS and shadcn/ui components, create basic layout with navigation sidebar matching legacy app structure. `S`
+### 3. [x] Next.js Frontend Setup — Initialize Next.js 14 project with TypeScript, install TailwindCSS and shadcn/ui components, create basic layout with navigation sidebar matching legacy app structure. `S`
 
 **Testing Guide (Non-Technical):**
 - Open `http://localhost:3000` in your browser
@@ -31,7 +31,7 @@ This roadmap prioritizes quick delivery of legacy application functionality usin
 - Menu should have items like "Employee", "Data", "Overtime", "Reports", "Admin"
 - Clicking menu items doesn't load content yet - that's normal
 
-### 4. [ ] GraphQL Client Integration — Set up Apollo Client in Next.js, configure CORS on backend, create connection between frontend and backend, verify end-to-end request flow with simple query. `S`
+### 4. [x] GraphQL Client Integration — Set up Apollo Client in Next.js, configure CORS on backend, create connection between frontend and backend, verify end-to-end request flow with simple query. `S`
 
 **Testing Guide (Non-Technical):**
 - Open `http://localhost:3000` in your browser
@@ -39,7 +39,7 @@ This roadmap prioritizes quick delivery of legacy application functionality usin
 - If you see employee names from your database (even if layout is rough), integration works!
 - If you see "Loading..." forever or error message, connection failed
 
-### 5. [ ] Employee Overview Screen (Read-Only) — Build complete "Employee" screen showing full name (with titles), employment type, vacation balance, and admin status. Fetch data via GraphQL query from Zamestnanci table, display in clean card layout with proper formatting. `M`
+### 5. [x] Employee Overview Screen (Read-Only) — Build complete "Employee" screen showing full name (with titles), employment type, vacation balance, and admin status. Fetch data via GraphQL query from Zamestnanci table, display in clean card layout with proper formatting. `M`
 
 **Testing Guide (Non-Technical):**
 - Open `http://localhost:3000` and click "Employee" (or Zamestnanec)
