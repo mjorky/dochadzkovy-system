@@ -24,12 +24,12 @@ export class EmployeesService {
         employeeType: employee.ZamestnanecTyp.Typ,
         lastRecordDate: employee.PoslednyZaznam
           ? employee.PoslednyZaznam.toISOString()
-          : undefined,
+          : null,
         lockedUntil: employee.ZamknuteK
           ? employee.ZamknuteK.toISOString()
-          : undefined,
-        titlePrefix: employee.TitulPred || undefined,
-        titleSuffix: employee.TitulZa || undefined,
+          : null,
+        titlePrefix: employee.TitulPred || null,
+        titleSuffix: employee.TitulZa || null,
       }));
     } catch (error) {
       this.logger.error('Failed to fetch employees', error);
