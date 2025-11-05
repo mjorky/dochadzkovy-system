@@ -18,14 +18,14 @@ export class Employee {
   employeeType: string;
 
   @Field(() => String, { nullable: true })
-  lastRecordDate?: string;
+  lastRecordDate: string | null;
 
   @Field(() => String, { nullable: true })
-  lockedUntil?: string;
+  lockedUntil: string | null;
 
   @Field(() => String, { nullable: true })
-  titlePrefix?: string;
+  titlePrefix: string | null;
 
   @Field(() => String, { nullable: true })
-  titleSuffix?: string;
+  titleSuffix: string | null;
 }
