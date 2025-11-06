@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Users, Database, Clock, FileText, Settings, CalendarCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { ModeToggle } from '@/components/mode-toggle';
 import { cn } from '@/lib/utils';
 
 const menuItems = [
@@ -20,10 +21,11 @@ export function Sidebar() {
 
   return (
     <aside className="w-64 bg-sidebar border-r border-sidebar-border flex flex-col">
-      <div className="p-6">
+      <div className="p-6 flex items-center justify-between">
         <h1 className="text-xl font-bold text-sidebar-foreground">
           Attendance System
         </h1>
+        <ModeToggle />
       </div>
       <nav className="flex-1 px-3 py-4">
         <ul className="space-y-1">
