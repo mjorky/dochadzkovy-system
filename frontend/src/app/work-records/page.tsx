@@ -43,10 +43,13 @@ const mockUser = {
 };
 
 export default function WorkRecordsPage() {
-  // Initialize default date range: last 31 days
-  const today = new Date();
-  const thirtyOneDaysAgo = new Date();
-  thirtyOneDaysAgo.setDate(today.getDate() - 31);
+  // Initialize default date range: last 31 days (computed once!)
+  const initialDates = useMemo(() => {
+    const today = new Date();
+    const thirtyOneDaysAgo = new Date();
+    thirtyOneDaysAgo.setDate(today.getDate() - 31);
+    return { today, thirtyOneDaysAgo };
+  }, []);
 
   // Employee selection state (for managers/admins)
   const [selectedEmployeeId, setSelectedEmployeeId] = useState<string>(mockUser.id);
@@ -58,8 +61,8 @@ export default function WorkRecordsPage() {
 
   // Filter state - default to last 31 days
   const [filters, setFilters] = useState<WorkRecordsFilterState>({
-    fromDate: thirtyOneDaysAgo,
-    toDate: today,
+    fromDate: initialDates.thirtyOneDaysAgo,
+    toDate: initialDates.today,
     showWholeMonth: false,
     searchText: '',
     selectedProjects: [],
@@ -391,6 +394,7 @@ export default function WorkRecordsPage() {
 
       {/* Filter controls */}
       <WorkRecordsFilterControls
+        filters={filters}
         onFilterChange={handleFilterChange}
         projects={projectsData?.getActiveProjects || []}
         absenceTypes={absenceTypesData?.getAbsenceTypes || []}
