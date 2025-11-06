@@ -34,6 +34,7 @@ export function useInfiniteScroll({
   isLoading = false,
 }: UseInfiniteScrollOptions) {
   const observerTarget = useRef<HTMLDivElement>(null);
+  const lastFetchTime = useRef<number>(0);
 
   useEffect(() => {
     // Don't set up observer if no more data or currently loading
@@ -47,21 +48,26 @@ export function useInfiniteScroll({
     }
 
     // Create IntersectionObserver to detect when sentinel element is visible
-    // Threshold: 1.0 means trigger when element is fully visible (at 200px from bottom)
     const observer = new IntersectionObserver(
       (entries) => {
         // entries[0] is the sentinel element
         if (entries[0].isIntersecting && hasMore && !isLoading) {
+          // Debounce: prevent fetches within 500ms of each other
+          const now = Date.now();
+          if (now - lastFetchTime.current < 500) {
+            return;
+          }
+          lastFetchTime.current = now;
           fetchMore();
         }
       },
       {
         // Root is viewport by default
         root: null,
-        // 200px from bottom of viewport (as per requirements)
+        // 200px from bottom of viewport
         rootMargin: '200px',
-        // Trigger when element is fully visible
-        threshold: 1.0,
+        // Trigger when at least 10% of element is visible
+        threshold: 0.1,
       }
     );
 

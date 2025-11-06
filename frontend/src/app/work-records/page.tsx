@@ -468,19 +468,17 @@ export default function WorkRecordsPage() {
           {/* Work records table */}
           <WorkRecordsTable workRecords={filteredRecords} />
 
-          {/* Infinite scroll sentinel */}
-          {recordsData?.getWorkRecords.hasMore && (
-            <div ref={observerTarget} className="py-8 text-center">
-              {isFetchingMore && (
-                <div className="flex items-center justify-center gap-2">
-                  <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
-                  <span className="text-sm text-muted-foreground">
-                    Loading more...
-                  </span>
-                </div>
-              )}
-            </div>
-          )}
+          {/* Infinite scroll sentinel - always render to avoid observer re-initialization */}
+          <div ref={observerTarget} className="py-8 text-center">
+            {recordsData?.getWorkRecords.hasMore && isFetchingMore && (
+              <div className="flex items-center justify-center gap-2">
+                <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+                <span className="text-sm text-muted-foreground">
+                  Loading more...
+                </span>
+              </div>
+            )}
+          </div>
         </>
       )}
     </div>
