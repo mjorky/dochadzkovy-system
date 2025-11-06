@@ -22,6 +22,16 @@ import { FilterChips } from '@/components/filter-chips';
 import { EmployeeSelector } from '@/components/employee-selector';
 import { WorkRecordsFilterState } from '@/types/work-records-filters';
 import { useInfiniteScroll } from '@/hooks/use-infinite-scroll';
+import { Button } from '@/components/ui/button';
+import {
+  Breadcrumb,
+  BreadcrumbList,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbSeparator,
+  BreadcrumbPage,
+} from '@/components/ui/breadcrumb';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 
 // Mock user context - in real app, this would come from auth context
 // TODO: Replace with actual auth context when available
@@ -327,23 +337,18 @@ export default function WorkRecordsPage() {
   if (recordsError) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="flex flex-col items-center gap-4 max-w-md p-6 bg-card rounded-lg border border-destructive shadow-md">
-          <XCircle className="h-12 w-12 text-destructive" />
-          <div className="text-center">
-            <h2 className="text-lg font-semibold text-foreground mb-2">
-              Failed to load work records
-            </h2>
-            <p className="text-sm text-muted-foreground mb-4">
-              {recordsError.message || 'An unexpected error occurred'}
-            </p>
-            <button
-              onClick={() => refetchRecords()}
-              className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
-            >
-              Retry
-            </button>
-          </div>
-        </div>
+        <Card className="max-w-md border-destructive">
+          <CardContent className="flex flex-col items-center gap-4 text-center">
+            <XCircle className="h-12 w-12 text-destructive" />
+            <CardHeader className="p-0">
+              <CardTitle>Failed to load work records</CardTitle>
+              <CardDescription>
+                {recordsError.message || 'An unexpected error occurred'}
+              </CardDescription>
+            </CardHeader>
+            <Button onClick={() => refetchRecords()}>Retry</Button>
+          </CardContent>
+        </Card>
       </div>
     );
   }
@@ -361,11 +366,17 @@ export default function WorkRecordsPage() {
   return (
     <div className="p-8">
       {/* Breadcrumb navigation */}
-      <nav className="text-sm text-muted-foreground mb-2">
-        <span>Home</span>
-        <span className="mx-2">&gt;</span>
-        <span className="text-foreground font-medium">Work Records</span>
-      </nav>
+      <Breadcrumb className="mb-2">
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/">Home</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>Work Records</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
 
       {/* Page title */}
       <h1 className="text-3xl font-bold text-foreground mb-6">Work Records</h1>

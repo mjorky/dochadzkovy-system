@@ -2,6 +2,14 @@
 
 import { useEffect, useDeferredValue, useState } from 'react';
 import { Search, X } from 'lucide-react';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
 
 export interface FilterState {
   searchText: string;
@@ -55,13 +63,13 @@ export function FilterControls({ onFilterChange }: FilterControlsProps) {
           Search
         </label>
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <input
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+          <Input
             type="text"
             placeholder="Search by name..."
             value={searchText}
             onChange={(e) => handleSearchChange(e.target.value)}
-            className="w-full pl-10 pr-10 py-2 text-sm border border-input bg-background rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+            className="pl-10 pr-10"
           />
           {searchText && (
             <button
@@ -80,15 +88,19 @@ export function FilterControls({ onFilterChange }: FilterControlsProps) {
         <label className="block text-sm font-medium text-foreground mb-1">
           Admin Status
         </label>
-        <select
+        <Select
           value={adminFilter}
-          onChange={(e) => handleAdminFilterChange(e.target.value as FilterState['adminFilter'])}
-          className="w-full px-3 py-2 text-sm border border-input bg-background rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent cursor-pointer"
+          onValueChange={(value) => handleAdminFilterChange(value as FilterState['adminFilter'])}
         >
-          <option value="all">All</option>
-          <option value="admin">Admin Only</option>
-          <option value="non-admin">Non-Admin Only</option>
-        </select>
+          <SelectTrigger className="w-full">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All</SelectItem>
+            <SelectItem value="admin">Admin Only</SelectItem>
+            <SelectItem value="non-admin">Non-Admin Only</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       {/* Employee Type Filter */}
@@ -96,17 +108,21 @@ export function FilterControls({ onFilterChange }: FilterControlsProps) {
         <label className="block text-sm font-medium text-foreground mb-1">
           Employee Type
         </label>
-        <select
+        <Select
           value={employeeTypeFilter}
-          onChange={(e) => handleTypeFilterChange(e.target.value)}
-          className="w-full px-3 py-2 text-sm border border-input bg-background rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent cursor-pointer"
+          onValueChange={handleTypeFilterChange}
         >
-          <option value="all">All</option>
-          <option value="Zamestnanec">Zamestnanec</option>
-          <option value="SZCO">SZCO</option>
-          <option value="Študent">Študent</option>
-          <option value="Brigádnik">Brigádnik</option>
-        </select>
+          <SelectTrigger className="w-full">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All</SelectItem>
+            <SelectItem value="Zamestnanec">Zamestnanec</SelectItem>
+            <SelectItem value="SZCO">SZCO</SelectItem>
+            <SelectItem value="Študent">Študent</SelectItem>
+            <SelectItem value="Brigádnik">Brigádnik</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
     </div>
   );

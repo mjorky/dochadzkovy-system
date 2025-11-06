@@ -6,6 +6,14 @@ import { WorkRecordsFilterState } from '@/types/work-records-filters';
 import { DatePicker } from '@/components/ui/date-picker';
 import { MultiSelect } from '@/components/ui/multi-select';
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
+import {
   ProjectOption,
   AbsenceTypeOption,
   ProductivityTypeOption,
@@ -137,13 +145,13 @@ export function WorkRecordsFilterControls({
           Search Description
         </label>
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <input
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+          <Input
             type="text"
             placeholder="Search by description..."
             value={searchText}
             onChange={(e) => handleSearchChange(e.target.value)}
-            className="w-full pl-10 pr-10 py-2 text-sm border border-input bg-background rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+            className="pl-10 pr-10"
           />
           {searchText && (
             <button
@@ -195,29 +203,37 @@ export function WorkRecordsFilterControls({
           <label className="block text-sm font-medium text-foreground mb-1">
             Lock Status
           </label>
-          <select
+          <Select
             value={lockStatus}
-            onChange={(e) => setLockStatus(e.target.value as 'all' | 'locked' | 'unlocked')}
-            className="w-full px-3 py-2 text-sm border border-input bg-background rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent cursor-pointer"
+            onValueChange={(value) => setLockStatus(value as 'all' | 'locked' | 'unlocked')}
           >
-            <option value="all">All</option>
-            <option value="locked">Locked Only</option>
-            <option value="unlocked">Unlocked Only</option>
-          </select>
+            <SelectTrigger className="w-full">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All</SelectItem>
+              <SelectItem value="locked">Locked Only</SelectItem>
+              <SelectItem value="unlocked">Unlocked Only</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
         <div>
           <label className="block text-sm font-medium text-foreground mb-1">
             Trip Flag
           </label>
-          <select
+          <Select
             value={tripFlag}
-            onChange={(e) => setTripFlag(e.target.value as 'all' | 'yes' | 'no')}
-            className="w-full px-3 py-2 text-sm border border-input bg-background rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent cursor-pointer"
+            onValueChange={(value) => setTripFlag(value as 'all' | 'yes' | 'no')}
           >
-            <option value="all">All</option>
-            <option value="yes">Yes Only</option>
-            <option value="no">No Only</option>
-          </select>
+            <SelectTrigger className="w-full">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All</SelectItem>
+              <SelectItem value="yes">Yes Only</SelectItem>
+              <SelectItem value="no">No Only</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </div>
     </div>

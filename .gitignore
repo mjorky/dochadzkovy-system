@@ -29,6 +29,7 @@ pnpm-debug.log*
 # Misc
 .DS_Store
 *.pem
+shadcn-cheatsheet/
 
 # Debug
 .vscode/

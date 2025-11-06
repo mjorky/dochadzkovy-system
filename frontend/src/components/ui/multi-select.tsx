@@ -1,7 +1,24 @@
 'use client';
 
 import * as React from 'react';
-import { Check, ChevronDown, X } from 'lucide-react';
+import { ChevronsUpDown } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+  CommandSeparator,
+} from '@/components/ui/command';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import { Checkbox } from '@/components/ui/checkbox';
 
 interface MultiSelectOption {
   value: string;
@@ -14,6 +31,7 @@ interface MultiSelectProps {
   onChange: (selectedValues: string[]) => void;
   placeholder?: string;
   label?: string;
+  className?: string;
 }
 
 export function MultiSelect({
@@ -22,21 +40,9 @@ export function MultiSelect({
   onChange,
   placeholder = 'Select...',
   label,
+  className,
 }: MultiSelectProps) {
   const [open, setOpen] = React.useState(false);
-  const dropdownRef = React.useRef<HTMLDivElement>(null);
-
-  // Close dropdown when clicking outside
-  React.useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setOpen(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
 
   const handleToggle = (value: string) => {
     const newSelected = selectedValues.includes(value)
@@ -62,66 +68,75 @@ export function MultiSelect({
       : `${selectedCount} selected`;
 
   return (
-    <div className="relative" ref={dropdownRef}>
+    <div className={cn('relative', className)}>
       {label && (
         <label className="block text-sm font-medium text-foreground mb-1">
           {label}
         </label>
       )}
-      <button
-        type="button"
-        onClick={() => setOpen(!open)}
-        className="w-full px-3 py-2 text-sm border border-input bg-background rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent cursor-pointer flex items-center justify-between"
-      >
-        <span className={selectedCount === 0 ? 'text-muted-foreground' : ''}>
-          {displayText}
-        </span>
-        <ChevronDown className="h-4 w-4 text-muted-foreground" />
-      </button>
-
-      {open && (
-        <div className="absolute z-50 mt-1 w-full bg-popover border border-border rounded-md shadow-lg max-h-60 overflow-auto">
-          <div className="flex items-center justify-between p-2 border-b border-border">
-            <button
-              type="button"
-              onClick={handleSelectAll}
-              className="text-xs text-primary hover:underline"
-            >
-              Select All
-            </button>
-            <button
-              type="button"
-              onClick={handleClearAll}
-              className="text-xs text-primary hover:underline"
-            >
-              Clear All
-            </button>
-          </div>
-          <div className="p-1">
-            {options.map((option) => {
-              const isSelected = selectedValues.includes(option.value);
-              return (
-                <div
-                  key={option.value}
-                  onClick={() => handleToggle(option.value)}
-                  className="flex items-center px-2 py-2 cursor-pointer hover:bg-accent rounded-sm"
-                >
-                  <div
-                    className={`w-4 h-4 mr-2 border rounded flex items-center justify-center ${
-                      isSelected
-                        ? 'bg-primary border-primary'
-                        : 'border-input'
-                    }`}
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <Button
+            variant="outline"
+            role="combobox"
+            aria-expanded={open}
+            className="w-full justify-between"
+          >
+            <span className={cn(selectedCount === 0 && 'text-muted-foreground')}>
+              {displayText}
+            </span>
+            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-full p-0" align="start">
+          <Command>
+            <CommandInput placeholder="Search..." />
+            <CommandList>
+              <CommandEmpty>No results found.</CommandEmpty>
+              <CommandGroup>
+                <div className="flex items-center justify-between px-2 py-1.5">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleSelectAll}
+                    className="h-auto p-1 text-xs"
                   >
-                    {isSelected && <Check className="h-3 w-3 text-primary-foreground" />}
-                  </div>
-                  <span className="text-sm">{option.label}</span>
+                    Select All
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleClearAll}
+                    className="h-auto p-1 text-xs"
+                  >
+                    Clear All
+                  </Button>
                 </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
+                <CommandSeparator />
+                {options.map((option) => {
+                  const isSelected = selectedValues.includes(option.value);
+                  return (
+                    <CommandItem
+                      key={option.value}
+                      value={option.value}
+                      onSelect={() => handleToggle(option.value)}
+                      className="cursor-pointer"
+                    >
+                      <Checkbox
+                        checked={isSelected}
+                        onCheckedChange={() => handleToggle(option.value)}
+                        className="mr-2"
+                        onClick={(e) => e.stopPropagation()}
+                      />
+                      <span>{option.label}</span>
+                    </CommandItem>
+                  );
+                })}
+              </CommandGroup>
+            </CommandList>
+          </Command>
+        </PopoverContent>
+      </Popover>
     </div>
   );
 }

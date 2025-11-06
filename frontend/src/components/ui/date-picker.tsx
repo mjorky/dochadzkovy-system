@@ -6,6 +6,7 @@ import { Calendar as CalendarIcon } from 'lucide-react';
 import { Calendar } from './calendar';
 import { Popover, PopoverContent, PopoverTrigger } from './popover';
 import { Button } from './button';
+import { cn } from '@/lib/utils';
 
 interface DatePickerProps {
   value: Date | null;
@@ -26,9 +27,10 @@ export function DatePicker({ value, onChange, placeholder = 'Pick a date' }: Dat
       <PopoverTrigger asChild>
         <Button
           variant="outline"
-          className={`w-full justify-start text-left font-normal ${
+          className={cn(
+            'w-full justify-start text-left font-normal',
             !value && 'text-muted-foreground'
-          }`}
+          )}
         >
           <CalendarIcon className="mr-2 h-4 w-4" />
           {value ? format(value, 'PPP') : <span>{placeholder}</span>}

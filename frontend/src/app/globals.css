@@ -173,11 +173,119 @@
 
 @layer base {
   * {
-    @apply border-border;
+    @apply border-border outline-ring/50;
   }
 
   body {
     @apply bg-background text-foreground;
     font-family: var(--font-sans);
   }
+
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  input[type="number"] {
+    -moz-appearance: textfield;
+  }
+}
+
+@keyframes enter {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes exit {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+}
+
+@keyframes slideInFromTop {
+  from {
+    transform: translateY(-0.5rem);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInFromBottom {
+  from {
+    transform: translateY(0.5rem);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInFromLeft {
+  from {
+    transform: translateX(-0.5rem);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInFromRight {
+  from {
+    transform: translateX(0.5rem);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.animate-in {
+  animation: enter 150ms ease-out;
+}
+
+.animate-out {
+  animation: exit 150ms ease-in;
+}
+
+.fade-in-0 {
+  animation: enter 150ms ease-out;
+}
+
+.fade-out-0 {
+  animation: exit 150ms ease-in;
+}
+
+.zoom-in-95 {
+  animation: enter 150ms ease-out;
+}
+
+.zoom-out-95 {
+  animation: exit 150ms ease-in;
+}
+
+.slide-in-from-top-2 {
+  animation: slideInFromTop 150ms ease-out;
+}
+
+.slide-in-from-bottom-2 {
+  animation: slideInFromBottom 150ms ease-out;
+}
+
+.slide-in-from-left-2 {
+  animation: slideInFromLeft 150ms ease-out;
+}
+
+.slide-in-from-right-2 {
+  animation: slideInFromRight 150ms ease-out;
 }

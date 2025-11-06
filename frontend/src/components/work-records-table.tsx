@@ -3,6 +3,15 @@
 import { useState } from 'react';
 import { ChevronUp, ChevronDown, Lock, Moon } from 'lucide-react';
 import { WorkRecord } from '@/graphql/queries/work-records';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { Badge } from '@/components/ui/badge';
 
 type SortColumn = keyof WorkRecord;
 type SortDirection = 'asc' | 'desc';
@@ -78,201 +87,132 @@ export function WorkRecordsTable({ workRecords }: WorkRecordsTableProps) {
   };
 
   return (
-    <div className="rounded-lg border border-border bg-card shadow-md overflow-x-auto">
-      <table className="w-full border-collapse">
-        <thead>
-          <tr className="bg-muted border-b border-border">
-            <th
-              className="px-4 py-3 text-left text-sm font-medium text-foreground cursor-pointer hover:bg-muted/80 transition-colors"
-              onClick={() => handleSort('id')}
-            >
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead className="cursor-pointer hover:bg-muted/80 transition-colors" onClick={() => handleSort('id')}>
+            <div className="flex items-center gap-2">
+              ID
+              <SortIndicator column="id" />
+            </div>
+          </TableHead>
+          <TableHead className="cursor-pointer hover:bg-muted/80 transition-colors" onClick={() => handleSort('date')}>
+            <div className="flex items-center gap-2">
+              Date
+              <SortIndicator column="date" />
+            </div>
+          </TableHead>
+          <TableHead className="cursor-pointer hover:bg-muted/80 transition-colors" onClick={() => handleSort('absenceType')}>
+            <div className="flex items-center gap-2">
+              Absence Type
+              <SortIndicator column="absenceType" />
+            </div>
+          </TableHead>
+          <TableHead className="cursor-pointer hover:bg-muted/80 transition-colors" onClick={() => handleSort('project')}>
+            <div className="flex items-center gap-2">
+              Project
+              <SortIndicator column="project" />
+            </div>
+          </TableHead>
+          <TableHead className="cursor-pointer hover:bg-muted/80 transition-colors" onClick={() => handleSort('productivityType')}>
+            <div className="flex items-center gap-2">
+              Productivity Type
+              <SortIndicator column="productivityType" />
+            </div>
+          </TableHead>
+          <TableHead className="cursor-pointer hover:bg-muted/80 transition-colors" onClick={() => handleSort('workType')}>
+            <div className="flex items-center gap-2">
+              Work Type
+              <SortIndicator column="workType" />
+            </div>
+          </TableHead>
+          <TableHead className="cursor-pointer hover:bg-muted/80 transition-colors" onClick={() => handleSort('startTime')}>
+            <div className="flex items-center gap-2">
+              Start Time
+              <SortIndicator column="startTime" />
+            </div>
+          </TableHead>
+          <TableHead className="cursor-pointer hover:bg-muted/80 transition-colors" onClick={() => handleSort('endTime')}>
+            <div className="flex items-center gap-2">
+              End Time
+              <SortIndicator column="endTime" />
+            </div>
+          </TableHead>
+          <TableHead className="cursor-pointer hover:bg-muted/80 transition-colors" onClick={() => handleSort('hours')}>
+            <div className="flex items-center gap-2">
+              Hours
+              <SortIndicator column="hours" />
+            </div>
+          </TableHead>
+          <TableHead className="cursor-pointer hover:bg-muted/80 transition-colors" onClick={() => handleSort('description')}>
+            <div className="flex items-center gap-2">
+              Description
+              <SortIndicator column="description" />
+            </div>
+          </TableHead>
+          <TableHead className="cursor-pointer hover:bg-muted/80 transition-colors" onClick={() => handleSort('km')}>
+            <div className="flex items-center gap-2">
+              KM
+              <SortIndicator column="km" />
+            </div>
+          </TableHead>
+          <TableHead className="cursor-pointer hover:bg-muted/80 transition-colors" onClick={() => handleSort('isTripFlag')}>
+            <div className="flex items-center gap-2">
+              Trip Flag
+              <SortIndicator column="isTripFlag" />
+            </div>
+          </TableHead>
+          <TableHead className="cursor-pointer hover:bg-muted/80 transition-colors" onClick={() => handleSort('isLocked')}>
+            <div className="flex items-center gap-2">
+              Lock Status
+              <SortIndicator column="isLocked" />
+            </div>
+          </TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {sortedRecords.map((record) => (
+          <TableRow
+            key={record.id}
+            className={record.isLocked ? 'opacity-50 cursor-not-allowed' : ''}
+          >
+            <TableCell className="w-20">{record.id}</TableCell>
+            <TableCell className="min-w-[120px]">{formatDate(record.date)}</TableCell>
+            <TableCell className="min-w-[120px]">{record.absenceType}</TableCell>
+            <TableCell className="min-w-[100px]">{record.project ?? '—'}</TableCell>
+            <TableCell className="min-w-[140px]">{record.productivityType ?? '—'}</TableCell>
+            <TableCell className="min-w-[120px]">{record.workType ?? '—'}</TableCell>
+            <TableCell className="w-[100px]">{formatTime(record.startTime)}</TableCell>
+            <TableCell className="w-[100px]">
               <div className="flex items-center gap-2">
-                ID
-                <SortIndicator column="id" />
-              </div>
-            </th>
-            <th
-              className="px-4 py-3 text-left text-sm font-medium text-foreground cursor-pointer hover:bg-muted/80 transition-colors"
-              onClick={() => handleSort('date')}
-            >
-              <div className="flex items-center gap-2">
-                Date
-                <SortIndicator column="date" />
-              </div>
-            </th>
-            <th
-              className="px-4 py-3 text-left text-sm font-medium text-foreground cursor-pointer hover:bg-muted/80 transition-colors"
-              onClick={() => handleSort('absenceType')}
-            >
-              <div className="flex items-center gap-2">
-                Absence Type
-                <SortIndicator column="absenceType" />
-              </div>
-            </th>
-            <th
-              className="px-4 py-3 text-left text-sm font-medium text-foreground cursor-pointer hover:bg-muted/80 transition-colors"
-              onClick={() => handleSort('project')}
-            >
-              <div className="flex items-center gap-2">
-                Project
-                <SortIndicator column="project" />
-              </div>
-            </th>
-            <th
-              className="px-4 py-3 text-left text-sm font-medium text-foreground cursor-pointer hover:bg-muted/80 transition-colors"
-              onClick={() => handleSort('productivityType')}
-            >
-              <div className="flex items-center gap-2">
-                Productivity Type
-                <SortIndicator column="productivityType" />
-              </div>
-            </th>
-            <th
-              className="px-4 py-3 text-left text-sm font-medium text-foreground cursor-pointer hover:bg-muted/80 transition-colors"
-              onClick={() => handleSort('workType')}
-            >
-              <div className="flex items-center gap-2">
-                Work Type
-                <SortIndicator column="workType" />
-              </div>
-            </th>
-            <th
-              className="px-4 py-3 text-left text-sm font-medium text-foreground cursor-pointer hover:bg-muted/80 transition-colors"
-              onClick={() => handleSort('startTime')}
-            >
-              <div className="flex items-center gap-2">
-                Start Time
-                <SortIndicator column="startTime" />
-              </div>
-            </th>
-            <th
-              className="px-4 py-3 text-left text-sm font-medium text-foreground cursor-pointer hover:bg-muted/80 transition-colors"
-              onClick={() => handleSort('endTime')}
-            >
-              <div className="flex items-center gap-2">
-                End Time
-                <SortIndicator column="endTime" />
-              </div>
-            </th>
-            <th
-              className="px-4 py-3 text-left text-sm font-medium text-foreground cursor-pointer hover:bg-muted/80 transition-colors"
-              onClick={() => handleSort('hours')}
-            >
-              <div className="flex items-center gap-2">
-                Hours
-                <SortIndicator column="hours" />
-              </div>
-            </th>
-            <th
-              className="px-4 py-3 text-left text-sm font-medium text-foreground cursor-pointer hover:bg-muted/80 transition-colors"
-              onClick={() => handleSort('description')}
-            >
-              <div className="flex items-center gap-2">
-                Description
-                <SortIndicator column="description" />
-              </div>
-            </th>
-            <th
-              className="px-4 py-3 text-left text-sm font-medium text-foreground cursor-pointer hover:bg-muted/80 transition-colors"
-              onClick={() => handleSort('km')}
-            >
-              <div className="flex items-center gap-2">
-                KM
-                <SortIndicator column="km" />
-              </div>
-            </th>
-            <th
-              className="px-4 py-3 text-left text-sm font-medium text-foreground cursor-pointer hover:bg-muted/80 transition-colors"
-              onClick={() => handleSort('isTripFlag')}
-            >
-              <div className="flex items-center gap-2">
-                Trip Flag
-                <SortIndicator column="isTripFlag" />
-              </div>
-            </th>
-            <th
-              className="px-4 py-3 text-left text-sm font-medium text-foreground cursor-pointer hover:bg-muted/80 transition-colors"
-              onClick={() => handleSort('isLocked')}
-            >
-              <div className="flex items-center gap-2">
-                Lock Status
-                <SortIndicator column="isLocked" />
-              </div>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {sortedRecords.map((record) => (
-            <tr
-              key={record.id}
-              className={`border-b border-border ${
-                record.isLocked
-                  ? 'opacity-50 cursor-not-allowed'
-                  : 'hover:bg-muted/50'
-              } transition-colors`}
-            >
-              <td className="px-4 py-3 text-sm text-foreground w-20">
-                {record.id}
-              </td>
-              <td className="px-4 py-3 text-sm text-foreground min-w-[120px]">
-                {formatDate(record.date)}
-              </td>
-              <td className="px-4 py-3 text-sm text-foreground min-w-[120px]">
-                {record.absenceType}
-              </td>
-              <td className="px-4 py-3 text-sm text-foreground min-w-[100px]">
-                {record.project ?? '—'}
-              </td>
-              <td className="px-4 py-3 text-sm text-foreground min-w-[140px]">
-                {record.productivityType ?? '—'}
-              </td>
-              <td className="px-4 py-3 text-sm text-foreground min-w-[120px]">
-                {record.workType ?? '—'}
-              </td>
-              <td className="px-4 py-3 text-sm text-foreground w-[100px]">
-                {formatTime(record.startTime)}
-              </td>
-              <td className="px-4 py-3 text-sm text-foreground w-[100px]">
-                <div className="flex items-center gap-2">
-                  {formatTime(record.endTime)}
-                  {record.isOvernightShift && (
-                    <span title="Overnight shift">
-                      <Moon className="h-4 w-4 text-blue-500" />
-                    </span>
-                  )}
-                </div>
-              </td>
-              <td className="px-4 py-3 text-sm text-foreground w-[80px]">
-                {record.hours.toFixed(2)}
-              </td>
-              <td className="px-4 py-3 text-sm text-muted-foreground min-w-[150px]">
-                {record.description || '—'}
-              </td>
-              <td className="px-4 py-3 text-sm text-foreground w-[70px]">
-                {record.km}
-              </td>
-              <td className="px-4 py-3 text-sm w-[80px]">
-                {record.isTripFlag ? (
-                  <span className="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-600/20">
-                    Yes
-                  </span>
-                ) : (
-                  <span className="inline-flex items-center rounded-md bg-gray-50 px-2 py-1 text-xs font-medium text-gray-600 ring-1 ring-inset ring-gray-500/10">
-                    No
+                {formatTime(record.endTime)}
+                {record.isOvernightShift && (
+                  <span title="Overnight shift">
+                    <Moon className="h-4 w-4 text-blue-500" />
                   </span>
                 )}
-              </td>
-              <td className="px-4 py-3 text-sm w-[80px]">
-                {record.isLocked && (
-                  <span title="Locked">
-                    <Lock className="h-4 w-4 text-red-500" />
-                  </span>
-                )}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+              </div>
+            </TableCell>
+            <TableCell className="w-[80px]">{record.hours.toFixed(2)}</TableCell>
+            <TableCell className="min-w-[150px] text-muted-foreground">{record.description || '—'}</TableCell>
+            <TableCell className="w-[70px]">{record.km}</TableCell>
+            <TableCell className="w-[80px]">
+              {record.isTripFlag ? (
+                <Badge variant="default" className="bg-blue-50 text-blue-700 border-blue-600/20">Yes</Badge>
+              ) : (
+                <Badge variant="secondary">No</Badge>
+              )}
+            </TableCell>
+            <TableCell className="w-[80px]">
+              {record.isLocked && (
+                <span title="Locked">
+                  <Lock className="h-4 w-4 text-red-500" />
+                </span>
+              )}
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
   );
 }

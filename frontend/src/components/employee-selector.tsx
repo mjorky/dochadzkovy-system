@@ -3,6 +3,13 @@
 import { useQuery } from '@apollo/client';
 import { Loader2 } from 'lucide-react';
 import { EMPLOYEES_QUERY, EmployeesData } from '@/graphql/queries/employees';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 interface EmployeeSelectorProps {
   currentEmployeeId: string;
@@ -65,17 +72,18 @@ export function EmployeeSelector({
       <label className="block text-sm font-medium text-foreground mb-2">
         View Records For
       </label>
-      <select
-        value={currentEmployeeId}
-        onChange={(e) => onEmployeeChange(e.target.value)}
-        className="w-full md:w-auto min-w-[300px] px-3 py-2 text-sm border border-input bg-background rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent cursor-pointer"
-      >
-        {data.employees.map((employee) => (
-          <option key={employee.id} value={employee.id}>
-            {employee.fullName} (ID: {employee.id})
-          </option>
-        ))}
-      </select>
+      <Select value={currentEmployeeId} onValueChange={onEmployeeChange}>
+        <SelectTrigger className="w-full md:w-auto min-w-[300px]">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          {data.employees.map((employee) => (
+            <SelectItem key={employee.id} value={employee.id}>
+              {employee.fullName} (ID: {employee.id})
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
       {currentEmployee && (
         <p className="mt-2 text-xs text-muted-foreground">
           Currently viewing: {currentEmployee.fullName}

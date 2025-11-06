@@ -8,6 +8,8 @@ import {
   ProductivityTypeOption,
   WorkTypeOption,
 } from '@/graphql/queries/work-records';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 
 interface FilterChipsProps {
   filters: WorkRecordsFilterState;
@@ -57,123 +59,111 @@ export function FilterChips({
 
         {/* Search text chip */}
         {filters.searchText && (
-          <div className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm">
-            <span>Description: "{filters.searchText}"</span>
+          <Badge variant="secondary" className="gap-1 pl-3 pr-1">
+            Description: "{filters.searchText}"
             <button
               onClick={() => onRemoveFilter('searchText')}
-              className="hover:bg-primary/20 rounded-full p-0.5"
+              className="hover:bg-secondary/80 rounded-full p-0.5 ml-1"
               aria-label="Remove search filter"
             >
               <X className="h-3 w-3" />
             </button>
-          </div>
+          </Badge>
         )}
 
         {/* Project chips */}
         {filters.selectedProjects.map((projectId) => (
-          <div
-            key={projectId}
-            className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm"
-          >
-            <span>Project: {getLabel(projectId, projectOptions)}</span>
+          <Badge key={projectId} variant="secondary" className="gap-1 pl-3 pr-1">
+            Project: {getLabel(projectId, projectOptions)}
             <button
               onClick={() => onRemoveFilter('selectedProjects', projectId)}
-              className="hover:bg-primary/20 rounded-full p-0.5"
+              className="hover:bg-secondary/80 rounded-full p-0.5 ml-1"
               aria-label="Remove project filter"
             >
               <X className="h-3 w-3" />
             </button>
-          </div>
+          </Badge>
         ))}
 
         {/* Absence type chips */}
         {filters.selectedAbsenceTypes.map((absenceTypeId) => (
-          <div
-            key={absenceTypeId}
-            className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm"
-          >
-            <span>Absence: {getLabel(absenceTypeId, absenceTypeOptions)}</span>
+          <Badge key={absenceTypeId} variant="secondary" className="gap-1 pl-3 pr-1">
+            Absence: {getLabel(absenceTypeId, absenceTypeOptions)}
             <button
               onClick={() => onRemoveFilter('selectedAbsenceTypes', absenceTypeId)}
-              className="hover:bg-primary/20 rounded-full p-0.5"
+              className="hover:bg-secondary/80 rounded-full p-0.5 ml-1"
               aria-label="Remove absence type filter"
             >
               <X className="h-3 w-3" />
             </button>
-          </div>
+          </Badge>
         ))}
 
         {/* Productivity type chips */}
         {filters.selectedProductivityTypes.map((productivityTypeId) => (
-          <div
-            key={productivityTypeId}
-            className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm"
-          >
-            <span>Productivity: {getLabel(productivityTypeId, productivityTypeOptions)}</span>
+          <Badge key={productivityTypeId} variant="secondary" className="gap-1 pl-3 pr-1">
+            Productivity: {getLabel(productivityTypeId, productivityTypeOptions)}
             <button
               onClick={() => onRemoveFilter('selectedProductivityTypes', productivityTypeId)}
-              className="hover:bg-primary/20 rounded-full p-0.5"
+              className="hover:bg-secondary/80 rounded-full p-0.5 ml-1"
               aria-label="Remove productivity type filter"
             >
               <X className="h-3 w-3" />
             </button>
-          </div>
+          </Badge>
         ))}
 
         {/* Work type chips */}
         {filters.selectedWorkTypes.map((workTypeId) => (
-          <div
-            key={workTypeId}
-            className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm"
-          >
-            <span>Work Type: {getLabel(workTypeId, workTypeOptions)}</span>
+          <Badge key={workTypeId} variant="secondary" className="gap-1 pl-3 pr-1">
+            Work Type: {getLabel(workTypeId, workTypeOptions)}
             <button
               onClick={() => onRemoveFilter('selectedWorkTypes', workTypeId)}
-              className="hover:bg-primary/20 rounded-full p-0.5"
+              className="hover:bg-secondary/80 rounded-full p-0.5 ml-1"
               aria-label="Remove work type filter"
             >
               <X className="h-3 w-3" />
             </button>
-          </div>
+          </Badge>
         ))}
 
         {/* Lock status chip */}
         {filters.lockStatus !== 'all' && (
-          <div className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm">
-            <span>
-              Lock Status: {filters.lockStatus === 'locked' ? 'Locked' : 'Unlocked'}
-            </span>
+          <Badge variant="secondary" className="gap-1 pl-3 pr-1">
+            Lock Status: {filters.lockStatus === 'locked' ? 'Locked' : 'Unlocked'}
             <button
               onClick={() => onRemoveFilter('lockStatus')}
-              className="hover:bg-primary/20 rounded-full p-0.5"
+              className="hover:bg-secondary/80 rounded-full p-0.5 ml-1"
               aria-label="Remove lock status filter"
             >
               <X className="h-3 w-3" />
             </button>
-          </div>
+          </Badge>
         )}
 
         {/* Trip flag chip */}
         {filters.tripFlag !== 'all' && (
-          <div className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm">
-            <span>Trip Flag: {filters.tripFlag === 'yes' ? 'Yes' : 'No'}</span>
+          <Badge variant="secondary" className="gap-1 pl-3 pr-1">
+            Trip Flag: {filters.tripFlag === 'yes' ? 'Yes' : 'No'}
             <button
               onClick={() => onRemoveFilter('tripFlag')}
-              className="hover:bg-primary/20 rounded-full p-0.5"
+              className="hover:bg-secondary/80 rounded-full p-0.5 ml-1"
               aria-label="Remove trip flag filter"
             >
               <X className="h-3 w-3" />
             </button>
-          </div>
+          </Badge>
         )}
 
         {/* Clear all button */}
-        <button
+        <Button
+          variant="outline"
+          size="sm"
           onClick={onClearAll}
-          className="ml-2 px-3 py-1 text-sm border border-input bg-background rounded-md hover:bg-accent hover:text-accent-foreground transition-colors"
+          className="ml-2"
         >
           Clear all filters
-        </button>
+        </Button>
       </div>
     </div>
   );

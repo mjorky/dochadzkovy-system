@@ -3,6 +3,15 @@
 import { useState } from 'react';
 import { ChevronUp, ChevronDown } from 'lucide-react';
 import { Employee } from '@/graphql/queries/employees';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { Badge } from '@/components/ui/badge';
 
 type SortColumn = keyof Employee;
 type SortDirection = 'asc' | 'desc';
@@ -72,138 +81,115 @@ export function EmployeeTable({ employees }: EmployeeTableProps) {
   };
 
   return (
-    <div className="rounded-lg border border-border bg-card shadow-md overflow-x-auto">
-      <table className="w-full border-collapse">
-        <thead>
-          <tr className="bg-muted border-b border-border">
-            <th
-              className="px-4 py-3 text-left text-sm font-medium text-foreground cursor-pointer hover:bg-muted/80 transition-colors"
-              onClick={() => handleSort('id')}
-            >
-              <div className="flex items-center gap-2">
-                ID
-                <SortIndicator column="id" />
-              </div>
-            </th>
-            <th
-              className="px-4 py-3 text-left text-sm font-medium text-foreground cursor-pointer hover:bg-muted/80 transition-colors"
-              onClick={() => handleSort('fullName')}
-            >
-              <div className="flex items-center gap-2">
-                Name
-                <SortIndicator column="fullName" />
-              </div>
-            </th>
-            <th
-              className="px-4 py-3 text-left text-sm font-medium text-foreground cursor-pointer hover:bg-muted/80 transition-colors"
-              onClick={() => handleSort('vacationDays')}
-            >
-              <div className="flex items-center gap-2">
-                Vacation Days
-                <SortIndicator column="vacationDays" />
-              </div>
-            </th>
-            <th
-              className="px-4 py-3 text-left text-sm font-medium text-foreground cursor-pointer hover:bg-muted/80 transition-colors"
-              onClick={() => handleSort('isAdmin')}
-            >
-              <div className="flex items-center gap-2">
-                Admin
-                <SortIndicator column="isAdmin" />
-              </div>
-            </th>
-            <th
-              className="px-4 py-3 text-left text-sm font-medium text-foreground cursor-pointer hover:bg-muted/80 transition-colors"
-              onClick={() => handleSort('employeeType')}
-            >
-              <div className="flex items-center gap-2">
-                Employee Type
-                <SortIndicator column="employeeType" />
-              </div>
-            </th>
-            <th
-              className="px-4 py-3 text-left text-sm font-medium text-foreground cursor-pointer hover:bg-muted/80 transition-colors"
-              onClick={() => handleSort('lastRecordDate')}
-            >
-              <div className="flex items-center gap-2">
-                Last Record
-                <SortIndicator column="lastRecordDate" />
-              </div>
-            </th>
-            <th
-              className="px-4 py-3 text-left text-sm font-medium text-foreground cursor-pointer hover:bg-muted/80 transition-colors"
-              onClick={() => handleSort('lockedUntil')}
-            >
-              <div className="flex items-center gap-2">
-                Locked Until
-                <SortIndicator column="lockedUntil" />
-              </div>
-            </th>
-            <th
-              className="px-4 py-3 text-left text-sm font-medium text-foreground cursor-pointer hover:bg-muted/80 transition-colors"
-              onClick={() => handleSort('titlePrefix')}
-            >
-              <div className="flex items-center gap-2">
-                Title Prefix
-                <SortIndicator column="titlePrefix" />
-              </div>
-            </th>
-            <th
-              className="px-4 py-3 text-left text-sm font-medium text-foreground cursor-pointer hover:bg-muted/80 transition-colors"
-              onClick={() => handleSort('titleSuffix')}
-            >
-              <div className="flex items-center gap-2">
-                Title Suffix
-                <SortIndicator column="titleSuffix" />
-              </div>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {sortedEmployees.map((employee) => (
-            <tr
-              key={employee.id}
-              className="border-b border-border hover:bg-muted/50 transition-colors"
-            >
-              <td className="px-4 py-3 text-sm text-foreground w-20">
-                {employee.id}
-              </td>
-              <td className="px-4 py-3 text-sm text-foreground min-w-[150px]">
-                {employee.fullName}
-              </td>
-              <td className="px-4 py-3 text-sm text-foreground w-[100px]">
-                {employee.vacationDays.toFixed(1)}
-              </td>
-              <td className="px-4 py-3 text-sm w-[80px]">
-                {employee.isAdmin ? (
-                  <span className="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
-                    Admin
-                  </span>
-                ) : (
-                  <span className="inline-flex items-center rounded-md bg-gray-50 px-2 py-1 text-xs font-medium text-gray-600 ring-1 ring-inset ring-gray-500/10">
-                    No
-                  </span>
-                )}
-              </td>
-              <td className="px-4 py-3 text-sm text-foreground w-[120px]">
-                {employee.employeeType}
-              </td>
-              <td className="px-4 py-3 text-sm text-foreground w-[120px]">
-                {formatDate(employee.lastRecordDate)}
-              </td>
-              <td className="px-4 py-3 text-sm text-foreground w-[120px]">
-                {formatDate(employee.lockedUntil)}
-              </td>
-              <td className="px-4 py-3 text-sm text-muted-foreground w-[100px]">
-                {employee.titlePrefix || '—'}
-              </td>
-              <td className="px-4 py-3 text-sm text-muted-foreground w-[100px]">
-                {employee.titleSuffix || '—'}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead
+            className="cursor-pointer hover:bg-muted/80 transition-colors"
+            onClick={() => handleSort('id')}
+          >
+            <div className="flex items-center gap-2">
+              ID
+              <SortIndicator column="id" />
+            </div>
+          </TableHead>
+          <TableHead
+            className="cursor-pointer hover:bg-muted/80 transition-colors"
+            onClick={() => handleSort('fullName')}
+          >
+            <div className="flex items-center gap-2">
+              Name
+              <SortIndicator column="fullName" />
+            </div>
+          </TableHead>
+          <TableHead
+            className="cursor-pointer hover:bg-muted/80 transition-colors"
+            onClick={() => handleSort('vacationDays')}
+          >
+            <div className="flex items-center gap-2">
+              Vacation Days
+              <SortIndicator column="vacationDays" />
+            </div>
+          </TableHead>
+          <TableHead
+            className="cursor-pointer hover:bg-muted/80 transition-colors"
+            onClick={() => handleSort('isAdmin')}
+          >
+            <div className="flex items-center gap-2">
+              Admin
+              <SortIndicator column="isAdmin" />
+            </div>
+          </TableHead>
+          <TableHead
+            className="cursor-pointer hover:bg-muted/80 transition-colors"
+            onClick={() => handleSort('employeeType')}
+          >
+            <div className="flex items-center gap-2">
+              Employee Type
+              <SortIndicator column="employeeType" />
+            </div>
+          </TableHead>
+          <TableHead
+            className="cursor-pointer hover:bg-muted/80 transition-colors"
+            onClick={() => handleSort('lastRecordDate')}
+          >
+            <div className="flex items-center gap-2">
+              Last Record
+              <SortIndicator column="lastRecordDate" />
+            </div>
+          </TableHead>
+          <TableHead
+            className="cursor-pointer hover:bg-muted/80 transition-colors"
+            onClick={() => handleSort('lockedUntil')}
+          >
+            <div className="flex items-center gap-2">
+              Locked Until
+              <SortIndicator column="lockedUntil" />
+            </div>
+          </TableHead>
+          <TableHead
+            className="cursor-pointer hover:bg-muted/80 transition-colors"
+            onClick={() => handleSort('titlePrefix')}
+          >
+            <div className="flex items-center gap-2">
+              Title Prefix
+              <SortIndicator column="titlePrefix" />
+            </div>
+          </TableHead>
+          <TableHead
+            className="cursor-pointer hover:bg-muted/80 transition-colors"
+            onClick={() => handleSort('titleSuffix')}
+          >
+            <div className="flex items-center gap-2">
+              Title Suffix
+              <SortIndicator column="titleSuffix" />
+            </div>
+          </TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {sortedEmployees.map((employee) => (
+          <TableRow key={employee.id}>
+            <TableCell className="w-20">{employee.id}</TableCell>
+            <TableCell className="min-w-[150px]">{employee.fullName}</TableCell>
+            <TableCell className="w-[100px]">{employee.vacationDays.toFixed(1)}</TableCell>
+            <TableCell className="w-[80px]">
+              {employee.isAdmin ? (
+                <Badge variant="default" className="bg-green-50 text-green-700 border-green-600/20">
+                  Admin
+                </Badge>
+              ) : (
+                <Badge variant="secondary">No</Badge>
+              )}
+            </TableCell>
+            <TableCell className="w-[120px]">{employee.employeeType}</TableCell>
+            <TableCell className="w-[120px]">{formatDate(employee.lastRecordDate)}</TableCell>
+            <TableCell className="w-[120px]">{formatDate(employee.lockedUntil)}</TableCell>
+            <TableCell className="w-[100px] text-muted-foreground">{employee.titlePrefix || '—'}</TableCell>
+            <TableCell className="w-[100px] text-muted-foreground">{employee.titleSuffix || '—'}</TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
   );
 }
