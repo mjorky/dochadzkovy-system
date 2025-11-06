@@ -41,6 +41,7 @@ export function DatePicker({ value, onChange, placeholder = 'Pick a date' }: Dat
           mode="single"
           selected={value || undefined}
           onSelect={handleSelect}
+          defaultMonth={value || undefined}
           initialFocus
         />
       </PopoverContent>

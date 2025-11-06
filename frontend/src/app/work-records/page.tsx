@@ -222,28 +222,55 @@ export default function WorkRecordsPage() {
       }
 
       // Project filter (OR logic within category)
-      // Note: projectId needs to be extracted from the record
-      // Since backend returns project number (string), we need to compare differently
-      // For now, filter by project name/number string comparison
       if (filters.selectedProjects.length > 0) {
-        // This will need adjustment based on how backend returns project IDs
-        // For now, skip project filtering in client-side
-        // (ideally, backend should include projectId field)
+        // Map selected project IDs to their display numbers
+        const selectedProjectNumbers = filters.selectedProjects
+          .map((id) => projectsData?.getActiveProjects.find((p) => p.id === id)?.number)
+          .filter(Boolean);
+
+        // Check if record's project matches any selected project
+        if (!record.project || !selectedProjectNumbers.includes(record.project)) {
+          return false;
+        }
       }
 
       // Absence Type filter (OR logic within category)
       if (filters.selectedAbsenceTypes.length > 0) {
-        // Similar issue - need absenceTypeId from backend
+        // Map selected absence type IDs to their display aliases
+        const selectedAbsenceAliases = filters.selectedAbsenceTypes
+          .map((id) => absenceTypesData?.getAbsenceTypes.find((a) => a.id === id)?.alias)
+          .filter(Boolean);
+
+        // Check if record's absence type matches any selected type
+        if (!selectedAbsenceAliases.includes(record.absenceType)) {
+          return false;
+        }
       }
 
       // Productivity Type filter (OR logic within category)
       if (filters.selectedProductivityTypes.length > 0) {
-        // Similar issue - need productivityTypeId from backend
+        // Map selected productivity type IDs to their display hourTypes
+        const selectedProductivityHourTypes = filters.selectedProductivityTypes
+          .map((id) => productivityTypesData?.getProductivityTypes.find((p) => p.id === id)?.hourType)
+          .filter(Boolean);
+
+        // Check if record's productivity type matches any selected type
+        if (!record.productivityType || !selectedProductivityHourTypes.includes(record.productivityType)) {
+          return false;
+        }
       }
 
       // Work Type filter (OR logic within category)
       if (filters.selectedWorkTypes.length > 0) {
-        // Similar issue - need workTypeId from backend
+        // Map selected work type IDs to their display hourTypes
+        const selectedWorkHourTypes = filters.selectedWorkTypes
+          .map((id) => workTypesData?.getWorkTypes.find((w) => w.id === id)?.hourType)
+          .filter(Boolean);
+
+        // Check if record's work type matches any selected type
+        if (!record.workType || !selectedWorkHourTypes.includes(record.workType)) {
+          return false;
+        }
       }
 
       // Lock Status filter
@@ -265,7 +292,7 @@ export default function WorkRecordsPage() {
       // All filters passed (AND logic between categories)
       return true;
     });
-  }, [allRecords, filters]);
+  }, [allRecords, filters, projectsData, absenceTypesData, productivityTypesData, workTypesData]);
 
   // Handle removing individual filter
   const handleRemoveFilter = useCallback(
