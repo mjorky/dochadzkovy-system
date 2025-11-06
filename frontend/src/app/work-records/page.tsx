@@ -466,7 +466,9 @@ export default function WorkRecordsPage() {
           </div>
 
           {/* Work records table */}
-          <WorkRecordsTable workRecords={filteredRecords} />
+          <div className="overflow-x-auto -mx-8 px-8">
+            <WorkRecordsTable workRecords={filteredRecords} />
+          </div>
 
           {/* Infinite scroll sentinel - always render to avoid observer re-initialization */}
           <div ref={observerTarget} className="py-8 text-center">
