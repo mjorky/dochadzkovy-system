@@ -28,6 +28,8 @@ interface WorkRecordsFilterControlsProps {
   absenceTypes: AbsenceTypeOption[];
   productivityTypes: ProductivityTypeOption[];
   workTypes: WorkTypeOption[];
+  availableLockStatuses: { hasLocked: boolean; hasUnlocked: boolean };
+  availableTripFlags: { hasYes: boolean; hasNo: boolean };
 }
 
 export function WorkRecordsFilterControls({
@@ -37,6 +39,8 @@ export function WorkRecordsFilterControls({
   absenceTypes,
   productivityTypes,
   workTypes,
+  availableLockStatuses,
+  availableTripFlags,
 }: WorkRecordsFilterControlsProps) {
   // Debounce search text
   const deferredSearchText = useDeferredValue(filters.searchText);
@@ -162,42 +166,48 @@ export function WorkRecordsFilterControls({
           onChange={(selectedWorkTypes) => onFilterChange({ ...filters, selectedWorkTypes })}
           placeholder="All types"
         />
-        <div>
-          <label className="block text-xs font-medium text-muted-foreground mb-1">
-            Lock Status
-          </label>
-          <Select
-            value={filters.lockStatus}
-            onValueChange={(value) => onFilterChange({ ...filters, lockStatus: value as 'all' | 'locked' | 'unlocked' })}
-          >
-            <SelectTrigger className="w-full h-9">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All</SelectItem>
-              <SelectItem value="locked">Locked</SelectItem>
-              <SelectItem value="unlocked">Unlocked</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        <div>
-          <label className="block text-xs font-medium text-muted-foreground mb-1">
-            Trip Flag
-          </label>
-          <Select
-            value={filters.tripFlag}
-            onValueChange={(value) => onFilterChange({ ...filters, tripFlag: value as 'all' | 'yes' | 'no' })}
-          >
-            <SelectTrigger className="w-full h-9">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All</SelectItem>
-              <SelectItem value="yes">Yes</SelectItem>
-              <SelectItem value="no">No</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+        {/* Only show Lock Status filter if both locked and unlocked records exist */}
+        {availableLockStatuses.hasLocked && availableLockStatuses.hasUnlocked && (
+          <div>
+            <label className="block text-xs font-medium text-muted-foreground mb-1">
+              Lock Status
+            </label>
+            <Select
+              value={filters.lockStatus}
+              onValueChange={(value) => onFilterChange({ ...filters, lockStatus: value as 'all' | 'locked' | 'unlocked' })}
+            >
+              <SelectTrigger className="w-full h-9">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All</SelectItem>
+                <SelectItem value="locked">Locked</SelectItem>
+                <SelectItem value="unlocked">Unlocked</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        )}
+        {/* Only show Trip Flag filter if both yes and no values exist */}
+        {availableTripFlags.hasYes && availableTripFlags.hasNo && (
+          <div>
+            <label className="block text-xs font-medium text-muted-foreground mb-1">
+              Trip Flag
+            </label>
+            <Select
+              value={filters.tripFlag}
+              onValueChange={(value) => onFilterChange({ ...filters, tripFlag: value as 'all' | 'yes' | 'no' })}
+            >
+              <SelectTrigger className="w-full h-9">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All</SelectItem>
+                <SelectItem value="yes">Yes</SelectItem>
+                <SelectItem value="no">No</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        )}
       </div>
     </div>
   );

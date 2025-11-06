@@ -210,6 +210,57 @@ export default function WorkRecordsPage() {
     [filters.fromDate, filters.toDate, refetchRecords, selectedEmployeeId]
   );
 
+  // Filter available options based on records in current date range
+  const availableProjects = useMemo(() => {
+    const uniqueProjectNumbers = new Set(
+      allRecords.map((r) => r.project).filter(Boolean)
+    );
+    return (projectsData?.getActiveProjects || []).filter((p) =>
+      uniqueProjectNumbers.has(p.number)
+    );
+  }, [allRecords, projectsData]);
+
+  const availableAbsenceTypes = useMemo(() => {
+    const uniqueAbsenceAliases = new Set(
+      allRecords.map((r) => r.absenceType).filter(Boolean)
+    );
+    return (absenceTypesData?.getAbsenceTypes || []).filter((a) =>
+      uniqueAbsenceAliases.has(a.alias)
+    );
+  }, [allRecords, absenceTypesData]);
+
+  const availableProductivityTypes = useMemo(() => {
+    const uniqueProductivityHourTypes = new Set(
+      allRecords.map((r) => r.productivityType).filter(Boolean)
+    );
+    return (productivityTypesData?.getProductivityTypes || []).filter((p) =>
+      uniqueProductivityHourTypes.has(p.hourType)
+    );
+  }, [allRecords, productivityTypesData]);
+
+  const availableWorkTypes = useMemo(() => {
+    const uniqueWorkHourTypes = new Set(
+      allRecords.map((r) => r.workType).filter(Boolean)
+    );
+    return (workTypesData?.getWorkTypes || []).filter((w) =>
+      uniqueWorkHourTypes.has(w.hourType)
+    );
+  }, [allRecords, workTypesData]);
+
+  // Check which lock statuses exist in current data
+  const availableLockStatuses = useMemo(() => {
+    const hasLocked = allRecords.some((r) => r.isLocked);
+    const hasUnlocked = allRecords.some((r) => !r.isLocked);
+    return { hasLocked, hasUnlocked };
+  }, [allRecords]);
+
+  // Check which trip flag values exist in current data
+  const availableTripFlags = useMemo(() => {
+    const hasYes = allRecords.some((r) => r.isTripFlag);
+    const hasNo = allRecords.some((r) => !r.isTripFlag);
+    return { hasYes, hasNo };
+  }, [allRecords]);
+
   // Client-side filtering logic (OR within category, AND between categories)
   const filteredRecords = useMemo(() => {
     return allRecords.filter((record) => {
@@ -423,10 +474,12 @@ export default function WorkRecordsPage() {
       <WorkRecordsFilterControls
         filters={filters}
         onFilterChange={handleFilterChange}
-        projects={projectsData?.getActiveProjects || []}
-        absenceTypes={absenceTypesData?.getAbsenceTypes || []}
-        productivityTypes={productivityTypesData?.getProductivityTypes || []}
-        workTypes={workTypesData?.getWorkTypes || []}
+        projects={availableProjects}
+        absenceTypes={availableAbsenceTypes}
+        productivityTypes={availableProductivityTypes}
+        workTypes={availableWorkTypes}
+        availableLockStatuses={availableLockStatuses}
+        availableTripFlags={availableTripFlags}
       />
 
       {/* Active filter chips */}
@@ -434,10 +487,10 @@ export default function WorkRecordsPage() {
         filters={filters}
         onRemoveFilter={handleRemoveFilter}
         onClearAll={handleClearAllFilters}
-        projects={projectsData?.getActiveProjects || []}
-        absenceTypes={absenceTypesData?.getAbsenceTypes || []}
-        productivityTypes={productivityTypesData?.getProductivityTypes || []}
-        workTypes={workTypesData?.getWorkTypes || []}
+        projects={availableProjects}
+        absenceTypes={availableAbsenceTypes}
+        productivityTypes={availableProductivityTypes}
+        workTypes={availableWorkTypes}
       />
 
       {/* Empty state after filtering */}
