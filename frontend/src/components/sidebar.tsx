@@ -3,6 +3,8 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Users, Database, Clock, FileText, Settings, CalendarCheck } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 const menuItems = [
   { name: 'Employees', href: '/employees', icon: Users },
@@ -31,20 +33,20 @@ export function Sidebar() {
 
             return (
               <li key={item.href}>
-                <Link
-                  href={item.href}
-                  className={`
-                    flex items-center gap-3 px-3 py-2 rounded-lg transition-colors
-                    ${
-                      isActive
-                        ? 'bg-sidebar-primary text-sidebar-primary-foreground font-medium'
-                        : 'text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
-                    }
-                  `}
+                <Button
+                  variant={isActive ? 'secondary' : 'ghost'}
+                  className={cn(
+                    'w-full justify-start gap-3',
+                    isActive && 'bg-sidebar-primary text-sidebar-primary-foreground font-medium hover:bg-sidebar-primary/90',
+                    !isActive && 'text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
+                  )}
+                  asChild
                 >
-                  <Icon className="h-5 w-5" />
-                  <span>{item.name}</span>
-                </Link>
+                  <Link href={item.href}>
+                    <Icon className="h-5 w-5" />
+                    <span>{item.name}</span>
+                  </Link>
+                </Button>
               </li>
             );
           })}

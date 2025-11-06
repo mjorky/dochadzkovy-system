@@ -13,6 +13,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   ProjectOption,
   AbsenceTypeOption,
@@ -129,11 +130,9 @@ export function WorkRecordsFilterControls({
       {/* Show Whole Month Checkbox */}
       <div className="mb-4">
         <label className="flex items-center gap-2 text-sm text-foreground cursor-pointer">
-          <input
-            type="checkbox"
+          <Checkbox
             checked={showWholeMonth}
-            onChange={(e) => setShowWholeMonth(e.target.checked)}
-            className="w-4 h-4 text-primary border-input rounded focus:ring-2 focus:ring-primary cursor-pointer"
+            onCheckedChange={(checked) => setShowWholeMonth(checked === true)}
           />
           Show whole month
         </label>
