@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ChevronUp, ChevronDown, Lock, Moon } from 'lucide-react';
+import { ChevronUp, ChevronDown, Lock, Moon, Pencil, Trash2 } from 'lucide-react';
 import { WorkRecord } from '@/graphql/queries/work-records';
 import {
   Table,
@@ -12,17 +12,20 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 
 type SortColumn = keyof WorkRecord;
 type SortDirection = 'asc' | 'desc';
 
 interface WorkRecordsTableProps {
   workRecords: WorkRecord[];
+  onEdit?: (record: WorkRecord) => void;
+  onDelete?: (record: WorkRecord) => void;
 }
 
-export function WorkRecordsTable({ workRecords }: WorkRecordsTableProps) {
+export function WorkRecordsTable({ workRecords, onEdit, onDelete }: WorkRecordsTableProps) {
   const [sortColumn, setSortColumn] = useState<SortColumn>('date');
-  const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
+  const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
 
   const handleSort = (column: SortColumn) => {
     if (sortColumn === column) {
@@ -85,6 +88,8 @@ export function WorkRecordsTable({ workRecords }: WorkRecordsTableProps) {
       <ChevronDown className="h-4 w-4 text-primary" />
     );
   };
+
+  const showActions = onEdit || onDelete;
 
   return (
     <div className="min-w-[1200px] border border-border rounded-lg overflow-hidden">
@@ -163,6 +168,11 @@ export function WorkRecordsTable({ workRecords }: WorkRecordsTableProps) {
                 <SortIndicator column="isLocked" />
               </div>
             </TableHead>
+            {showActions && (
+              <TableHead className="text-center">
+                Actions
+              </TableHead>
+            )}
           </TableRow>
         </TableHeader>
       <TableBody>
@@ -204,6 +214,32 @@ export function WorkRecordsTable({ workRecords }: WorkRecordsTableProps) {
                 </span>
               )}
             </TableCell>
+            {showActions && (
+              <TableCell className="text-center">
+                <div className="flex items-center justify-center gap-2">
+                  {!record.isLocked && onEdit && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => onEdit(record)}
+                      title="Edit work entry"
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                  )}
+                  {!record.isLocked && onDelete && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => onDelete(record)}
+                      title="Delete work entry"
+                    >
+                      <Trash2 className="h-4 w-4 text-destructive" />
+                    </Button>
+                  )}
+                </div>
+              </TableCell>
+            )}
           </TableRow>
         ))}
       </TableBody>

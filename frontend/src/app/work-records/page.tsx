@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useCallback, useEffect } from 'react';
 import { useQuery } from '@apollo/client';
-import { Loader2, XCircle, Calendar } from 'lucide-react';
+import { Loader2, XCircle, Calendar, Plus } from 'lucide-react';
 import {
   GET_WORK_RECORDS,
   GET_ACTIVE_PROJECTS,
@@ -20,6 +20,8 @@ import { WorkRecordsTable } from '@/components/work-records-table';
 import { WorkRecordsFilterControls } from '@/components/work-records-filter-controls';
 import { FilterChips } from '@/components/filter-chips';
 import { EmployeeSelector } from '@/components/employee-selector';
+import { WorkRecordDialog } from '@/components/work-record-dialog';
+import { DeleteWorkRecordDialog } from '@/components/delete-work-record-dialog';
 import { WorkRecordsFilterState } from '@/types/work-records-filters';
 import { useInfiniteScroll } from '@/hooks/use-infinite-scroll';
 import { Button } from '@/components/ui/button';
@@ -59,6 +61,13 @@ export default function WorkRecordsPage() {
   const [offset, setOffset] = useState(0);
   const [isFetchingMore, setIsFetchingMore] = useState(false);
 
+  // Dialog state
+  const [createDialogOpen, setCreateDialogOpen] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [selectedRecord, setSelectedRecord] = useState<WorkRecord | null>(null);
+  const [recordToDelete, setRecordToDelete] = useState<WorkRecord | null>(null);
+
   // Filter state - default to last 31 days
   const [filters, setFilters] = useState<WorkRecordsFilterState>({
     fromDate: initialDates.thirtyOneDaysAgo,
@@ -93,6 +102,7 @@ export default function WorkRecordsPage() {
       toDate: formatDateForQuery(filters.toDate),
       limit: 50,
       offset: 0,
+      sortOrder: 'DESC', // Newest first
     },
   });
 
@@ -132,6 +142,7 @@ export default function WorkRecordsPage() {
           toDate: formatDateForQuery(filters.toDate),
           limit: 50,
           offset,
+          sortOrder: 'DESC', // Newest first
         },
       });
 
@@ -209,6 +220,22 @@ export default function WorkRecordsPage() {
     },
     [filters.fromDate, filters.toDate, refetchRecords, selectedEmployeeId]
   );
+
+  // Handle dialog actions
+  const handleAddEntry = () => {
+    setSelectedRecord(null);
+    setCreateDialogOpen(true);
+  };
+
+  const handleEdit = (record: WorkRecord) => {
+    setSelectedRecord(record);
+    setEditDialogOpen(true);
+  };
+
+  const handleDelete = (record: WorkRecord) => {
+    setRecordToDelete(record);
+    setDeleteDialogOpen(true);
+  };
 
   // Filter available options based on records in current date range
   const availableProjects = useMemo(() => {
@@ -460,7 +487,9 @@ export default function WorkRecordsPage() {
       </Breadcrumb>
 
       {/* Page title */}
-      <h1 className="text-3xl font-bold text-foreground mb-6">Work Records</h1>
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold text-foreground">Work Records</h1>
+      </div>
 
       {/* Employee selector (for managers/admins only) */}
       <EmployeeSelector
@@ -512,15 +541,25 @@ export default function WorkRecordsPage() {
         </div>
       ) : (
         <>
-          {/* Record count */}
-          <div className="mb-4 text-sm text-muted-foreground">
-            Showing {filteredRecords.length} of{' '}
-            {recordsData?.getWorkRecords.totalCount || allRecords.length} records
+          {/* Add Entry button and Record count */}
+          <div className="flex items-center justify-between mb-4">
+            <Button onClick={handleAddEntry} className="gap-2">
+              <Plus className="h-4 w-4" />
+              Add Entry
+            </Button>
+            <div className="text-sm text-muted-foreground">
+              Showing {filteredRecords.length} of{' '}
+              {recordsData?.getWorkRecords.totalCount || allRecords.length} records
+            </div>
           </div>
 
           {/* Work records table */}
           <div className="overflow-x-auto -mx-8 px-8">
-            <WorkRecordsTable workRecords={filteredRecords} />
+            <WorkRecordsTable
+              workRecords={filteredRecords}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+            />
           </div>
 
           {/* Infinite scroll sentinel - always render to avoid observer re-initialization */}
@@ -536,6 +575,27 @@ export default function WorkRecordsPage() {
           </div>
         </>
       )}
+
+      {/* Dialogs */}
+      <WorkRecordDialog
+        open={createDialogOpen}
+        onOpenChange={setCreateDialogOpen}
+        mode="create"
+        employeeId={parseInt(selectedEmployeeId, 10)}
+      />
+      <WorkRecordDialog
+        open={editDialogOpen}
+        onOpenChange={setEditDialogOpen}
+        mode="edit"
+        initialData={selectedRecord}
+        employeeId={parseInt(selectedEmployeeId, 10)}
+      />
+      <DeleteWorkRecordDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        record={recordToDelete}
+        employeeId={parseInt(selectedEmployeeId, 10)}
+      />
     </div>
   );
 }

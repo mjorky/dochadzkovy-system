@@ -3,6 +3,7 @@ import "./globals.css";
 import { ApolloProvider } from "@/providers/apollo-provider";
 import { ThemeProvider } from "@/providers/theme-provider";
 import { Sidebar } from "@/components/sidebar";
+import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
   title: "Attendance System - Dochádzkový Systém",
@@ -31,6 +32,7 @@ export default function RootLayout({
               </main>
             </div>
           </ApolloProvider>
+          <Toaster richColors position="top-right" />
         </ThemeProvider>
       </body>
     </html>

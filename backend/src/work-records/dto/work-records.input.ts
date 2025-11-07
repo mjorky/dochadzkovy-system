@@ -16,4 +16,7 @@ export class WorkRecordsInput {
 
   @Field(() => Int, { nullable: true, defaultValue: 0 })
   offset?: number;
+
+  @Field(() => String, { nullable: true, defaultValue: 'DESC' })
+  sortOrder?: 'ASC' | 'DESC';
 }

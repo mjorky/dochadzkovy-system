@@ -8,6 +8,7 @@ export const GET_WORK_RECORDS = gql`
     $toDate: String!
     $limit: Int
     $offset: Int
+    $sortOrder: String
   ) {
     getWorkRecords(
       input: {
@@ -16,6 +17,7 @@ export const GET_WORK_RECORDS = gql`
         toDate: $toDate
         limit: $limit
         offset: $offset
+        sortOrder: $sortOrder
       }
     ) {
       records {
@@ -37,6 +39,13 @@ export const GET_WORK_RECORDS = gql`
       totalCount
       hasMore
     }
+  }
+`;
+
+// GraphQL query for next workday calculation
+export const GET_NEXT_WORKDAY = gql`
+  query GetNextWorkday($employeeId: Int!) {
+    getNextWorkday(employeeId: $employeeId)
   }
 `;
 
@@ -106,6 +115,10 @@ export interface WorkRecordsResponse {
 
 export interface WorkRecordsData {
   getWorkRecords: WorkRecordsResponse;
+}
+
+export interface NextWorkdayData {
+  getNextWorkday: string;
 }
 
 // Catalog data types for filter options
