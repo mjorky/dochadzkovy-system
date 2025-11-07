@@ -486,13 +486,9 @@ export default function WorkRecordsPage() {
         </BreadcrumbList>
       </Breadcrumb>
 
-      {/* Page title and Add Entry button */}
-      <div className="flex items-center justify-between mb-6">
+      {/* Page title */}
+      <div className="mb-6">
         <h1 className="text-3xl font-bold text-foreground">Work Records</h1>
-        <Button onClick={handleAddEntry} className="gap-2">
-          <Plus className="h-4 w-4" />
-          Add Entry
-        </Button>
       </div>
 
       {/* Employee selector (for managers/admins only) */}
@@ -545,10 +541,16 @@ export default function WorkRecordsPage() {
         </div>
       ) : (
         <>
-          {/* Record count */}
-          <div className="mb-4 text-sm text-muted-foreground">
-            Showing {filteredRecords.length} of{' '}
-            {recordsData?.getWorkRecords.totalCount || allRecords.length} records
+          {/* Add Entry button and Record count */}
+          <div className="flex items-center justify-between mb-4">
+            <Button onClick={handleAddEntry} className="gap-2">
+              <Plus className="h-4 w-4" />
+              Add Entry
+            </Button>
+            <div className="text-sm text-muted-foreground">
+              Showing {filteredRecords.length} of{' '}
+              {recordsData?.getWorkRecords.totalCount || allRecords.length} records
+            </div>
           </div>
 
           {/* Work records table */}
