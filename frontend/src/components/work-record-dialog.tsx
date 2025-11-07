@@ -41,6 +41,13 @@ export function WorkRecordDialog({
 }: WorkRecordDialogProps) {
   const [keepSameDate, setKeepSameDate] = React.useState(false);
 
+  // Reset checkbox when dialog opens
+  React.useEffect(() => {
+    if (open && mode === 'create') {
+      setKeepSameDate(false);
+    }
+  }, [open, mode]);
+
   // Fetch catalog data
   const { data: absenceTypesData } = useQuery<AbsenceTypesData>(GET_ABSENCE_TYPES);
   const { data: projectsData } = useQuery<ActiveProjectsData>(GET_ACTIVE_PROJECTS);
@@ -50,7 +57,7 @@ export function WorkRecordDialog({
   // Fetch next workday for date pre-fill
   const { data: nextWorkdayData } = useQuery<NextWorkdayData>(GET_NEXT_WORKDAY, {
     variables: { employeeId },
-    skip: mode === 'edit' || keepSameDate,
+    skip: mode === 'edit', // Always fetch next workday in create mode
   });
 
   // Fetch last work record for default field values
@@ -61,6 +68,7 @@ export function WorkRecordDialog({
       toDate: format(new Date(), 'yyyy-MM-dd'),
       limit: 1,
       offset: 0,
+      sortOrder: 'DESC', // Always get the most recent record
     },
     skip: mode === 'edit',
   });
@@ -209,6 +217,7 @@ export function WorkRecordDialog({
           <DialogTitle>{dialogTitle}</DialogTitle>
         </DialogHeader>
         <WorkRecordForm
+          key={`${mode}-${open}-${keepSameDate}`}
           initialValues={initialFormValues}
           onSubmit={handleSubmit}
           onCancel={handleCancel}

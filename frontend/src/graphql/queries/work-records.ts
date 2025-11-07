@@ -8,6 +8,7 @@ export const GET_WORK_RECORDS = gql`
     $toDate: String!
     $limit: Int
     $offset: Int
+    $sortOrder: String
   ) {
     getWorkRecords(
       input: {
@@ -16,6 +17,7 @@ export const GET_WORK_RECORDS = gql`
         toDate: $toDate
         limit: $limit
         offset: $offset
+        sortOrder: $sortOrder
       }
     ) {
       records {

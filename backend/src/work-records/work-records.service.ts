@@ -89,7 +89,7 @@ export class WorkRecordsService {
         LEFT JOIN "HourType" ht ON wr."HourTypeID" = ht."ID"
         LEFT JOIN "HourTypes" hts ON wr."HourTypesID" = hts."ID"
         WHERE wr."StartDate" BETWEEN $1 AND $2
-        ORDER BY wr."StartDate" ASC
+        ORDER BY wr."StartDate" ${input.sortOrder || 'DESC'}
         LIMIT $3 OFFSET $4
         `,
         fromDate,
