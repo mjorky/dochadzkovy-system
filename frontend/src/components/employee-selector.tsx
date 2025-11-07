@@ -79,7 +79,7 @@ export function EmployeeSelector({
         <SelectContent>
           {data.employees.map((employee) => (
             <SelectItem key={employee.id} value={employee.id}>
-              {employee.fullName} (ID: {employee.id})
+              {employee.fullName}
             </SelectItem>
           ))}
         </SelectContent>

@@ -21,7 +21,7 @@ interface EmployeeTableProps {
 }
 
 export function EmployeeTable({ employees }: EmployeeTableProps) {
-  const [sortColumn, setSortColumn] = useState<SortColumn>('id');
+  const [sortColumn, setSortColumn] = useState<SortColumn>('fullName');
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
 
   const handleSort = (column: SortColumn) => {
@@ -81,18 +81,10 @@ export function EmployeeTable({ employees }: EmployeeTableProps) {
   };
 
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead
-            className="cursor-pointer hover:bg-muted/80 transition-colors"
-            onClick={() => handleSort('id')}
-          >
-            <div className="flex items-center gap-2">
-              ID
-              <SortIndicator column="id" />
-            </div>
-          </TableHead>
+    <div className="border border-border rounded-lg overflow-hidden">
+      <Table>
+        <TableHeader className="bg-muted/50">
+          <TableRow className="hover:bg-muted/50">
           <TableHead
             className="cursor-pointer hover:bg-muted/80 transition-colors"
             onClick={() => handleSort('fullName')}
@@ -170,7 +162,6 @@ export function EmployeeTable({ employees }: EmployeeTableProps) {
       <TableBody>
         {sortedEmployees.map((employee) => (
           <TableRow key={employee.id}>
-            <TableCell className="w-20">{employee.id}</TableCell>
             <TableCell className="min-w-[150px]">{employee.fullName}</TableCell>
             <TableCell className="w-[100px]">{employee.vacationDays.toFixed(1)}</TableCell>
             <TableCell className="w-[80px]">
@@ -191,5 +182,6 @@ export function EmployeeTable({ employees }: EmployeeTableProps) {
         ))}
       </TableBody>
     </Table>
+    </div>
   );
 }

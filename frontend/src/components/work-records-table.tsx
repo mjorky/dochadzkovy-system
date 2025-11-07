@@ -91,12 +91,6 @@ export function WorkRecordsTable({ workRecords }: WorkRecordsTableProps) {
       <Table>
         <TableHeader className="bg-muted/50">
           <TableRow className="hover:bg-muted/50">
-            <TableHead className="cursor-pointer hover:bg-muted/80 transition-colors w-16" onClick={() => handleSort('id')}>
-              <div className="flex items-center gap-1">
-                ID
-                <SortIndicator column="id" />
-              </div>
-            </TableHead>
             <TableHead className="cursor-pointer hover:bg-muted/80 transition-colors" onClick={() => handleSort('date')}>
               <div className="flex items-center gap-1">
                 Date
@@ -177,7 +171,6 @@ export function WorkRecordsTable({ workRecords }: WorkRecordsTableProps) {
             key={record.id}
             className={record.isLocked ? 'opacity-50 cursor-not-allowed' : ''}
           >
-            <TableCell className="w-16">{record.id}</TableCell>
             <TableCell className="whitespace-nowrap">{formatDate(record.date)}</TableCell>
             <TableCell className="whitespace-nowrap">{record.absenceType}</TableCell>
             <TableCell>{record.project ?? '—'}</TableCell>
