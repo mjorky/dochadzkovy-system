@@ -6,6 +6,16 @@ import { Loader2, XCircle, Users } from 'lucide-react';
 import { EMPLOYEES_QUERY, EmployeesData, Employee } from '@/graphql/queries/employees';
 import { EmployeeTable } from '@/components/employee-table';
 import { FilterControls, FilterState } from '@/components/filter-controls';
+import { Button } from '@/components/ui/button';
+import {
+  Breadcrumb,
+  BreadcrumbList,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbSeparator,
+  BreadcrumbPage,
+} from '@/components/ui/breadcrumb';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 
 export default function EmployeesPage() {
   const { loading, error, data, refetch } = useQuery<EmployeesData>(EMPLOYEES_QUERY);
@@ -64,23 +74,18 @@ export default function EmployeesPage() {
   if (error) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="flex flex-col items-center gap-4 max-w-md p-6 bg-card rounded-lg border border-destructive shadow-md">
-          <XCircle className="h-12 w-12 text-destructive" />
-          <div className="text-center">
-            <h2 className="text-lg font-semibold text-foreground mb-2">
-              Failed to load employees
-            </h2>
-            <p className="text-sm text-muted-foreground mb-4">
-              {error.message || 'An unexpected error occurred'}
-            </p>
-            <button
-              onClick={() => refetch()}
-              className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
-            >
-              Retry
-            </button>
-          </div>
-        </div>
+        <Card className="max-w-md border-destructive">
+          <CardContent className="flex flex-col items-center gap-4 text-center">
+            <XCircle className="h-12 w-12 text-destructive" />
+            <CardHeader className="p-0">
+              <CardTitle>Failed to load employees</CardTitle>
+              <CardDescription>
+                {error.message || 'An unexpected error occurred'}
+              </CardDescription>
+            </CardHeader>
+            <Button onClick={() => refetch()}>Retry</Button>
+          </CardContent>
+        </Card>
       </div>
     );
   }
@@ -113,11 +118,17 @@ export default function EmployeesPage() {
   return (
     <div className="p-8">
       {/* Breadcrumb navigation */}
-      <nav className="text-sm text-muted-foreground mb-2">
-        <span>Home</span>
-        <span className="mx-2">&gt;</span>
-        <span className="text-foreground font-medium">Employees</span>
-      </nav>
+      <Breadcrumb className="mb-2">
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/">Home</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>Employees</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
 
       {/* Page title */}
       <h1 className="text-3xl font-bold text-foreground mb-6">Employees</h1>

@@ -8,6 +8,7 @@ import { AppService } from './app.service';
 import { PrismaModule } from './prisma/prisma.module';
 import { HealthModule } from './health/health.module';
 import { EmployeesModule } from './employees/employees.module';
+import { WorkRecordsModule } from './work-records/work-records.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { EmployeesModule } from './employees/employees.module';
     PrismaModule,
     HealthModule,
     EmployeesModule,
+    WorkRecordsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
