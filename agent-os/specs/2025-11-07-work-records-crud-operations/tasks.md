@@ -25,22 +25,22 @@ This task breakdown implements complete Create, Read, Update, Delete (CRUD) oper
 ### Task Group 1.1: Backend - Create Work Record Mutation
 **Dependencies:** None
 
-- [ ] 1.1.0 Complete backend Create mutation implementation
-  - [ ] 1.1.1 Write 2-8 focused tests for createWorkRecord mutation
+- [x] 1.1.0 Complete backend Create mutation implementation
+  - [x] 1.1.1 Write 2-8 focused tests for createWorkRecord mutation
     - Test critical behaviors: successful creation, lock validation, overnight shift support
     - File: `/Users/miro/Projects/dochadzkovy-system/backend/src/work-records/work-records.service.spec.ts`
     - Focus: Lock validation prevents creation on locked dates, overnight shifts calculated correctly
     - Skip: Exhaustive validation tests for all field combinations
-  - [ ] 1.1.2 Create CreateWorkRecordInput DTO
+  - [x] 1.1.2 Create CreateWorkRecordInput DTO
     - File: `/Users/miro/Projects/dochadzkovy-system/backend/src/work-records/dto/create-work-record.input.ts`
     - Fields: employeeId, date, absenceTypeId, projectId, productivityTypeId, workTypeId, startTime, endTime, description (optional), km (optional), isTripFlag (optional)
     - Validations: @IsNotEmpty, @IsDate, @IsString, @Min(0) for km, @MaxLength(500) for description
     - Time format: HH:MM or HH:MM:SS
-  - [ ] 1.1.3 Create WorkRecordMutationResponse entity
+  - [x] 1.1.3 Create WorkRecordMutationResponse entity
     - File: `/Users/miro/Projects/dochadzkovy-system/backend/src/work-records/entities/work-record-mutation-response.entity.ts`
     - Fields: success (Boolean), message (String), record (WorkRecord nullable)
     - Use @ObjectType decorator for GraphQL
-  - [ ] 1.1.4 Implement createWorkRecord service method
+  - [x] 1.1.4 Implement createWorkRecord service method
     - File: `/Users/miro/Projects/dochadzkovy-system/backend/src/work-records/work-records.service.ts`
     - Fetch employee from Zamestnanci table (Meno, Priezvisko, ZamknuteK)
     - Construct dynamic table name using `constructTableName()`
@@ -49,13 +49,13 @@ This task breakdown implements complete Create, Read, Update, Delete (CRUD) oper
     - Insert into per-user table with Lock=false
     - Return WorkRecordMutationResponse with created record
     - Error handling: NotFoundException (employee), ForbiddenException (locked date), BadRequestException (validation)
-  - [ ] 1.1.5 Add createWorkRecord mutation resolver
+  - [x] 1.1.5 Add createWorkRecord mutation resolver
     - File: `/Users/miro/Projects/dochadzkovy-system/backend/src/work-records/work-records.resolver.ts`
     - Add @Mutation decorator
     - Accept CreateWorkRecordInput
     - Call service method
     - Return WorkRecordMutationResponse
-  - [ ] 1.1.6 Ensure backend Create mutation tests pass
+  - [x] 1.1.6 Ensure backend Create mutation tests pass
     - Run ONLY the 2-8 tests written in 1.1.1
     - Verify lock validation works
     - Verify overnight shifts handled correctly
@@ -74,13 +74,13 @@ This task breakdown implements complete Create, Read, Update, Delete (CRUD) oper
 ### Task Group 1.2: Backend - Next Workday Calculator Utility
 **Dependencies:** None (can run in parallel with 1.1)
 
-- [ ] 1.2.0 Complete next workday calculator utility
-  - [ ] 1.2.1 Write 2-8 focused tests for workday calculator
+- [x] 1.2.0 Complete next workday calculator utility
+  - [x] 1.2.1 Write 2-8 focused tests for workday calculator
     - Test critical cases: skips weekends, skips Slovak holidays, handles edge cases (Friday to Monday)
     - File: `/Users/miro/Projects/dochadzkovy-system/backend/src/work-records/utils/workday-calculator.spec.ts`
     - Focus: Weekend skipping, holiday detection, multi-day gaps
     - Skip: All possible holiday combinations, timezone edge cases
-  - [ ] 1.2.2 Create workday calculator utility
+  - [x] 1.2.2 Create workday calculator utility
     - File: `/Users/miro/Projects/dochadzkovy-system/backend/src/work-records/utils/workday-calculator.ts`
     - Function: `calculateNextWorkday(lastRecordDate: Date, employeeId: bigint): Promise<Date>`
     - Query Holidays table for dates between lastRecordDate and today
@@ -88,18 +88,18 @@ This task breakdown implements complete Create, Read, Update, Delete (CRUD) oper
     - Skip dates present in Holidays table
     - Return next valid workday Date
     - Handle edge case: if last record is today, return today
-  - [ ] 1.2.3 Integrate workday calculator into service
+  - [x] 1.2.3 Integrate workday calculator into service
     - File: `/Users/miro/Projects/dochadzkovy-system/backend/src/work-records/work-records.service.ts`
     - Add `getNextWorkday` service method
     - Fetch last record date from per-user table (ORDER BY StartDate DESC LIMIT 1)
     - Call `calculateNextWorkday()` utility
     - Return Date for frontend pre-fill
-  - [ ] 1.2.4 Add getNextWorkday query resolver
+  - [x] 1.2.4 Add getNextWorkday query resolver
     - File: `/Users/miro/Projects/dochadzkovy-system/backend/src/work-records/work-records.resolver.ts`
     - Add @Query decorator
     - Accept employeeId parameter
     - Return Date scalar
-  - [ ] 1.2.5 Ensure workday calculator tests pass
+  - [x] 1.2.5 Ensure workday calculator tests pass
     - Run ONLY the 2-8 tests written in 1.2.1
     - Verify weekends skipped correctly
     - Verify Slovak holidays respected
@@ -117,25 +117,25 @@ This task breakdown implements complete Create, Read, Update, Delete (CRUD) oper
 ### Task Group 1.3: Frontend - Reusable Work Record Form Component
 **Dependencies:** Task Group 1.1 (needs CreateWorkRecordInput schema), Task Group 1.2 (needs getNextWorkday query)
 
-- [ ] 1.3.0 Complete reusable work record form component
+- [x] 1.3.0 Complete reusable work record form component
   - [ ] 1.3.1 Write 2-8 focused tests for form component
     - Test critical behaviors: form submission, validation errors, overnight shift helper text display
     - File: `/Users/miro/Projects/dochadzkovy-system/frontend/src/components/work-record-form.test.tsx`
     - Focus: Required field validation, time increment rounding, overnight shift detection UI
     - Skip: All edge cases, accessibility tests, loading states
-  - [ ] 1.3.2 Create Zod validation schema
+  - [x] 1.3.2 Create Zod validation schema
     - File: `/Users/miro/Projects/dochadzkovy-system/frontend/src/lib/validations/work-record-schema.ts`
     - Mirror CreateWorkRecordInput structure
     - Required: date, absenceTypeId, projectId, productivityTypeId, workTypeId, startTime, endTime
     - Optional: description (max 500 chars), km (min 0), isTripFlag
     - Custom validation: startTime and endTime in 30-minute increments
     - Allow overnight: endTime < startTime is valid
-  - [ ] 1.3.3 Create time rounding utility
+  - [x] 1.3.3 Create time rounding utility
     - File: `/Users/miro/Projects/dochadzkovy-system/frontend/src/lib/utils/time-utils.ts`
     - Function: `roundToNearest30Minutes(time: string): string`
     - Parse HH:MM input, round to nearest 30-minute increment
     - Return formatted HH:MM string
-  - [ ] 1.3.4 Create WorkRecordForm component
+  - [x] 1.3.4 Create WorkRecordForm component
     - File: `/Users/miro/Projects/dochadzkovy-system/frontend/src/components/work-record-form.tsx`
     - Use React Hook Form with Zod schema
     - Form fields in order:
@@ -152,12 +152,12 @@ This task breakdown implements complete Create, Read, Update, Delete (CRUD) oper
     - Display overnight shift helper text: "This is an overnight shift (adds 24 hours)" when endTime < startTime
     - Apply time rounding on blur for startTime and endTime inputs
     - Props: initialValues (optional), onSubmit, onCancel, isSubmitting
-  - [ ] 1.3.5 Create GraphQL mutation definition
+  - [x] 1.3.5 Create GraphQL mutation definition
     - File: `/Users/miro/Projects/dochadzkovy-system/frontend/src/graphql/mutations/work-records.ts`
     - Define CREATE_WORK_RECORD mutation
     - Accept CreateWorkRecordInput variable
     - Return WorkRecordMutationResponse fields (success, message, record)
-  - [ ] 1.3.6 Create useCreateWorkRecord hook
+  - [x] 1.3.6 Create useCreateWorkRecord hook
     - File: `/Users/miro/Projects/dochadzkovy-system/frontend/src/hooks/use-create-work-record.ts`
     - Use Apollo useMutation with CREATE_WORK_RECORD
     - Handle optimistic updates or refetch getWorkRecords query
@@ -182,13 +182,13 @@ This task breakdown implements complete Create, Read, Update, Delete (CRUD) oper
 ### Task Group 1.4: Frontend - Create Work Record Dialog
 **Dependencies:** Task Group 1.3 (needs WorkRecordForm component)
 
-- [ ] 1.4.0 Complete Create Work Record dialog implementation
+- [x] 1.4.0 Complete Create Work Record dialog implementation
   - [ ] 1.4.1 Write 2-8 focused tests for Create dialog
     - Test critical flows: dialog opens, form submits successfully, error handling
     - File: `/Users/miro/Projects/dochadzkovy-system/frontend/src/components/work-record-dialog.test.tsx`
     - Focus: Dialog state management, success toast, table refetch after success
     - Skip: All form validation tests (covered in 1.3.1), loading states, accessibility
-  - [ ] 1.4.2 Create WorkRecordDialog component
+  - [x] 1.4.2 Create WorkRecordDialog component
     - File: `/Users/miro/Projects/dochadzkovy-system/frontend/src/components/work-record-dialog.tsx`
     - Props: open, onOpenChange, mode ("create" | "edit"), initialData (optional), employeeId
     - Dialog title: "Add Work Entry" for create mode
@@ -198,21 +198,21 @@ This task breakdown implements complete Create, Read, Update, Delete (CRUD) oper
       - On success: show toast "Work record created successfully", refetch getWorkRecords query, close dialog
       - On error: show toast with error message, keep dialog open
     - Loading state: disable Save button and show spinner during submission
-  - [ ] 1.4.3 Fetch default field values from last record
+  - [x] 1.4.3 Fetch default field values from last record
     - Use getWorkRecords query with limit=1, order by date DESC
     - Extract last-used absenceTypeId, projectId, productivityTypeId, workTypeId
     - Store in local state for form initialValues
-  - [ ] 1.4.4 Fetch next workday for date pre-fill
+  - [x] 1.4.4 Fetch next workday for date pre-fill
     - Call getNextWorkday query with employeeId
     - Pre-fill date field with returned workday
     - Handle "Keep same date" checkbox:
       - When checked, disable date field and keep current value
       - When unchecked, re-enable date field
-  - [ ] 1.4.5 Fetch catalog data for dropdowns
+  - [x] 1.4.5 Fetch catalog data for dropdowns
     - Use existing queries: getActiveProjects, getAbsenceTypes, getProductivityTypes, getWorkTypes
     - Populate Select dropdowns with fetched data
     - Cache data in Apollo Client for reuse
-  - [ ] 1.4.6 Add "Add Entry" button to work records page
+  - [x] 1.4.6 Add "Add Entry" button to work records page
     - File: `/Users/miro/Projects/dochadzkovy-system/frontend/src/app/work-records/page.tsx`
     - Add button to page header
     - Manage dialog open state with useState
@@ -241,18 +241,18 @@ This task breakdown implements complete Create, Read, Update, Delete (CRUD) oper
 ### Task Group 2.1: Backend - Update Work Record Mutation
 **Dependencies:** Task Group 1.1 (reuses CreateWorkRecordInput structure)
 
-- [ ] 2.1.0 Complete backend Update mutation implementation
+- [x] 2.1.0 Complete backend Update mutation implementation
   - [ ] 2.1.1 Write 2-8 focused tests for updateWorkRecord mutation
     - Test critical behaviors: successful update, lock validation prevents editing, record not found error
     - File: `/Users/miro/Projects/dochadzkovy-system/backend/src/work-records/work-records.service.spec.ts`
     - Focus: Lock checks (Record.Lock=true OR StartDate <= ZamknuteK), partial updates work
     - Skip: All field validation combinations, edge cases
-  - [ ] 2.1.2 Create UpdateWorkRecordInput DTO
+  - [x] 2.1.2 Create UpdateWorkRecordInput DTO
     - File: `/Users/miro/Projects/dochadzkovy-system/backend/src/work-records/dto/update-work-record.input.ts`
     - Fields: recordId (required), employeeId (required), all CreateWorkRecordInput fields (optional)
     - Use @IsOptional for all update fields except recordId and employeeId
     - Reuse validation decorators from CreateWorkRecordInput
-  - [ ] 2.1.3 Implement updateWorkRecord service method
+  - [x] 2.1.3 Implement updateWorkRecord service method
     - File: `/Users/miro/Projects/dochadzkovy-system/backend/src/work-records/work-records.service.ts`
     - Fetch employee from Zamestnanci (Meno, Priezvisko, ZamknuteK)
     - Construct dynamic table name
@@ -262,7 +262,7 @@ This task breakdown implements complete Create, Read, Update, Delete (CRUD) oper
     - Throw ForbiddenException with message "Cannot edit locked record" if locked
     - Update record with provided fields (partial update)
     - Return WorkRecordMutationResponse with updated record
-  - [ ] 2.1.4 Add updateWorkRecord mutation resolver
+  - [x] 2.1.4 Add updateWorkRecord mutation resolver
     - File: `/Users/miro/Projects/dochadzkovy-system/backend/src/work-records/work-records.resolver.ts`
     - Add @Mutation decorator
     - Accept UpdateWorkRecordInput
@@ -287,22 +287,22 @@ This task breakdown implements complete Create, Read, Update, Delete (CRUD) oper
 ### Task Group 2.2: Frontend - Update Work Record Dialog
 **Dependencies:** Task Group 1.3 (reuses WorkRecordForm), Task Group 1.4 (reuses WorkRecordDialog), Task Group 2.1 (needs updateWorkRecord mutation)
 
-- [ ] 2.2.0 Complete Update Work Record dialog implementation
+- [x] 2.2.0 Complete Update Work Record dialog implementation
   - [ ] 2.2.1 Write 2-8 focused tests for Update dialog
     - Test critical flows: dialog opens with pre-filled data, form submits update successfully, error handling
     - File: `/Users/miro/Projects/dochadzkovy-system/frontend/src/components/work-record-dialog.test.tsx` (extend existing tests)
     - Focus: Pre-fill form fields from record data, success toast "updated", table refetch
     - Skip: Form validation (covered in 1.3.1), all edge cases
-  - [ ] 2.2.2 Create GraphQL UPDATE_WORK_RECORD mutation
+  - [x] 2.2.2 Create GraphQL UPDATE_WORK_RECORD mutation
     - File: `/Users/miro/Projects/dochadzkovy-system/frontend/src/graphql/mutations/work-records.ts` (add to existing)
     - Accept UpdateWorkRecordInput variable
     - Return WorkRecordMutationResponse
-  - [ ] 2.2.3 Create useUpdateWorkRecord hook
+  - [x] 2.2.3 Create useUpdateWorkRecord hook
     - File: `/Users/miro/Projects/dochadzkovy-system/frontend/src/hooks/use-update-work-record.ts`
     - Use Apollo useMutation with UPDATE_WORK_RECORD
     - Handle refetch of getWorkRecords query on success
     - Return mutation function, loading, error
-  - [ ] 2.2.4 Extend WorkRecordDialog for edit mode
+  - [x] 2.2.4 Extend WorkRecordDialog for edit mode
     - File: `/Users/miro/Projects/dochadzkovy-system/frontend/src/components/work-record-dialog.tsx` (modify existing)
     - When mode="edit", change title to "Edit Work Entry"
     - Accept initialData prop with WorkRecord to pre-fill form
@@ -311,13 +311,13 @@ This task breakdown implements complete Create, Read, Update, Delete (CRUD) oper
       - Call useUpdateWorkRecord mutation
       - On success: toast "Work record updated successfully", refetch, close dialog
       - On error: toast error message, keep dialog open
-  - [ ] 2.2.5 Add Edit action to work records table
+  - [x] 2.2.5 Add Edit action to work records table
     - File: `/Users/miro/Projects/dochadzkovy-system/frontend/src/components/work-records-table.tsx`
     - Add new "Actions" TableHead column
     - Add TableCell with Edit button (pencil icon)
     - Conditionally render: hide Edit button if record.isLocked === true
     - On click: emit callback to parent with record data
-  - [ ] 2.2.6 Connect Edit action to dialog in page
+  - [x] 2.2.6 Connect Edit action to dialog in page
     - File: `/Users/miro/Projects/dochadzkovy-system/frontend/src/app/work-records/page.tsx`
     - Add state for selectedRecord
     - Pass handleEdit callback to WorkRecordsTable
@@ -344,17 +344,17 @@ This task breakdown implements complete Create, Read, Update, Delete (CRUD) oper
 ### Task Group 3.1: Backend - Delete Work Record Mutation
 **Dependencies:** Task Group 1.1 (reuses error handling patterns)
 
-- [ ] 3.1.0 Complete backend Delete mutation implementation
+- [x] 3.1.0 Complete backend Delete mutation implementation
   - [ ] 3.1.1 Write 2-8 focused tests for deleteWorkRecord mutation
     - Test critical behaviors: successful deletion, lock validation prevents deletion, record not found error
     - File: `/Users/miro/Projects/dochadzkovy-system/backend/src/work-records/work-records.service.spec.ts`
     - Focus: Lock checks prevent deletion, DELETE query executes correctly
     - Skip: Edge cases, cascading deletes (not applicable)
-  - [ ] 3.1.2 Create DeleteWorkRecordInput DTO
+  - [x] 3.1.2 Create DeleteWorkRecordInput DTO
     - File: `/Users/miro/Projects/dochadzkovy-system/backend/src/work-records/dto/delete-work-record.input.ts`
     - Fields: recordId (required), employeeId (required)
     - Simple DTO with @IsNotEmpty validators
-  - [ ] 3.1.3 Implement deleteWorkRecord service method
+  - [x] 3.1.3 Implement deleteWorkRecord service method
     - File: `/Users/miro/Projects/dochadzkovy-system/backend/src/work-records/work-records.service.ts`
     - Fetch employee from Zamestnanci (Meno, Priezvisko, ZamknuteK)
     - Construct dynamic table name
@@ -364,7 +364,7 @@ This task breakdown implements complete Create, Read, Update, Delete (CRUD) oper
     - Throw ForbiddenException with message "Cannot delete locked record" if locked
     - Execute DELETE query on per-user table
     - Return WorkRecordMutationResponse with success=true
-  - [ ] 3.1.4 Add deleteWorkRecord mutation resolver
+  - [x] 3.1.4 Add deleteWorkRecord mutation resolver
     - File: `/Users/miro/Projects/dochadzkovy-system/backend/src/work-records/work-records.resolver.ts`
     - Add @Mutation decorator
     - Accept DeleteWorkRecordInput
@@ -389,22 +389,22 @@ This task breakdown implements complete Create, Read, Update, Delete (CRUD) oper
 ### Task Group 3.2: Frontend - Delete Work Record Confirmation Dialog
 **Dependencies:** Task Group 3.1 (needs deleteWorkRecord mutation)
 
-- [ ] 3.2.0 Complete Delete confirmation dialog implementation
+- [x] 3.2.0 Complete Delete confirmation dialog implementation
   - [ ] 3.2.1 Write 2-8 focused tests for Delete dialog
     - Test critical flows: dialog shows record summary, deletion succeeds, cancellation works
     - File: `/Users/miro/Projects/dochadzkovy-system/frontend/src/components/delete-work-record-dialog.test.tsx`
     - Focus: Confirmation message displays correctly, success toast, table refetch after deletion
     - Skip: Edge cases, loading states
-  - [ ] 3.2.2 Create GraphQL DELETE_WORK_RECORD mutation
+  - [x] 3.2.2 Create GraphQL DELETE_WORK_RECORD mutation
     - File: `/Users/miro/Projects/dochadzkovy-system/frontend/src/graphql/mutations/work-records.ts` (add to existing)
     - Accept DeleteWorkRecordInput variable
     - Return WorkRecordMutationResponse
-  - [ ] 3.2.3 Create useDeleteWorkRecord hook
+  - [x] 3.2.3 Create useDeleteWorkRecord hook
     - File: `/Users/miro/Projects/dochadzkovy-system/frontend/src/hooks/use-delete-work-record.ts`
     - Use Apollo useMutation with DELETE_WORK_RECORD
     - Handle refetch of getWorkRecords query on success
     - Return mutation function, loading, error
-  - [ ] 3.2.4 Create DeleteWorkRecordDialog component
+  - [x] 3.2.4 Create DeleteWorkRecordDialog component
     - File: `/Users/miro/Projects/dochadzkovy-system/frontend/src/components/delete-work-record-dialog.tsx`
     - Props: open, onOpenChange, record, employeeId
     - Dialog title: "Delete Work Entry"
@@ -416,12 +416,12 @@ This task breakdown implements complete Create, Read, Update, Delete (CRUD) oper
       - On success: toast "Work record deleted successfully", refetch getWorkRecords, close dialog
       - On error: toast error message, keep dialog open
     - Loading state: disable Delete button during mutation
-  - [ ] 3.2.5 Add Delete action to work records table
+  - [x] 3.2.5 Add Delete action to work records table
     - File: `/Users/miro/Projects/dochadzkovy-system/frontend/src/components/work-records-table.tsx`
     - Add Delete button (trash icon) to Actions column
     - Conditionally render: hide Delete button if record.isLocked === true
     - On click: emit callback to parent with record data
-  - [ ] 3.2.6 Connect Delete action to dialog in page
+  - [x] 3.2.6 Connect Delete action to dialog in page
     - File: `/Users/miro/Projects/dochadzkovy-system/frontend/src/app/work-records/page.tsx`
     - Add state for recordToDelete
     - Pass handleDelete callback to WorkRecordsTable

@@ -40,6 +40,13 @@ export const GET_WORK_RECORDS = gql`
   }
 `;
 
+// GraphQL query for next workday calculation
+export const GET_NEXT_WORKDAY = gql`
+  query GetNextWorkday($employeeId: Int!) {
+    getNextWorkday(employeeId: $employeeId)
+  }
+`;
+
 // GraphQL query for active projects (AllowAssignWorkingHours=true)
 export const GET_ACTIVE_PROJECTS = gql`
   query GetActiveProjects {
@@ -106,6 +113,10 @@ export interface WorkRecordsResponse {
 
 export interface WorkRecordsData {
   getWorkRecords: WorkRecordsResponse;
+}
+
+export interface NextWorkdayData {
+  getNextWorkday: string;
 }
 
 // Catalog data types for filter options
