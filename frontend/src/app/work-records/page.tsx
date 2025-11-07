@@ -102,6 +102,7 @@ export default function WorkRecordsPage() {
       toDate: formatDateForQuery(filters.toDate),
       limit: 50,
       offset: 0,
+      sortOrder: 'DESC', // Newest first
     },
   });
 
@@ -141,6 +142,7 @@ export default function WorkRecordsPage() {
           toDate: formatDateForQuery(filters.toDate),
           limit: 50,
           offset,
+          sortOrder: 'DESC', // Newest first
         },
       });
 
