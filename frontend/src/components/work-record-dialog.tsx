@@ -23,6 +23,7 @@ import {
   type WorkRecord,
 } from '@/graphql/queries/work-records';
 import { format } from 'date-fns';
+import { toast } from 'sonner';
 
 export interface WorkRecordDialogProps {
   open: boolean;
@@ -167,8 +168,7 @@ export function WorkRecordDialog({
         });
         // Success - close dialog
         onOpenChange(false);
-        // TODO: Replace with toast notification
-        console.log('Work record created successfully');
+        toast.success('Work record created successfully');
       } else {
         // Edit mode - call update mutation
         if (!initialData) {
@@ -194,13 +194,12 @@ export function WorkRecordDialog({
         });
         // Success - close dialog
         onOpenChange(false);
-        // TODO: Replace with toast notification
-        console.log('Work record updated successfully');
+        toast.success('Work record updated successfully');
       }
     } catch (error) {
       // Error handling - keep dialog open
       console.error('Failed to save work record:', error);
-      // TODO: Replace with toast notification
+      toast.error('Failed to save work record. Please try again.');
     }
   };
 

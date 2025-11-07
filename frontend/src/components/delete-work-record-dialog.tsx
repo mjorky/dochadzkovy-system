@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button';
 import { useDeleteWorkRecord } from '@/hooks/use-delete-work-record';
 import { WorkRecord } from '@/graphql/queries/work-records';
 import { AlertTriangle } from 'lucide-react';
+import { toast } from 'sonner';
 
 export interface DeleteWorkRecordDialogProps {
   open: boolean;
@@ -43,12 +44,11 @@ export function DeleteWorkRecordDialog({
       });
       // Success - close dialog
       onOpenChange(false);
-      // TODO: Replace with toast notification
-      console.log('Work record deleted successfully');
+      toast.success('Work record deleted successfully');
     } catch (error) {
       // Error handling - keep dialog open
       console.error('Failed to delete work record:', error);
-      // TODO: Replace with toast notification
+      toast.error('Failed to delete work record. Please try again.');
     }
   };
 
