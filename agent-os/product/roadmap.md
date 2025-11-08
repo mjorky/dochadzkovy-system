@@ -101,7 +101,7 @@ This roadmap prioritizes quick delivery of legacy application functionality usin
 
 **Goal:** Users can add new work entries and edit existing ones, just like in the desktop app but in the browser.
 
-### 9. [ ] Work Record Create Dialog — Build "Add Entry" dialog with form fields: date picker, absence type dropdown, project dropdown (active only), productivity dropdown, work type dropdown, start time (30-min steps), end time (30-min steps), description text area, km number input, trip checkbox. Validate end >= start, allow overnight. `M`
+### 9. [x] Work Record Create Dialog — Build "Add Entry" dialog with form fields: date picker, absence type dropdown, project dropdown (active only), productivity dropdown, work type dropdown, start time (30-min steps), end time (30-min steps), description text area, km number input, trip checkbox. Validate end >= start, allow overnight. `M`
 
 **Testing Guide (Non-Technical):**
 - On the Data screen, click "+ Add Entry" button (or similar)
@@ -116,7 +116,7 @@ This roadmap prioritizes quick delivery of legacy application functionality usin
 - Time pickers: can you only select 8:00, 8:30, 9:00, etc. (30-minute steps)?
 - Does your entry appear in the table after saving?
 
-### 10. [ ] Work Record Create Mutation — Implement GraphQL mutation that inserts into correct per-user table (t_{Name}_{Surname}), validates business rules (time constraints, lock status), returns created record with computed hours, handles errors gracefully. `S`
+### 10. [x] Work Record Create Mutation — Implement GraphQL mutation that inserts into correct per-user table (t_{Name}_{Surname}), validates business rules (time constraints, lock status), returns created record with computed hours, handles errors gracefully. `S`
 
 **Testing Guide (Non-Technical):**
 - Try adding an entry for TODAY with project and times
@@ -127,7 +127,7 @@ This roadmap prioritizes quick delivery of legacy application functionality usin
 - Does saving work without errors?
 - If you try to save something invalid (like end time before start time), do you get a helpful error message?
 
-### 11. [ ] Work Record Update Dialog & Mutation — Add "Edit" action on table rows (pencil icon), open same form pre-filled with existing values, implement update mutation that respects lock flags and ZamknuteK date, update table row without reload. `M`
+### 11. [x] Work Record Update Dialog & Mutation — Add "Edit" action on table rows (pencil icon), open same form pre-filled with existing values, implement update mutation that respects lock flags and ZamknuteK date, update table row without reload. `M`
 
 **Testing Guide (Non-Technical):**
 - In the Data table, hover over a row - you should see an edit icon (pencil)
@@ -141,7 +141,7 @@ This roadmap prioritizes quick delivery of legacy application functionality usin
 - If you try to edit a LOCKED entry, does it prevent you or show error?
 - Does the change appear immediately without refreshing the browser?
 
-### 12. [ ] Work Record Delete Dialog & Mutation — Add "Delete" action (trash icon) with confirmation dialog, implement delete mutation that respects locks, remove from table on success with optimistic update. `S`
+### 12. [x] Work Record Delete Dialog & Mutation — Add "Delete" action (trash icon) with confirmation dialog, implement delete mutation that respects locks, remove from table on success with optimistic update. `S`
 
 **Testing Guide (Non-Technical):**
 - Hover over a work record row and click the trash icon
