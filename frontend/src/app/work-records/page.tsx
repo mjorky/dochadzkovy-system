@@ -588,10 +588,10 @@ export default function WorkRecordsPage() {
           {/* Add Entry button, Export CSV button and Record count */}
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
-              <Button onClick={handleAddEntry} className="gap-2">
-                <Plus className="h-4 w-4" />
-                Add Entry
-              </Button>
+            <Button onClick={handleAddEntry} className="gap-2">
+              <Plus className="h-4 w-4" />
+              Add Entry
+            </Button>
               <Button onClick={handleExportCSV} variant="outline" className="gap-2">
                 <Download className="h-4 w-4" />
                 Export CSV
