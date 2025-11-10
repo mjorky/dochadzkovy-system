@@ -352,6 +352,7 @@ describe('WorkRecordsService', () => {
 
       jest.spyOn(prismaService.zamestnanci, 'findUnique').mockResolvedValue(mockEmployee as any);
       jest.spyOn(prismaService, '$queryRawUnsafe')
+        .mockResolvedValueOnce([]) // Duplicate check returns empty
         .mockResolvedValueOnce(mockInsertResult as any) // INSERT
         .mockResolvedValueOnce([mockCreatedRecord] as any); // SELECT
 
@@ -433,8 +434,9 @@ describe('WorkRecordsService', () => {
 
       jest.spyOn(prismaService.zamestnanci, 'findUnique').mockResolvedValue(mockEmployee as any);
       jest.spyOn(prismaService, '$queryRawUnsafe')
-        .mockResolvedValueOnce(mockInsertResult as any)
-        .mockResolvedValueOnce([mockCreatedRecord] as any);
+        .mockResolvedValueOnce([]) // Duplicate check returns empty
+        .mockResolvedValueOnce(mockInsertResult as any) // INSERT
+        .mockResolvedValueOnce([mockCreatedRecord] as any); // SELECT
 
       const result = await service.createWorkRecord(input);
 
@@ -502,8 +504,9 @@ describe('WorkRecordsService', () => {
 
       jest.spyOn(prismaService.zamestnanci, 'findUnique').mockResolvedValue(mockEmployee as any);
       jest.spyOn(prismaService, '$queryRawUnsafe')
-        .mockResolvedValueOnce(mockInsertResult as any)
-        .mockResolvedValueOnce([mockCreatedRecord] as any);
+        .mockResolvedValueOnce([]) // Duplicate check returns empty
+        .mockResolvedValueOnce(mockInsertResult as any) // INSERT
+        .mockResolvedValueOnce([mockCreatedRecord] as any); // SELECT
 
       const result = await service.createWorkRecord(input);
 
@@ -511,13 +514,178 @@ describe('WorkRecordsService', () => {
       expect(result.record?.startTime).toBe('08:00:00');
       expect(result.record?.endTime).toBe('16:00:00');
     });
+
+    it('should throw BadRequestException when exact duplicate record exists', async () => {
+      const input: CreateWorkRecordInput = {
+        employeeId: 1,
+        date: '2025-02-01',
+        absenceTypeId: 1,
+        projectId: 100,
+        productivityTypeId: 1,
+        workTypeId: 5,
+        startTime: '08:00',
+        endTime: '16:30',
+        description: 'Development work',
+        km: 0,
+        isTripFlag: false,
+      };
+
+      const mockEmployee = {
+        ID: BigInt(1),
+        Meno: 'Miroslav',
+        Priezvisko: 'Boloz',
+        ZamknuteK: new Date('2025-01-15'),
+      };
+
+      // Mock duplicate check finding an existing record
+      const mockDuplicateCheck = [{ ID: BigInt(999) }];
+
+      (prismaService.zamestnanci.findUnique as jest.Mock).mockResolvedValue(mockEmployee as any);
+      (prismaService.$queryRawUnsafe as jest.Mock).mockResolvedValue(mockDuplicateCheck as any[]);
+
+      await expect(service.createWorkRecord(input)).rejects.toThrow(BadRequestException);
+      await expect(service.createWorkRecord(input)).rejects.toThrow('This record already exists');
+    });
+
+    it('should allow creation when no duplicate exists', async () => {
+      const input: CreateWorkRecordInput = {
+        employeeId: 1,
+        date: '2025-02-01',
+        absenceTypeId: 1,
+        projectId: 100,
+        productivityTypeId: 1,
+        workTypeId: 5,
+        startTime: '08:00',
+        endTime: '16:30',
+        description: 'Development work',
+        km: 0,
+        isTripFlag: false,
+      };
+
+      const mockEmployee = {
+        ID: BigInt(1),
+        Meno: 'Miroslav',
+        Priezvisko: 'Boloz',
+        ZamknuteK: new Date('2025-01-15'),
+      };
+
+      const mockInsertResult = [{ ID: BigInt(126) }];
+      const mockCreatedRecord = {
+        ID: BigInt(126),
+        StartDate: new Date('2025-02-01'),
+        CinnostTypID: BigInt(1),
+        ProjectID: BigInt(100),
+        HourTypeID: BigInt(1),
+        HourTypesID: BigInt(5),
+        StartTime: '08:00:00',
+        EndTime: '16:30:00',
+        Description: 'Development work',
+        km: 0,
+        Lock: false,
+        DlhodobaSC: false,
+        CinnostTyp_Alias: 'Prítomný v práci',
+        Projects_Number: 'PRJ-100',
+        HourType_HourType: 'Produktívne',
+        HourTypes_HourType: 'Programovanie',
+      };
+
+      // Mock duplicate check returning empty (no duplicate)
+      jest.spyOn(prismaService.zamestnanci, 'findUnique').mockResolvedValue(mockEmployee as any);
+      jest.spyOn(prismaService, '$queryRawUnsafe')
+        .mockResolvedValueOnce([]) // Duplicate check returns empty
+        .mockResolvedValueOnce(mockInsertResult as any) // INSERT
+        .mockResolvedValueOnce([mockCreatedRecord] as any); // SELECT
+
+      const result = await service.createWorkRecord(input);
+
+      expect(result.success).toBe(true);
+      expect(result.record).toBeDefined();
+    });
+
+    it('should check all fields for duplicate detection', async () => {
+      const input: CreateWorkRecordInput = {
+        employeeId: 1,
+        date: '2025-02-01',
+        absenceTypeId: 1,
+        projectId: 100,
+        productivityTypeId: 1,
+        workTypeId: 5,
+        startTime: '08:00',
+        endTime: '16:30',
+        description: 'Development work',
+        km: 50,
+        isTripFlag: true,
+      };
+
+      const mockEmployee = {
+        ID: BigInt(1),
+        Meno: 'Miroslav',
+        Priezvisko: 'Boloz',
+        ZamknuteK: new Date('2025-01-15'),
+      };
+
+      // Mock duplicate check finding a match
+      const mockDuplicateCheck = [{ ID: BigInt(999) }];
+
+      (prismaService.zamestnanci.findUnique as jest.Mock).mockResolvedValue(mockEmployee as any);
+      (prismaService.$queryRawUnsafe as jest.Mock).mockResolvedValueOnce(mockDuplicateCheck as any[]);
+
+      await expect(service.createWorkRecord(input)).rejects.toThrow(BadRequestException);
+
+      // Verify the duplicate check query was called with all fields
+      expect(prismaService.$queryRawUnsafe).toHaveBeenCalledWith(
+        expect.stringContaining('CinnostTypID'),
+        expect.anything(), // absenceTypeId
+        expect.anything(), // date
+        expect.anything(), // projectId
+        expect.anything(), // productivityTypeId
+        expect.anything(), // workTypeId
+        expect.anything(), // startTime
+        expect.anything(), // endTime
+        expect.anything(), // description
+        expect.anything(), // km
+        expect.anything(), // isTripFlag
+      );
+    });
+
+    it('should handle null values correctly in duplicate detection', async () => {
+      const input: CreateWorkRecordInput = {
+        employeeId: 1,
+        date: '2025-02-01',
+        absenceTypeId: 1,
+        projectId: 100,
+        productivityTypeId: 1,
+        workTypeId: 5,
+        startTime: '08:00',
+        endTime: '16:30',
+        description: undefined, // Null description
+        km: 0,
+        isTripFlag: false,
+      };
+
+      const mockEmployee = {
+        ID: BigInt(1),
+        Meno: 'Miroslav',
+        Priezvisko: 'Boloz',
+        ZamknuteK: new Date('2025-01-15'),
+      };
+
+      // Mock duplicate check finding a match (with null description)
+      const mockDuplicateCheck = [{ ID: BigInt(999) }];
+
+      (prismaService.zamestnanci.findUnique as jest.Mock).mockResolvedValue(mockEmployee as any);
+      (prismaService.$queryRawUnsafe as jest.Mock).mockResolvedValue(mockDuplicateCheck as any[]);
+
+      await expect(service.createWorkRecord(input)).rejects.toThrow(BadRequestException);
+      await expect(service.createWorkRecord(input)).rejects.toThrow('This record already exists');
+    });
   });
 
   describe('updateWorkRecord', () => {
     it('should update a work record successfully', async () => {
       const input: UpdateWorkRecordInput = {
         employeeId: 1,
-        recordId: '123',
+        recordId: 123,
         description: 'Updated description',
         km: 50,
       };
@@ -571,7 +739,7 @@ describe('WorkRecordsService', () => {
     it('should prevent updating a locked record (Lock flag)', async () => {
       const input: UpdateWorkRecordInput = {
         employeeId: 1,
-        recordId: '123',
+        recordId: 123,
         description: 'Attempted update',
       };
 
@@ -599,7 +767,7 @@ describe('WorkRecordsService', () => {
     it('should prevent updating a record locked by ZamknuteK', async () => {
       const input: UpdateWorkRecordInput = {
         employeeId: 1,
-        recordId: '123',
+        recordId: 123,
         description: 'Attempted update',
       };
 
@@ -627,7 +795,7 @@ describe('WorkRecordsService', () => {
     it('should throw NotFoundException if employee not found', async () => {
       const input: UpdateWorkRecordInput = {
         employeeId: 999,
-        recordId: '123',
+        recordId: 123,
         description: 'Test',
       };
 
@@ -640,7 +808,7 @@ describe('WorkRecordsService', () => {
     it('should throw NotFoundException if record not found', async () => {
       const input: UpdateWorkRecordInput = {
         employeeId: 1,
-        recordId: '999',
+        recordId: 999,
         description: 'Test',
       };
 
@@ -661,7 +829,7 @@ describe('WorkRecordsService', () => {
     it('should throw BadRequestException if no fields to update', async () => {
       const input: UpdateWorkRecordInput = {
         employeeId: 1,
-        recordId: '123',
+        recordId: 123,
         // No update fields provided
       };
 
@@ -689,7 +857,7 @@ describe('WorkRecordsService', () => {
     it('should handle partial updates (only some fields)', async () => {
       const input: UpdateWorkRecordInput = {
         employeeId: 1,
-        recordId: '123',
+        recordId: 123,
         startTime: '09:00',
         endTime: '17:00',
       };
@@ -745,7 +913,7 @@ describe('WorkRecordsService', () => {
     it('should delete a work record successfully', async () => {
       const input: DeleteWorkRecordInput = {
         employeeId: 1,
-        recordId: '123',
+        recordId: 123,
       };
 
       const mockEmployee = {
@@ -776,7 +944,7 @@ describe('WorkRecordsService', () => {
     it('should prevent deleting a locked record (Lock flag)', async () => {
       const input: DeleteWorkRecordInput = {
         employeeId: 1,
-        recordId: '123',
+        recordId: 123,
       };
 
       const mockEmployee = {
@@ -803,7 +971,7 @@ describe('WorkRecordsService', () => {
     it('should prevent deleting a record locked by ZamknuteK', async () => {
       const input: DeleteWorkRecordInput = {
         employeeId: 1,
-        recordId: '123',
+        recordId: 123,
       };
 
       const mockEmployee = {
@@ -830,7 +998,7 @@ describe('WorkRecordsService', () => {
     it('should throw NotFoundException if employee not found', async () => {
       const input: DeleteWorkRecordInput = {
         employeeId: 999,
-        recordId: '123',
+        recordId: 123,
       };
 
       jest.spyOn(prismaService.zamestnanci, 'findUnique').mockResolvedValue(null);
@@ -842,7 +1010,7 @@ describe('WorkRecordsService', () => {
     it('should throw NotFoundException if record not found', async () => {
       const input: DeleteWorkRecordInput = {
         employeeId: 1,
-        recordId: '999',
+        recordId: 999,
       };
 
       const mockEmployee = {
