@@ -1,4 +1,4 @@
-import { useMutation } from '@apollo/client';
+import { useMutation } from '@apollo/client/react';
 import { CREATE_WORK_RECORD } from '@/graphql/mutations/work-records';
 import { GET_WORK_RECORDS, GET_NEXT_WORKDAY } from '@/graphql/queries/work-records';
 import { WorkRecordFormData } from '@/lib/validations/work-record-schema';

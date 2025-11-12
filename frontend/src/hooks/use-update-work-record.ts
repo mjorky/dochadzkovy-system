@@ -1,4 +1,4 @@
-import { useMutation } from '@apollo/client';
+import { useMutation } from '@apollo/client/react';
 import { UPDATE_WORK_RECORD } from '@/graphql/mutations/work-records';
 import { GET_WORK_RECORDS } from '@/graphql/queries/work-records';
 

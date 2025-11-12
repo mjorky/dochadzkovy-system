@@ -1,6 +1,6 @@
 'use client';
 
-import { useQuery } from '@apollo/client';
+import { useQuery } from '@apollo/client/react';
 import { Loader2 } from 'lucide-react';
 import { EMPLOYEES_QUERY, EmployeesData } from '@/graphql/queries/employees';
 import {

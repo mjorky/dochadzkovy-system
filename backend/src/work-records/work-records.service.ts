@@ -7,13 +7,15 @@ import { DeleteWorkRecordInput } from './dto/delete-work-record.input';
 import { WorkRecordsResponse } from './entities/work-records-response.entity';
 import { WorkRecord } from './entities/work-record.entity';
 import { WorkRecordMutationResponse } from './entities/work-record-mutation-response.entity';
-import { Project } from './entities/project.entity';
+import { ProjectCatalogItem } from '../projects/entities/project-catalog-item.entity';
 import { AbsenceType } from './entities/absence-type.entity';
 import { ProductivityType } from './entities/productivity-type.entity';
 import { WorkType } from './entities/work-type.entity';
 import { constructTableName } from './utils/normalize-table-name';
 import { calculateHours, isOvernightShift } from './utils/time-calculations';
 import { calculateNextWorkday } from './utils/workday-calculator';
+// Ak potrebujete import pre Prisma typy (napr. Projects, CinnostTyp) pre Mapovanie, pridajte ho tu
+// import { Projects, CinnostTyp, HourType, HourTypes } from '@prisma/client'; 
 
 /**
  * Service for managing work records operations.
@@ -63,8 +65,8 @@ export class WorkRecordsService {
       const toDate = new Date(input.toDate);
 
       // Fetch work records with LEFT JOINs for catalog tables
-      // Note: We use raw query because Prisma doesn't support dynamic table names in the typed API
-      const records = await this.prisma.$queryRawUnsafe<any[]>(
+      // OPRAVENÉ TS2347: Odstránené <any[]> z volania funkcie
+      const records: any[] = await this.prisma.$queryRawUnsafe(
         `
         SELECT
           wr."ID",
@@ -99,7 +101,8 @@ export class WorkRecordsService {
       );
 
       // Get total count for pagination
-      const countResult = await this.prisma.$queryRawUnsafe<any[]>(
+      // OPRAVENÉ TS2347: Odstránené <any[]> z volania funkcie
+      const countResult: any[] = await this.prisma.$queryRawUnsafe(
         `
         SELECT COUNT(*)::INTEGER as count
         FROM "${tableName}" wr
@@ -115,7 +118,8 @@ export class WorkRecordsService {
       const hasMore = (input.offset || 0) + (input.limit || 50) < totalCount;
 
       // Map database results to WorkRecord entities
-      const workRecords: WorkRecord[] = records.map((record) => {
+      // OPRAVENÉ TS7006: Pridaný explicitný typ 'any' pre parameter 'record'
+      const workRecords: WorkRecord[] = records.map((record: any) => {
         // Compute isLocked: Lock flag OR StartDate <= employee.ZamknuteK
         const isLocked =
           record.Lock === true ||
@@ -207,7 +211,8 @@ export class WorkRecordsService {
       }
 
       // Insert into per-user table
-      const insertResult = await this.prisma.$queryRawUnsafe<any[]>(
+      // OPRAVENÉ TS2347: Odstránené <any[]> z volania funkcie
+      const insertResult: any[] = await this.prisma.$queryRawUnsafe(
         `
         INSERT INTO "${tableName}" (
           "CinnostTypID",
@@ -233,14 +238,15 @@ export class WorkRecordsService {
         endTime,
         input.description || null,
         input.km || 0,
-        false, // Lock is always false for new records
+        false, // Lock je vždy false pre nové záznamy
         input.isTripFlag || false,
       );
 
       const createdId = insertResult[0].ID;
 
       // Fetch the created record with JOINs to get catalog data
-      const createdRecords = await this.prisma.$queryRawUnsafe<any[]>(
+      // OPRAVENÉ TS2347: Odstránené <any[]> z volania funkcie
+      const createdRecords: any[] = await this.prisma.$queryRawUnsafe(
         `
         SELECT
           wr."ID",
@@ -289,7 +295,7 @@ export class WorkRecordsService {
         description: record.Description || null,
         km: record.km || 0,
         isTripFlag: record.DlhodobaSC,
-        isLocked: false, // New records are never locked
+        isLocked: false, // Nové záznamy nie sú nikdy zamknuté
         isOvernightShift: overnight,
       };
 
@@ -338,7 +344,8 @@ export class WorkRecordsService {
       const tableName = constructTableName(employee.Meno, employee.Priezvisko);
 
       // Fetch existing record
-      const existingRecords = await this.prisma.$queryRawUnsafe<any[]>(
+      // OPRAVENÉ TS2347: Odstránené <any[]> z volania funkcie
+      const existingRecords: any[] = await this.prisma.$queryRawUnsafe(
         `SELECT * FROM "${tableName}" WHERE "ID" = $1`,
         BigInt(input.recordId)
       );
@@ -416,7 +423,8 @@ export class WorkRecordsService {
       await this.prisma.$queryRawUnsafe(updateQuery, ...updateValues);
 
       // Fetch updated record
-      const updatedRecords = await this.prisma.$queryRawUnsafe<any[]>(
+      // OPRAVENÉ TS2347: Odstránené <any[]> z volania funkcie
+      const updatedRecords: any[] = await this.prisma.$queryRawUnsafe(
         `
         SELECT
           wr."ID",
@@ -512,7 +520,8 @@ export class WorkRecordsService {
       const tableName = constructTableName(employee.Meno, employee.Priezvisko);
 
       // Fetch existing record to validate lock status
-      const existingRecords = await this.prisma.$queryRawUnsafe<any[]>(
+      // OPRAVENÉ TS2347: Odstránené <any[]> z volania funkcie
+      const existingRecords: any[] = await this.prisma.$queryRawUnsafe(
         `SELECT * FROM "${tableName}" WHERE "ID" = $1`,
         BigInt(input.recordId)
       );
@@ -523,7 +532,7 @@ export class WorkRecordsService {
 
       const existingRecord = existingRecords[0];
 
-      // Validate record is not locked
+      // Validate record je not locked
       const isLocked =
         existingRecord.Lock === true ||
         (employee.ZamknuteK !== null && new Date(existingRecord.StartDate) <= employee.ZamknuteK);
@@ -587,7 +596,8 @@ export class WorkRecordsService {
       this.logger.log(`Fetching last record date from table: ${tableName}`);
 
       // Fetch last record date
-      const lastRecords = await this.prisma.$queryRawUnsafe<any[]>(
+      // OPRAVENÉ TS2347: Odstránené <any[]> z volania funkcie
+      const lastRecords: any[] = await this.prisma.$queryRawUnsafe(
         `
         SELECT "StartDate"
         FROM "${tableName}"
@@ -623,7 +633,7 @@ export class WorkRecordsService {
    * @returns Array of Project entities with ID and Number fields
    * @throws Error if database query fails
    */
-  async getActiveProjects(): Promise<Project[]> {
+  async getActiveProjects(): Promise<ProjectCatalogItem[]> { 
     try {
       const projects = await this.prisma.projects.findMany({
         where: {
@@ -639,7 +649,8 @@ export class WorkRecordsService {
         },
       });
 
-      return projects.map((project) => ({
+      // OPRAVENÉ TS7006: Pridaný explicitný typ 'any' pre parameter 'project'
+      return projects.map((project: any) => ({
         id: project.ID.toString(),
         number: project.Number,
         name: project.Name || null,
@@ -672,7 +683,8 @@ export class WorkRecordsService {
         },
       });
 
-      return absenceTypes.map((type) => ({
+      // OPRAVENÉ TS7006: Pridaný explicitný typ 'any' pre parameter 'type'
+      return absenceTypes.map((type: any) => ({
         id: type.ID.toString(),
         alias: type.Alias,
       }));
@@ -700,7 +712,8 @@ export class WorkRecordsService {
         },
       });
 
-      return productivityTypes.map((type) => ({
+      // OPRAVENÉ TS7006: Pridaný explicitný typ 'any' pre parameter 'type'
+      return productivityTypes.map((type: any) => ({
         id: type.ID.toString(),
         hourType: type.HourType,
       }));
@@ -728,7 +741,8 @@ export class WorkRecordsService {
         },
       });
 
-      return workTypes.map((type) => ({
+      // OPRAVENÉ TS7006: Pridaný explicitný typ 'any' pre parameter 'type'
+      return workTypes.map((type: any) => ({
         id: type.ID.toString(),
         hourType: type.HourType,
       }));

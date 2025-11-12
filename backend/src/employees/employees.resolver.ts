@@ -10,4 +10,9 @@ export class EmployeesResolver {
   async employees(): Promise<Employee[]> {
     return this.employeesService.findAll();
   }
+
+  @Query(() => [Employee], { name: 'managers' })
+  async managers(): Promise<Employee[]> {
+    return this.employeesService.findManagers();
+  }
 }

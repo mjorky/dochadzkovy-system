@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo, useCallback, useEffect } from 'react';
-import { useQuery } from '@apollo/client';
+import { useQuery } from '@apollo/client/react';
 import { Loader2, XCircle, Calendar, Plus } from 'lucide-react';
 import {
   GET_WORK_RECORDS,
