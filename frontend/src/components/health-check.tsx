@@ -1,6 +1,6 @@
 'use client';
 
-import { useQuery } from '@apollo/client';
+import { useQuery } from '@apollo/client/react';
 import { HEALTH_QUERY, HealthData } from '@/graphql/queries/health';
 import { CheckCircle2, XCircle, Loader2 } from 'lucide-react';
 

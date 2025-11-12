@@ -44,7 +44,7 @@ export async function calculateNextWorkday(
 
   // Create a Set of holiday dates for fast lookup (compare by date string)
   const holidayDates = new Set(
-    holidays.map((h) => h.Den.toISOString().split('T')[0]),
+    holidays.map((h: { Den: Date }) => h.Den.toISOString().split('T')[0]),
   );
 
   // Find the next workday

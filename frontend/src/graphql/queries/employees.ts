@@ -16,6 +16,15 @@ export const EMPLOYEES_QUERY = gql`
   }
 `;
 
+export const GET_MANAGERS = gql`
+  query GetManagersForDropdown {
+    managers { # Používame našu novú query 'managers'
+      id
+      fullName
+    }
+  }
+`;
+
 export interface Employee {
   id: string;
   fullName: string;

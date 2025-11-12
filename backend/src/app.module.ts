@@ -9,7 +9,8 @@ import { PrismaModule } from './prisma/prisma.module';
 import { HealthModule } from './health/health.module';
 import { EmployeesModule } from './employees/employees.module';
 import { WorkRecordsModule } from './work-records/work-records.module';
-
+import { ProjectsModule } from './projects/projects.module';
+import { CountriesModule } from './countries/countries.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -29,6 +30,8 @@ import { WorkRecordsModule } from './work-records/work-records.module';
     HealthModule,
     EmployeesModule,
     WorkRecordsModule,
+    ProjectsModule,
+    CountriesModule, 
   ],
   controllers: [AppController],
   providers: [AppService],
