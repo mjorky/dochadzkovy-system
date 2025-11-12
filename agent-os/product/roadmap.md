@@ -160,7 +160,7 @@ This roadmap prioritizes quick delivery of legacy application functionality usin
 
 **Goal:** Add the convenience features from the legacy app that make daily time tracking faster.
 
-### 13. [ ] Next Workday Suggestion — Implement backend function that calculates next working day by skipping weekends (Sat/Sun) and dates in Holidays table, use as default date in "Add Entry" dialog, show helper text "Next workday: Monday, Nov 18". `S`
+### 13. [x] Next Workday Suggestion — Implement backend function that calculates next working day by skipping weekends (Sat/Sun) and dates in Holidays table, use as default date in "Add Entry" dialog, show helper text "Next workday: Monday, Nov 18". `S`
 
 **Testing Guide (Non-Technical):**
 - Open "Add Entry" dialog on a Friday afternoon
@@ -173,7 +173,7 @@ This roadmap prioritizes quick delivery of legacy application functionality usin
 - Does it skip Slovak public holidays (like Christmas, Easter)?
 - Can you still pick weekend dates manually if you need to?
 
-### 14. [ ] Record Copy Feature — Add "Copy" action (copy icon) on single row, open dialog showing selected record's fields, allow selecting multiple target dates with working day suggestions, create multiple entries with one save action. `M`
+### 14. [x] Record Copy Feature — Add "Copy" action (copy icon) on single row, open dialog showing selected record's fields, allow selecting multiple target dates with working day suggestions, create multiple entries with one save action. `M`
 
 **Testing Guide (Non-Technical):**
 - Find a work entry you want to duplicate (e.g., Monday's meeting entry)
@@ -187,7 +187,7 @@ This roadmap prioritizes quick delivery of legacy application functionality usin
 - Do the copied entries keep all details (project, times, description)?
 - Is this faster than creating each entry manually?
 
-### 15. [ ] CSV Export — Add "Export CSV" button above table, generate CSV file from currently filtered records with all columns, trigger browser download with filename including date range (e.g., "work-records-2025-11-01-to-2025-11-30.csv"). `S`
+### 15. [x] CSV Export — Add "Export CSV" button above table, generate CSV file from currently filtered records with all columns, trigger browser download with filename including date range (e.g., "work-records-2025-11-01-to-2025-11-30.csv"). `S`
 
 **Testing Guide (Non-Technical):**
 - Set date filter to "Last 31 days" (or any range you want)
