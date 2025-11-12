@@ -1,4 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react';
+import { vi } from 'vitest';
 import { WorkRecordsTable } from '../work-records-table';
 import { WorkRecord } from '@/graphql/queries/work-records';
 
@@ -165,5 +166,79 @@ describe('WorkRecordsTable', () => {
     expect(firstDataRow.textContent).toContain('Jan 10');
     // Last row should have latest date (Jan 20)
     expect(lastDataRow.textContent).toContain('Jan 20');
+  });
+
+  describe('Copy functionality', () => {
+    it('should render copy icon in Actions column when onCopy prop is provided', () => {
+      const mockOnCopy = vi.fn();
+      render(<WorkRecordsTable workRecords={mockWorkRecords} onCopy={mockOnCopy} />);
+
+      // Find copy icons (CopyPlus from lucide-react)
+      const copyButtons = screen.getAllByTitle('Copy work entry');
+      expect(copyButtons.length).toBe(mockWorkRecords.length);
+    });
+
+    it('should show copy icon for both locked and unlocked records', () => {
+      const mockOnCopy = vi.fn();
+      render(<WorkRecordsTable workRecords={mockWorkRecords} onCopy={mockOnCopy} />);
+
+      // Get all rows
+      const rows = screen.getAllByRole('row');
+      const lockedRow = rows.find((row) => row.textContent?.includes('Vacation'));
+      const unlockedRow = rows.find((row) => row.textContent?.includes('Project A'));
+
+      // Both should have copy buttons
+      expect(lockedRow?.querySelector('button[title="Copy work entry"]')).toBeTruthy();
+      expect(unlockedRow?.querySelector('button[title="Copy work entry"]')).toBeTruthy();
+    });
+
+    it('should call onCopy handler with correct record when copy icon is clicked', () => {
+      const mockOnCopy = vi.fn();
+      render(<WorkRecordsTable workRecords={mockWorkRecords} onCopy={mockOnCopy} />);
+
+      // Find and click the first copy button
+      const copyButtons = screen.getAllByTitle('Copy work entry');
+      fireEvent.click(copyButtons[0]);
+
+      // Verify onCopy was called (table sorts by date desc, so first button may not be first record)
+      expect(mockOnCopy).toHaveBeenCalledTimes(1);
+      // Verify it was called with one of the records (exact match depends on sorting)
+      expect(mockOnCopy).toHaveBeenCalledWith(expect.objectContaining({
+        id: expect.any(String),
+        date: expect.any(String),
+      }));
+    });
+
+    it('should not render copy icon when onCopy prop is not provided', () => {
+      render(<WorkRecordsTable workRecords={mockWorkRecords} />);
+
+      const copyButtons = screen.queryAllByTitle('Copy work entry');
+      expect(copyButtons.length).toBe(0);
+    });
+
+    it('should render copy icon before Edit and Delete icons', () => {
+      const mockOnCopy = vi.fn();
+      const mockOnEdit = vi.fn();
+      const mockOnDelete = vi.fn();
+      render(
+        <WorkRecordsTable
+          workRecords={[mockWorkRecords[0]]}
+          onCopy={mockOnCopy}
+          onEdit={mockOnEdit}
+          onDelete={mockOnDelete}
+        />
+      );
+
+      // Get the Actions cell
+      const actionsCell = screen.getByTitle('Copy work entry').closest('td');
+      const buttons = actionsCell?.querySelectorAll('button');
+
+      // Copy button should be first
+      expect(buttons?.[0]).toHaveAttribute('title', 'Copy work entry');
+      // Edit button should be second
+      expect(buttons?.[1]).toHaveAttribute('title', 'Edit work entry');
+      // Delete button should be third
+      expect(buttons?.[2]).toHaveAttribute('title', 'Delete work entry');
+    });
   });
 });

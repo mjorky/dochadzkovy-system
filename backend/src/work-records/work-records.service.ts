@@ -210,6 +210,39 @@ export class WorkRecordsService {
         throw new BadRequestException('Invalid time format');
       }
 
+      // Check for duplicate record (all fields must match exactly)
+      const duplicateCheck = await this.prisma.$queryRawUnsafe<any[]>(
+        `
+        SELECT "ID"
+        FROM "${tableName}"
+        WHERE "CinnostTypID" = $1
+          AND "StartDate" = $2
+          AND "ProjectID" = $3
+          AND "HourTypeID" = $4
+          AND "HourTypesID" = $5
+          AND "StartTime" = $6::time
+          AND "EndTime" = $7::time
+          AND COALESCE("Description", '') = COALESCE($8, '')
+          AND COALESCE("km", 0) = COALESCE($9, 0)
+          AND COALESCE("DlhodobaSC", false) = COALESCE($10, false)
+        LIMIT 1
+        `,
+        BigInt(input.absenceTypeId),
+        recordDate,
+        BigInt(input.projectId),
+        BigInt(input.productivityTypeId),
+        BigInt(input.workTypeId),
+        startTime,
+        endTime,
+        input.description || null,
+        input.km || 0,
+        input.isTripFlag || false,
+      );
+
+      if (duplicateCheck.length > 0) {
+        throw new BadRequestException('This record already exists');
+      }
+
       // Insert into per-user table
       // OPRAVENÉ TS2347: Odstránené <any[]> z volania funkcie
       const insertResult: any[] = await this.prisma.$queryRawUnsafe(

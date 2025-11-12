@@ -30,6 +30,7 @@ export interface WorkRecordDialogProps {
   onOpenChange: (open: boolean) => void;
   mode: 'create' | 'edit';
   initialData?: WorkRecord | null;
+  copyFromRecord?: WorkRecord | null;
   employeeId: number;
 }
 
@@ -38,6 +39,7 @@ export function WorkRecordDialog({
   onOpenChange,
   mode,
   initialData,
+  copyFromRecord,
   employeeId,
 }: WorkRecordDialogProps) {
   const [keepSameDate, setKeepSameDate] = React.useState(false);
@@ -115,42 +117,43 @@ export function WorkRecordDialog({
       };
     }
 
-    // Create mode: use defaults from last record + next workday
-    const lastRecord = lastRecordData?.getWorkRecords.records[0];
+    // Create mode: use copyFromRecord if provided, otherwise use defaults from last record + next workday
+    const sourceRecord = copyFromRecord || lastRecordData?.getWorkRecords.records[0];
     const nextWorkday = nextWorkdayData?.getNextWorkday
       ? new Date(nextWorkdayData.getNextWorkday).toISOString().split('T')[0]
       : format(new Date(), 'yyyy-MM-dd');
 
     return {
       employeeId,
-      date: keepSameDate && lastRecord ? lastRecord.date.split('T')[0] : nextWorkday,
-      absenceTypeId: lastRecord
+      date: keepSameDate && sourceRecord ? sourceRecord.date.split('T')[0] : nextWorkday,
+      absenceTypeId: sourceRecord
         ? parseInt(
-            catalogData.absenceTypes.find((t) => t.alias === lastRecord.absenceType)?.id || '0',
+            catalogData.absenceTypes.find((t) => t.alias === sourceRecord.absenceType)?.id || '0',
             10
           )
         : undefined,
-      projectId: lastRecord?.project
-        ? parseInt(catalogData.projects.find((p) => p.number === lastRecord.project)?.id || '0', 10)
+      projectId: sourceRecord?.project
+        ? parseInt(catalogData.projects.find((p) => p.number === sourceRecord.project)?.id || '0', 10)
         : undefined,
-      productivityTypeId: lastRecord?.productivityType
+      productivityTypeId: sourceRecord?.productivityType
         ? parseInt(
-            catalogData.productivityTypes.find((t) => t.hourType === lastRecord.productivityType)?.id || '0',
+            catalogData.productivityTypes.find((t) => t.hourType === sourceRecord.productivityType)?.id || '0',
             10
           )
         : undefined,
-      workTypeId: lastRecord?.workType
-        ? parseInt(catalogData.workTypes.find((t) => t.hourType === lastRecord.workType)?.id || '0', 10)
+      workTypeId: sourceRecord?.workType
+        ? parseInt(catalogData.workTypes.find((t) => t.hourType === sourceRecord.workType)?.id || '0', 10)
         : undefined,
-      startTime: '08:00',
-      endTime: '16:00',
-      description: '',
-      km: 0,
-      isTripFlag: false,
+      startTime: sourceRecord?.startTime.substring(0, 5) || '08:00',
+      endTime: sourceRecord?.endTime.substring(0, 5) || '16:00',
+      description: sourceRecord?.description || '',
+      km: sourceRecord?.km || 0,
+      isTripFlag: sourceRecord?.isTripFlag || false,
     };
   }, [
     mode,
     initialData,
+    copyFromRecord,
     employeeId,
     catalogData,
     lastRecordData,
@@ -196,10 +199,15 @@ export function WorkRecordDialog({
         onOpenChange(false);
         toast.success('Work record updated successfully');
       }
-    } catch (error) {
+    } catch (error: any) {
       // Error handling - keep dialog open
       console.error('Failed to save work record:', error);
-      toast.error('Failed to save work record. Please try again.');
+      // Extract error message from GraphQL error
+      const errorMessage =
+        error?.graphQLErrors?.[0]?.message ||
+        error?.message ||
+        'Failed to save work record. Please try again.';
+      toast.error(errorMessage);
     }
   };
 

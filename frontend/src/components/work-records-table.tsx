@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ChevronUp, ChevronDown, Lock, Moon, Pencil, Trash2 } from 'lucide-react';
+import { ChevronUp, ChevronDown, Lock, Moon, Pencil, Trash2, CopyPlus } from 'lucide-react';
 import { WorkRecord } from '@/graphql/queries/work-records';
 import {
   Table,
@@ -21,9 +21,10 @@ interface WorkRecordsTableProps {
   workRecords: WorkRecord[];
   onEdit?: (record: WorkRecord) => void;
   onDelete?: (record: WorkRecord) => void;
+  onCopy?: (record: WorkRecord) => void;
 }
 
-export function WorkRecordsTable({ workRecords, onEdit, onDelete }: WorkRecordsTableProps) {
+export function WorkRecordsTable({ workRecords, onEdit, onDelete, onCopy }: WorkRecordsTableProps) {
   const [sortColumn, setSortColumn] = useState<SortColumn>('date');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
 
@@ -89,7 +90,7 @@ export function WorkRecordsTable({ workRecords, onEdit, onDelete }: WorkRecordsT
     );
   };
 
-  const showActions = onEdit || onDelete;
+  const showActions = onEdit || onDelete || onCopy;
 
   return (
     <div className="min-w-[1200px] border border-border rounded-lg overflow-hidden">
@@ -217,6 +218,16 @@ export function WorkRecordsTable({ workRecords, onEdit, onDelete }: WorkRecordsT
             {showActions && (
               <TableCell className="text-center">
                 <div className="flex items-center justify-center gap-2">
+                  {onCopy && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => onCopy(record)}
+                      title="Copy work entry"
+                    >
+                      <CopyPlus className="h-4 w-4" />
+                    </Button>
+                  )}
                   {!record.isLocked && onEdit && (
                     <Button
                       variant="ghost"

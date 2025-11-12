@@ -34,6 +34,9 @@ import {
   BreadcrumbPage,
 } from '@/components/ui/breadcrumb';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { generateCSV, generateFilename } from '@/lib/utils/csv-utils';
+import { EMPLOYEES_QUERY, EmployeesData } from '@/graphql/queries/employees';
+import { toast } from 'sonner';
 
 // Mock user context - in real app, this would come from auth context
 // TODO: Replace with actual auth context when available
@@ -67,6 +70,7 @@ export default function WorkRecordsPage() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState<WorkRecord | null>(null);
   const [recordToDelete, setRecordToDelete] = useState<WorkRecord | null>(null);
+  const [copyFromRecord, setCopyFromRecord] = useState<WorkRecord | null>(null);
 
   // Filter state - default to last 31 days
   const [filters, setFilters] = useState<WorkRecordsFilterState>({
@@ -121,6 +125,7 @@ export default function WorkRecordsPage() {
     GET_PRODUCTIVITY_TYPES
   );
   const { data: workTypesData } = useQuery<WorkTypesData>(GET_WORK_TYPES);
+  const { data: employeesData } = useQuery<EmployeesData>(EMPLOYEES_QUERY);
 
   // Handle fetching more records (infinite scroll)
   const handleFetchMore = useCallback(async () => {
@@ -235,6 +240,45 @@ export default function WorkRecordsPage() {
   const handleDelete = (record: WorkRecord) => {
     setRecordToDelete(record);
     setDeleteDialogOpen(true);
+  };
+
+  const handleCopy = (record: WorkRecord) => {
+    setCopyFromRecord(record);
+    setCreateDialogOpen(true);
+  };
+
+  const handleExportCSV = () => {
+    try {
+      // Get employee name
+      const currentEmployee = employeesData?.employees.find(
+        (emp) => emp.id === selectedEmployeeId
+      );
+      const employeeName = currentEmployee?.fullName || 'employee';
+
+      // Generate CSV content
+      const csvContent = generateCSV(filteredRecords);
+
+      // Generate filename
+      const filename = generateFilename(employeeName, filters.fromDate, filters.toDate);
+
+      // Create Blob and trigger download
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      // Clean up object URL
+      URL.revokeObjectURL(url);
+
+      toast.success('CSV exported successfully');
+    } catch (error) {
+      console.error('Failed to export CSV:', error);
+      toast.error('Failed to export CSV. Please try again.');
+    }
   };
 
   // Filter available options based on records in current date range
@@ -541,12 +585,18 @@ export default function WorkRecordsPage() {
         </div>
       ) : (
         <>
-          {/* Add Entry button and Record count */}
+          {/* Add Entry button, Export CSV button and Record count */}
           <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
             <Button onClick={handleAddEntry} className="gap-2">
               <Plus className="h-4 w-4" />
               Add Entry
             </Button>
+              <Button onClick={handleExportCSV} variant="outline" className="gap-2">
+                <Download className="h-4 w-4" />
+                Export CSV
+              </Button>
+            </div>
             <div className="text-sm text-muted-foreground">
               Showing {filteredRecords.length} of{' '}
               {recordsData?.getWorkRecords.totalCount || allRecords.length} records
@@ -559,6 +609,7 @@ export default function WorkRecordsPage() {
               workRecords={filteredRecords}
               onEdit={handleEdit}
               onDelete={handleDelete}
+              onCopy={handleCopy}
             />
           </div>
 
@@ -579,9 +630,15 @@ export default function WorkRecordsPage() {
       {/* Dialogs */}
       <WorkRecordDialog
         open={createDialogOpen}
-        onOpenChange={setCreateDialogOpen}
+        onOpenChange={(open) => {
+          setCreateDialogOpen(open);
+          if (!open) {
+            setCopyFromRecord(null);
+          }
+        }}
         mode="create"
         employeeId={parseInt(selectedEmployeeId, 10)}
+        copyFromRecord={copyFromRecord}
       />
       <WorkRecordDialog
         open={editDialogOpen}
