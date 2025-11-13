@@ -12,7 +12,7 @@
     "build:all": "pnpm build:backend && pnpm build:frontend"
   },
   "devDependencies": {
-    "concurrently": "^9.0.0"
+    "concurrently": "^9.2.1"
   },
   "engines": {
     "node": ">=20.0.0",

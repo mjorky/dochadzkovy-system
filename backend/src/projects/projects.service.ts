@@ -4,12 +4,19 @@ import {
   NotFoundException,
   ConflictException,
 } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { Prisma, Zamestnanci } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { Project } from './entities/projects.entity';
 import { CreateProjectInput } from './dto/create-project.input';
 import { UpdateProjectInput } from './dto/update-project.input';
 import { Employee } from '../employees/entities/employee.entity';
+
+type ProjectWithRelations = Prisma.ProjectsGetPayload<{
+  include: {
+    Zamestnanci: true;
+    Countries: true;
+  };
+}>;
 
 @Injectable()
 export class ProjectsService {
@@ -42,7 +49,7 @@ export class ProjectsService {
         orderBy: { Name: 'asc' },
       });
 
-      return dbProjects.map((p) => this.mapToProjectEntity(p));
+      return dbProjects.map((p: ProjectWithRelations) => this.mapToProjectEntity(p));
     } catch (error) {
       this.logger.error('Failed to fetch projects', error);
       throw new Error('Could not fetch projects from the database.');
@@ -107,7 +114,7 @@ export class ProjectsService {
     }
   }
 
-  private mapToProjectEntity(dbProject: any): Project {
+  private mapToProjectEntity(dbProject: ProjectWithRelations): Project {
     return {
       id: dbProject.ID.toString(),
       name: dbProject.Name,
@@ -122,7 +129,7 @@ export class ProjectsService {
     };
   }
 
-  private mapToEmployeeEntity(dbEmployee: any): Employee {
+  private mapToEmployeeEntity(dbEmployee: Zamestnanci): Employee {
     return {
       id: dbEmployee.ID.toString(),
       fullName: `${dbEmployee.Meno} ${dbEmployee.Priezvisko}`,

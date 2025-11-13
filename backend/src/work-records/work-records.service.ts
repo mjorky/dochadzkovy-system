@@ -154,7 +154,16 @@ export class WorkRecordsService {
         throw error;
       }
       this.logger.error('Failed to fetch work records', error);
-      throw new Error('Failed to fetch work records from database');
+      
+      // Check if it's a connection error
+      if (error instanceof Error) {
+        if (error.message.includes('connect') || error.message.includes('ECONNREFUSED') || error.message.includes('P1001')) {
+          this.logger.error('Database connection error. Please check if the database is running and DATABASE_URL is correct.');
+          throw new Error('Database is not connected successfully. Please check the database connection.');
+        }
+      }
+      
+      throw new Error(`Failed to fetch work records from database: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
 

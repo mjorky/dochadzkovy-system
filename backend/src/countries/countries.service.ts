@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { Countries } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { Country } from './entities/country.entity';
 
@@ -16,7 +17,7 @@ export class CountriesService {
         },
       });
 
-      return countries.map((country) => ({
+      return countries.map((country: Countries) => ({
         countryCode: country.CountryCode,
         name: country.CountryName,
       }));
