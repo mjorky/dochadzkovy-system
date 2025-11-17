@@ -5,6 +5,8 @@ import { WorkRecordsInput } from './dto/work-records.input';
 import { CreateWorkRecordInput } from './dto/create-work-record.input';
 import { UpdateWorkRecordInput } from './dto/update-work-record.input';
 import { DeleteWorkRecordInput } from './dto/delete-work-record.input';
+import { WorkReportInput } from './dto/work-report.input';
+import { WorkReport } from './entities/work-report.entity';
 import { WorkRecordMutationResponse } from './entities/work-record-mutation-response.entity';
 import { ProjectCatalogItem } from '../projects/entities/project-catalog-item.entity';
 import { AbsenceType } from './entities/absence-type.entity';
@@ -14,6 +16,13 @@ import { WorkType } from './entities/work-type.entity';
 @Resolver()
 export class WorkRecordsResolver {
   constructor(private readonly workRecordsService: WorkRecordsService) {}
+
+  @Query(() => WorkReport, { name: 'getWorkReportData' })
+  async getWorkReportData(
+    @Args('input') input: WorkReportInput,
+  ): Promise<WorkReport> {
+    return this.workRecordsService.getWorkReportData(input);
+  }
 
   @Query(() => WorkRecordsResponse, { name: 'getWorkRecords' })
   async getWorkRecords(
@@ -65,8 +74,16 @@ export class WorkRecordsResolver {
     return this.workRecordsService.getProductivityTypes();
   }
 
-  @Query(() => [WorkType], { name: 'getWorkTypes' })
-  async getWorkTypes(): Promise<WorkType[]> {
-    return this.workRecordsService.getWorkTypes();
-  }
-}
+      @Query(() => [WorkType], { name: 'getWorkTypes' })
+
+      async getWorkTypes(): Promise<WorkType[]> {
+
+        return this.workRecordsService.getWorkTypes();
+
+      }
+
+    }
+
+    
+
+  

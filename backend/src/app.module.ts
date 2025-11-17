@@ -11,6 +11,7 @@ import { EmployeesModule } from './employees/employees.module';
 import { WorkRecordsModule } from './work-records/work-records.module';
 import { ProjectsModule } from './projects/projects.module';
 import { CountriesModule } from './countries/countries.module';
+import { ReportsModule } from './reports/reports.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -31,7 +32,8 @@ import { CountriesModule } from './countries/countries.module';
     EmployeesModule,
     WorkRecordsModule,
     ProjectsModule,
-    CountriesModule, 
+    CountriesModule,
+    ReportsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

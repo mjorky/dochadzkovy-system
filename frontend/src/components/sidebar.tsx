@@ -27,7 +27,14 @@ const menuItems: MenuItem[] = [
   { name: "Work Records", href: "/work-records", icon: CalendarCheck },
   { name: "Data", href: "/data", icon: Database },
   { name: "Overtime", href: "/overtime", icon: Clock },
-  { name: "Reports", href: "/reports", icon: FileText },
+  {
+    name: "Reports",
+    href: "/reports",
+    icon: FileText,
+    submenu: [
+      { name: "Work Report", href: "/reports/work-report", icon: FileText },
+    ],
+  },
   {
     name: "Admin",
     href: "/admin",

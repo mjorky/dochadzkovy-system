@@ -25,6 +25,15 @@ export const GET_MANAGERS = gql`
   }
 `;
 
+export const GET_EMPLOYEES_CATALOG = gql`
+  query GetEmployeesCatalog {
+    employees {
+      id
+      fullName
+    }
+  }
+`;
+
 export interface Employee {
   id: string;
   fullName: string;
@@ -39,4 +48,13 @@ export interface Employee {
 
 export interface EmployeesData {
   employees: Employee[];
+}
+
+export interface EmployeeCatalogItem {
+  id: string;
+  fullName: string;
+}
+
+export interface EmployeesCatalogData {
+  employees: EmployeeCatalogItem[];
 }

@@ -4,9 +4,11 @@ import { WorkRecordsInput } from './dto/work-records.input';
 import { CreateWorkRecordInput } from './dto/create-work-record.input';
 import { UpdateWorkRecordInput } from './dto/update-work-record.input';
 import { DeleteWorkRecordInput } from './dto/delete-work-record.input';
+import { WorkReportInput } from './dto/work-report.input';
 import { WorkRecordsResponse } from './entities/work-records-response.entity';
 import { WorkRecord } from './entities/work-record.entity';
 import { WorkRecordMutationResponse } from './entities/work-record-mutation-response.entity';
+import { WorkReport } from './entities/work-report.entity';
 import { ProjectCatalogItem } from '../projects/entities/project-catalog-item.entity';
 import { AbsenceType } from './entities/absence-type.entity';
 import { ProductivityType } from './entities/productivity-type.entity';
@@ -14,317 +16,162 @@ import { WorkType } from './entities/work-type.entity';
 import { constructTableName } from './utils/normalize-table-name';
 import { calculateHours, isOvernightShift } from './utils/time-calculations';
 import { calculateNextWorkday } from './utils/workday-calculator';
-// Ak potrebujete import pre Prisma typy (napr. Projects, CinnostTyp) pre Mapovanie, pridajte ho tu
-// import { Projects, CinnostTyp, HourType, HourTypes } from '@prisma/client'; 
 
-/**
- * Service for managing work records operations.
- *
- * This service handles fetching work records from per-employee tables,
- * including dynamic table name construction and proper handling of NULL
- * values in LEFT JOINed catalog tables.
- */
 @Injectable()
 export class WorkRecordsService {
   private readonly logger = new Logger(WorkRecordsService.name);
 
   constructor(private readonly prisma: PrismaService) {}
 
-  /**
-   * Fetch work records for a specific employee within a date range.
-   *
-   * @param input - Query parameters including employeeId, date range, and pagination
-   * @returns WorkRecordsResponse with records, totalCount, and hasMore flag
-   * @throws NotFoundException if employee not found
-   * @throws Error if database query fails
-   */
-  async getWorkRecords(input: WorkRecordsInput): Promise<WorkRecordsResponse> {
-    try {
-      // Fetch employee to get name for dynamic table and ZamknuteK for lock status
-      const employee = await this.prisma.zamestnanci.findUnique({
-        where: { ID: BigInt(input.employeeId) },
-        select: {
-          ID: true,
-          Meno: true,
-          Priezvisko: true,
-          ZamknuteK: true,
-        },
-      });
+  async getWorkReportData(input: WorkReportInput): Promise<WorkReport> {
+    const { employeeId, year, month } = input;
 
-      if (!employee) {
-        throw new NotFoundException(`Employee with ID ${input.employeeId} not found`);
-      }
+    const employee = await this.prisma.zamestnanci.findUnique({
+      where: { ID: BigInt(employeeId) },
+    });
 
-      // Construct dynamic table name: t_{FirstName}_{LastName}
-      // Note: Uses normalized names (removes Slovak diacritics) to match actual table names
-      const tableName = constructTableName(employee.Meno, employee.Priezvisko);
-      this.logger.log(`Fetching work records from table: ${tableName}`);
-
-      // Parse dates
-      const fromDate = new Date(input.fromDate);
-      const toDate = new Date(input.toDate);
-
-      // Fetch work records with LEFT JOINs for catalog tables
-      // OPRAVENÉ TS2347: Odstránené <any[]> z volania funkcie
-      const records: any[] = await this.prisma.$queryRawUnsafe(
-        `
-        SELECT
-          wr."ID",
-          wr."StartDate",
-          wr."CinnostTypID",
-          wr."ProjectID",
-          wr."HourTypeID",
-          wr."HourTypesID",
-          wr."StartTime"::TEXT as "StartTime",
-          wr."EndTime"::TEXT as "EndTime",
-          wr."Description",
-          wr."km",
-          wr."Lock",
-          wr."DlhodobaSC",
-          ct."Alias" as "CinnostTyp_Alias",
-          p."Number" as "Projects_Number",
-          ht."HourType" as "HourType_HourType",
-          hts."HourType" as "HourTypes_HourType"
-        FROM "${tableName}" wr
-        INNER JOIN "CinnostTyp" ct ON wr."CinnostTypID" = ct."ID"
-        LEFT JOIN "Projects" p ON wr."ProjectID" = p."ID"
-        LEFT JOIN "HourType" ht ON wr."HourTypeID" = ht."ID"
-        LEFT JOIN "HourTypes" hts ON wr."HourTypesID" = hts."ID"
-        WHERE wr."StartDate" BETWEEN $1 AND $2
-        ORDER BY wr."StartDate" ${input.sortOrder || 'DESC'}
-        LIMIT $3 OFFSET $4
-        `,
-        fromDate,
-        toDate,
-        input.limit || 50,
-        input.offset || 0,
-      );
-
-      // Get total count for pagination
-      // OPRAVENÉ TS2347: Odstránené <any[]> z volania funkcie
-      const countResult: any[] = await this.prisma.$queryRawUnsafe(
-        `
-        SELECT COUNT(*)::INTEGER as count
-        FROM "${tableName}" wr
-        WHERE wr."StartDate" BETWEEN $1 AND $2
-        `,
-        fromDate,
-        toDate,
-      );
-
-      const totalCount = Number(countResult[0]?.count || 0);
-
-      // Calculate hasMore for infinite scroll
-      const hasMore = (input.offset || 0) + (input.limit || 50) < totalCount;
-
-      // Map database results to WorkRecord entities
-      // OPRAVENÉ TS7006: Pridaný explicitný typ 'any' pre parameter 'record'
-      const workRecords: WorkRecord[] = records.map((record: any) => {
-        // Compute isLocked: Lock flag OR StartDate <= employee.ZamknuteK
-        const isLocked =
-          record.Lock === true ||
-          (employee.ZamknuteK !== null &&
-            new Date(record.StartDate) <= employee.ZamknuteK);
-
-        return {
-          id: record.ID.toString(),
-          date: new Date(record.StartDate).toISOString(),
-          absenceType: record.CinnostTyp_Alias,
-          project: record.Projects_Number || null,
-          productivityType: record.HourType_HourType || null,
-          workType: record.HourTypes_HourType || null,
-          startTime: record.StartTime,
-          endTime: record.EndTime,
-          hours: 0, // Computed by field resolver
-          description: record.Description || null,
-          km: record.km || 0,
-          isTripFlag: record.DlhodobaSC,
-          isLocked,
-          isOvernightShift: false, // Computed by field resolver
-        };
-      });
-
-      return {
-        records: workRecords,
-        totalCount,
-        hasMore,
-      };
-    } catch (error) {
-      if (error instanceof NotFoundException) {
-        throw error;
-      }
-      this.logger.error('Failed to fetch work records', error);
-      
-      // Check if it's a connection error
-      if (error instanceof Error) {
-        if (error.message.includes('connect') || error.message.includes('ECONNREFUSED') || error.message.includes('P1001')) {
-          this.logger.error('Database connection error. Please check if the database is running and DATABASE_URL is correct.');
-          throw new Error('Database is not connected successfully. Please check the database connection.');
-        }
-      }
-      
-      throw new Error(`Failed to fetch work records from database: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    if (!employee) {
+      throw new NotFoundException(`Employee with ID ${employeeId} not found`);
     }
+
+    const tableName = constructTableName(employee.Meno, employee.Priezvisko);
+    const startDate = new Date(year, month - 1, 1);
+    const endDate = new Date(year, month, 0);
+
+    const result = await this.prisma.$queryRawUnsafe<any[]>(`
+      WITH date_series AS (
+        SELECT generate_series($1::date, $2::date, '1 day'::interval) AS date
+      )
+      SELECT
+        ds.date,
+        EXTRACT(ISODOW FROM ds.date) as day_of_week_iso,
+        h."Den" as holiday_date,
+        wr."StartTime"::text as start_time,
+        wr."EndTime"::text as end_time,
+        ct."Alias" as absence_reason,
+        ct."ID" as cinnost_typ_id
+      FROM date_series ds
+      LEFT JOIN "${tableName}" wr ON ds.date = wr."StartDate"
+      LEFT JOIN "CinnostTyp" ct ON wr."CinnostTypID" = ct."ID"
+      LEFT JOIN "Holidays" h ON ds.date = h."Den"
+      ORDER BY ds.date, start_time;
+    `, startDate, endDate);
+
+    const slovakDays = ['Nedeľa', 'Pondelok', 'Utorok', 'Streda', 'Štvrtok', 'Piatok', 'Sobota'];
+
+    const dailyRecords = result.map(r => {
+      const hours = r.start_time && r.end_time ? calculateHours(r.start_time, r.end_time) : undefined;
+      const dayOfWeek = slovakDays[new Date(r.date).getDay()];
+      return {
+        date: new Date(r.date).toLocaleDateString('sk-SK'),
+        dayOfWeek: dayOfWeek,
+        startTime: r.start_time,
+        endTime: r.end_time,
+        hours,
+        absenceReason: r.absence_reason,
+      };
+    });
+
+    const workData = result.filter(r => r.start_time && r.end_time);
+    
+    const totalHours = workData.reduce((sum, r) => sum + calculateHours(r.start_time, r.end_time), 0);
+    const totalWorkDays = new Set(workData.map(r => new Date(r.date).toISOString().split('T')[0])).size;
+    const weekendWorkHours = workData.filter(r => [6, 7].includes(r.day_of_week_iso)).reduce((sum, r) => sum + calculateHours(r.start_time, r.end_time), 0);
+    const holidayWorkHours = workData.filter(r => r.holiday_date && r.start_time).reduce((sum, r) => sum + calculateHours(r.start_time, r.end_time), 0);
+
+    const absenceSummaryMap = result
+      .filter(r => !r.start_time && r.absence_reason)
+      .reduce((acc, r) => {
+        const reason = r.absence_reason;
+        if (!acc[reason]) {
+          acc[reason] = { days: 0, hours: 0 };
+        }
+        acc[reason].days += 1;
+        acc[reason].hours += 8; // Assuming 8 hours for a full day absence
+        return acc;
+    }, {});
+
+    const absenceSummary = Object.entries(absenceSummaryMap).map(([category, data]: [string, any]) => ({
+      category,
+      days: data.days,
+      hours: data.hours,
+    }));
+
+    // Calculate activity summary (sum of hours by activity type)
+    const activitySummaryMap = workData.reduce((acc, r) => {
+      const activityType = r.absence_reason || 'Neznámy';
+      if (!acc[activityType]) {
+        acc[activityType] = 0;
+      }
+      acc[activityType] += calculateHours(r.start_time, r.end_time);
+      return acc;
+    }, {} as Record<string, number>);
+
+    const activitySummary = Object.entries(activitySummaryMap)
+      .map(([activityType, hours]: [string, number]) => ({
+        activityType,
+        hours,
+      }))
+      .sort((a, b) => b.hours - a.hours); // Sort by hours descending
+
+    return {
+      totalWorkDays,
+      totalHours,
+      weekendWorkHours,
+      holidayWorkHours,
+      dailyRecords,
+      absenceSummary,
+      activitySummary,
+    };
   }
 
-  /**
-   * Create a new work record for a specific employee.
-   *
-   * @param input - Work record data including all required fields
-   * @returns WorkRecordMutationResponse with success status and created record
-   * @throws NotFoundException if employee not found
-   * @throws ForbiddenException if date is locked
-   * @throws BadRequestException if validation fails
-   */
-  async createWorkRecord(input: CreateWorkRecordInput): Promise<WorkRecordMutationResponse> {
-    try {
-      // Fetch employee to get name for dynamic table and ZamknuteK for lock validation
-      const employee = await this.prisma.zamestnanci.findUnique({
-        where: { ID: BigInt(input.employeeId) },
-        select: {
-          ID: true,
-          Meno: true,
-          Priezvisko: true,
-          ZamknuteK: true,
-        },
-      });
+  async getWorkRecords(input: WorkRecordsInput): Promise<WorkRecordsResponse> {
+    const employee = await this.prisma.zamestnanci.findUnique({
+      where: { ID: BigInt(input.employeeId) },
+      select: { ID: true, Meno: true, Priezvisko: true, ZamknuteK: true },
+    });
 
-      if (!employee) {
-        throw new NotFoundException(`Employee with ID ${input.employeeId} not found`);
-      }
+    if (!employee) {
+      throw new NotFoundException(`Employee with ID ${input.employeeId} not found`);
+    }
 
-      // Construct dynamic table name
-      const tableName = constructTableName(employee.Meno, employee.Priezvisko);
-      this.logger.log(`Creating work record in table: ${tableName}`);
+    const tableName = constructTableName(employee.Meno, employee.Priezvisko);
+    const fromDate = new Date(input.fromDate);
+    const toDate = new Date(input.toDate);
 
-      // Parse date
-      const recordDate = new Date(input.date);
+    const records: any[] = await this.prisma.$queryRawUnsafe(
+      `
+      SELECT
+        wr."ID", wr."StartDate", wr."CinnostTypID", wr."ProjectID", wr."HourTypeID",
+        wr."HourTypesID", wr."StartTime"::TEXT as "StartTime", wr."EndTime"::TEXT as "EndTime",
+        wr."Description", wr."km", wr."Lock", wr."DlhodobaSC",
+        ct."Alias" as "CinnostTyp_Alias",
+        p."Number" as "Projects_Number",
+        ht."HourType" as "HourType_HourType",
+        hts."HourType" as "HourTypes_HourType"
+      FROM "${tableName}" wr
+      INNER JOIN "CinnostTyp" ct ON wr."CinnostTypID" = ct."ID"
+      LEFT JOIN "Projects" p ON wr."ProjectID" = p."ID"
+      LEFT JOIN "HourType" ht ON wr."HourTypeID" = ht."ID"
+      LEFT JOIN "HourTypes" hts ON wr."HourTypesID" = hts."ID"
+      WHERE wr."StartDate" BETWEEN $1 AND $2
+      ORDER BY wr."StartDate" ${input.sortOrder === 'ASC' ? 'ASC' : 'DESC'}, wr."ID" ${input.sortOrder === 'ASC' ? 'ASC' : 'DESC'}
+      LIMIT $3 OFFSET $4
+      `,
+      fromDate, toDate, input.limit || 50, input.offset || 0,
+    );
 
-      // Validate date is not locked (date must be > ZamknuteK)
-      if (employee.ZamknuteK !== null && recordDate <= employee.ZamknuteK) {
-        throw new ForbiddenException('Cannot create record for locked date');
-      }
+    const countResult: any[] = await this.prisma.$queryRawUnsafe(
+      `SELECT COUNT(*)::INTEGER as count FROM "${tableName}" wr WHERE wr."StartDate" BETWEEN $1 AND $2`,
+      fromDate, toDate,
+    );
 
-      // Normalize time format (add :00 if HH:MM format)
-      const normalizeTime = (time: string): string => {
-        return time.length === 5 ? `${time}:00` : time;
-      };
+    const totalCount = Number(countResult[0]?.count || 0);
+    const hasMore = (input.offset || 0) + (input.limit || 50) < totalCount;
 
-      const startTime = normalizeTime(input.startTime);
-      const endTime = normalizeTime(input.endTime);
-
-      // Validate time format - this is handled by DTO validation, but we double-check
-      const timeRegex = /^\d{2}:\d{2}:\d{2}$/;
-      if (!timeRegex.test(startTime) || !timeRegex.test(endTime)) {
-        throw new BadRequestException('Invalid time format');
-      }
-
-      // Check for duplicate record (all fields must match exactly)
-      const duplicateCheck = await this.prisma.$queryRawUnsafe<any[]>(
-        `
-        SELECT "ID"
-        FROM "${tableName}"
-        WHERE "CinnostTypID" = $1
-          AND "StartDate" = $2
-          AND "ProjectID" = $3
-          AND "HourTypeID" = $4
-          AND "HourTypesID" = $5
-          AND "StartTime" = $6::time
-          AND "EndTime" = $7::time
-          AND COALESCE("Description", '') = COALESCE($8, '')
-          AND COALESCE("km", 0) = COALESCE($9, 0)
-          AND COALESCE("DlhodobaSC", false) = COALESCE($10, false)
-        LIMIT 1
-        `,
-        BigInt(input.absenceTypeId),
-        recordDate,
-        BigInt(input.projectId),
-        BigInt(input.productivityTypeId),
-        BigInt(input.workTypeId),
-        startTime,
-        endTime,
-        input.description || null,
-        input.km || 0,
-        input.isTripFlag || false,
-      );
-
-      if (duplicateCheck.length > 0) {
-        throw new BadRequestException('This record already exists');
-      }
-
-      // Insert into per-user table
-      // OPRAVENÉ TS2347: Odstránené <any[]> z volania funkcie
-      const insertResult: any[] = await this.prisma.$queryRawUnsafe(
-        `
-        INSERT INTO "${tableName}" (
-          "CinnostTypID",
-          "StartDate",
-          "ProjectID",
-          "HourTypeID",
-          "HourTypesID",
-          "StartTime",
-          "EndTime",
-          "Description",
-          "km",
-          "Lock",
-          "DlhodobaSC"
-        ) VALUES ($1, $2, $3, $4, $5, $6::time, $7::time, $8, $9, $10, $11)
-        RETURNING "ID"
-        `,
-        BigInt(input.absenceTypeId),
-        recordDate,
-        BigInt(input.projectId),
-        BigInt(input.productivityTypeId),
-        BigInt(input.workTypeId),
-        startTime,
-        endTime,
-        input.description || null,
-        input.km || 0,
-        false, // Lock je vždy false pre nové záznamy
-        input.isTripFlag || false,
-      );
-
-      const createdId = insertResult[0].ID;
-
-      // Fetch the created record with JOINs to get catalog data
-      // OPRAVENÉ TS2347: Odstránené <any[]> z volania funkcie
-      const createdRecords: any[] = await this.prisma.$queryRawUnsafe(
-        `
-        SELECT
-          wr."ID",
-          wr."StartDate",
-          wr."CinnostTypID",
-          wr."ProjectID",
-          wr."HourTypeID",
-          wr."HourTypesID",
-          wr."StartTime"::TEXT as "StartTime",
-          wr."EndTime"::TEXT as "EndTime",
-          wr."Description",
-          wr."km",
-          wr."Lock",
-          wr."DlhodobaSC",
-          ct."Alias" as "CinnostTyp_Alias",
-          p."Number" as "Projects_Number",
-          ht."HourType" as "HourType_HourType",
-          hts."HourType" as "HourTypes_HourType"
-        FROM "${tableName}" wr
-        INNER JOIN "CinnostTyp" ct ON wr."CinnostTypID" = ct."ID"
-        LEFT JOIN "Projects" p ON wr."ProjectID" = p."ID"
-        LEFT JOIN "HourType" ht ON wr."HourTypeID" = ht."ID"
-        LEFT JOIN "HourTypes" hts ON wr."HourTypesID" = hts."ID"
-        WHERE wr."ID" = $1
-        `,
-        createdId,
-      );
-
-      const record = createdRecords[0];
-
-      // Calculate hours
-      const hours = calculateHours(record.StartTime, record.EndTime);
-      const overnight = isOvernightShift(record.StartTime, record.EndTime);
-
-      // Map to WorkRecord entity
-      const workRecord: WorkRecord = {
+    const workRecords: WorkRecord[] = records.map((record: any) => {
+      const isLocked = record.Lock === true || (employee.ZamknuteK !== null && new Date(record.StartDate) <= employee.ZamknuteK);
+      return {
         id: record.ID.toString(),
         date: new Date(record.StartDate).toISOString(),
         absenceType: record.CinnostTyp_Alias,
@@ -333,173 +180,65 @@ export class WorkRecordsService {
         workType: record.HourTypes_HourType || null,
         startTime: record.StartTime,
         endTime: record.EndTime,
-        hours: hours,
+        hours: 0, // Computed by field resolver
         description: record.Description || null,
         km: record.km || 0,
         isTripFlag: record.DlhodobaSC,
-        isLocked: false, // Nové záznamy nie sú nikdy zamknuté
-        isOvernightShift: overnight,
+        isLocked,
+        isOvernightShift: false, // Computed by field resolver
       };
+    });
 
-      return {
-        success: true,
-        message: 'Work record created successfully',
-        record: workRecord,
-      };
-    } catch (error) {
-      if (error instanceof NotFoundException ||
-          error instanceof ForbiddenException ||
-          error instanceof BadRequestException) {
-        throw error;
-      }
-      this.logger.error('Failed to create work record', error);
-      throw new Error('Failed to create work record in database');
-    }
+    return { records: workRecords, totalCount, hasMore };
   }
 
-  /**
-   * Update an existing work record.
-   *
-   * @param input - Work record data with recordId and optional field updates
-   * @returns WorkRecordMutationResponse with success status and updated record
-   * @throws NotFoundException if employee or record not found
-   * @throws ForbiddenException if record is locked
-   * @throws BadRequestException if validation fails
-   */
-  async updateWorkRecord(input: UpdateWorkRecordInput): Promise<WorkRecordMutationResponse> {
-    try {
-      // Fetch employee
-      const employee = await this.prisma.zamestnanci.findUnique({
+  async createWorkRecord(input: CreateWorkRecordInput): Promise<WorkRecordMutationResponse> {
+    const employee = await this.prisma.zamestnanci.findUnique({
         where: { ID: BigInt(input.employeeId) },
-        select: {
-          ID: true,
-          Meno: true,
-          Priezvisko: true,
-          ZamknuteK: true,
-        },
-      });
+        select: { Meno: true, Priezvisko: true, ZamknuteK: true },
+    });
 
-      if (!employee) {
+    if (!employee) {
         throw new NotFoundException(`Employee with ID ${input.employeeId} not found`);
-      }
+    }
 
-      const tableName = constructTableName(employee.Meno, employee.Priezvisko);
+    const recordDate = new Date(input.date);
+    if (employee.ZamknuteK && recordDate <= employee.ZamknuteK) {
+        throw new ForbiddenException('Cannot create record for locked date');
+    }
 
-      // Fetch existing record
-      // OPRAVENÉ TS2347: Odstránené <any[]> z volania funkcie
-      const existingRecords: any[] = await this.prisma.$queryRawUnsafe(
-        `SELECT * FROM "${tableName}" WHERE "ID" = $1`,
-        BigInt(input.recordId)
-      );
+    const tableName = constructTableName(employee.Meno, employee.Priezvisko);
+    const normalizeTime = (time: string): string => (time.length === 5 ? `${time}:00` : time);
 
-      if (!existingRecords || existingRecords.length === 0) {
-        throw new NotFoundException(`Work record with ID ${input.recordId} not found`);
-      }
+    const startTime = normalizeTime(input.startTime);
+    const endTime = normalizeTime(input.endTime);
 
-      const existingRecord = existingRecords[0];
+    const insertResult: any[] = await this.prisma.$queryRawUnsafe(
+      `
+      INSERT INTO "${tableName}" ("CinnostTypID", "StartDate", "ProjectID", "HourTypeID", "HourTypesID", "StartTime", "EndTime", "Description", "km", "Lock", "DlhodobaSC")
+      VALUES ($1, $2, $3, $4, $5, $6::time, $7::time, $8, $9, false, $10)
+      RETURNING "ID"
+      `,
+      BigInt(input.absenceTypeId), recordDate, BigInt(input.projectId), BigInt(input.productivityTypeId), BigInt(input.workTypeId),
+      startTime, endTime, input.description || null, input.km || 0, input.isTripFlag || false,
+    );
 
-      // Validate record is not locked
-      const isLocked =
-        existingRecord.Lock === true ||
-        (employee.ZamknuteK !== null && new Date(existingRecord.StartDate) <= employee.ZamknuteK);
+    const createdId = insertResult[0].ID;
 
-      if (isLocked) {
-        throw new ForbiddenException('Cannot edit locked record');
-      }
+    const createdRecords: any[] = await this.prisma.$queryRawUnsafe(
+        `SELECT wr."ID", wr."StartDate", wr."StartTime"::TEXT, wr."EndTime"::TEXT, wr."Description", wr."km", wr."Lock", wr."DlhodobaSC",
+                ct."Alias" as "CinnostTyp_Alias", p."Number" as "Projects_Number", ht."HourType" as "HourType_HourType", hts."HourType" as "HourTypes_HourType"
+         FROM "${tableName}" wr
+         INNER JOIN "CinnostTyp" ct ON wr."CinnostTypID" = ct."ID"
+         LEFT JOIN "Projects" p ON wr."ProjectID" = p."ID"
+         LEFT JOIN "HourType" ht ON wr."HourTypeID" = ht."ID"
+         LEFT JOIN "HourTypes" hts ON wr."HourTypesID" = hts."ID"
+         WHERE wr."ID" = $1`,
+        createdId,
+    );
 
-      // Build UPDATE query with only provided fields
-      const updateFields: string[] = [];
-      const updateValues: any[] = [];
-      let paramIndex = 1;
-
-      if (input.date !== undefined) {
-        updateFields.push(`"StartDate" = $${paramIndex++}`);
-        updateValues.push(new Date(input.date));
-      }
-      if (input.absenceTypeId !== undefined) {
-        updateFields.push(`"CinnostTypID" = $${paramIndex++}`);
-        updateValues.push(BigInt(input.absenceTypeId));
-      }
-      if (input.projectId !== undefined) {
-        updateFields.push(`"ProjectID" = $${paramIndex++}`);
-        updateValues.push(BigInt(input.projectId));
-      }
-      if (input.productivityTypeId !== undefined) {
-        updateFields.push(`"HourTypeID" = $${paramIndex++}`);
-        updateValues.push(BigInt(input.productivityTypeId));
-      }
-      if (input.workTypeId !== undefined) {
-        updateFields.push(`"HourTypesID" = $${paramIndex++}`);
-        updateValues.push(BigInt(input.workTypeId));
-      }
-      if (input.startTime !== undefined) {
-        const normalizedTime = input.startTime.length === 5 ? `${input.startTime}:00` : input.startTime;
-        updateFields.push(`"StartTime" = $${paramIndex++}::time`);
-        updateValues.push(normalizedTime);
-      }
-      if (input.endTime !== undefined) {
-        const normalizedTime = input.endTime.length === 5 ? `${input.endTime}:00` : input.endTime;
-        updateFields.push(`"EndTime" = $${paramIndex++}::time`);
-        updateValues.push(normalizedTime);
-      }
-      if (input.description !== undefined) {
-        updateFields.push(`"Description" = $${paramIndex++}`);
-        updateValues.push(input.description || null);
-      }
-      if (input.km !== undefined) {
-        updateFields.push(`"km" = $${paramIndex++}`);
-        updateValues.push(input.km);
-      }
-      if (input.isTripFlag !== undefined) {
-        updateFields.push(`"DlhodobaSC" = $${paramIndex++}`);
-        updateValues.push(input.isTripFlag);
-      }
-
-      if (updateFields.length === 0) {
-        throw new BadRequestException('No fields to update');
-      }
-
-      // Execute UPDATE
-      updateValues.push(BigInt(input.recordId));
-      const updateQuery = `UPDATE "${tableName}" SET ${updateFields.join(', ')} WHERE "ID" = $${paramIndex}`;
-      await this.prisma.$queryRawUnsafe(updateQuery, ...updateValues);
-
-      // Fetch updated record
-      // OPRAVENÉ TS2347: Odstránené <any[]> z volania funkcie
-      const updatedRecords: any[] = await this.prisma.$queryRawUnsafe(
-        `
-        SELECT
-          wr."ID",
-          wr."StartDate",
-          wr."CinnostTypID",
-          wr."ProjectID",
-          wr."HourTypeID",
-          wr."HourTypesID",
-          wr."StartTime"::TEXT as "StartTime",
-          wr."EndTime"::TEXT as "EndTime",
-          wr."Description",
-          wr."km",
-          wr."Lock",
-          wr."DlhodobaSC",
-          ct."Alias" as "CinnostTyp_Alias",
-          p."Number" as "Projects_Number",
-          ht."HourType" as "HourType_HourType",
-          hts."HourType" as "HourTypes_HourType"
-        FROM "${tableName}" wr
-        INNER JOIN "CinnostTyp" ct ON wr."CinnostTypID" = ct."ID"
-        LEFT JOIN "Projects" p ON wr."ProjectID" = p."ID"
-        LEFT JOIN "HourType" ht ON wr."HourTypeID" = ht."ID"
-        LEFT JOIN "HourTypes" hts ON wr."HourTypesID" = hts."ID"
-        WHERE wr."ID" = $1
-        `,
-        BigInt(input.recordId)
-      );
-
-      const record = updatedRecords[0];
-      const hours = calculateHours(record.StartTime, record.EndTime);
-      const overnight = isOvernightShift(record.StartTime, record.EndTime);
-
-      const workRecord: WorkRecord = {
+    const record = createdRecords[0];
+    const workRecord: WorkRecord = {
         id: record.ID.toString(),
         date: new Date(record.StartDate).toISOString(),
         absenceType: record.CinnostTyp_Alias,
@@ -508,289 +247,174 @@ export class WorkRecordsService {
         workType: record.HourTypes_HourType || null,
         startTime: record.StartTime,
         endTime: record.EndTime,
-        hours: hours,
+        hours: calculateHours(record.StartTime, record.EndTime),
         description: record.Description || null,
         km: record.km || 0,
         isTripFlag: record.DlhodobaSC,
         isLocked: false,
-        isOvernightShift: overnight,
-      };
+        isOvernightShift: isOvernightShift(record.StartTime, record.EndTime),
+    };
 
-      return {
-        success: true,
-        message: 'Work record updated successfully',
-        record: workRecord,
-      };
-    } catch (error) {
-      if (
-        error instanceof NotFoundException ||
-        error instanceof ForbiddenException ||
-        error instanceof BadRequestException
-      ) {
-        throw error;
-      }
-      this.logger.error('Failed to update work record', error);
-      throw new Error('Failed to update work record in database');
-    }
+    return { success: true, message: 'Work record created successfully', record: workRecord };
   }
 
-  /**
-   * Delete a work record.
-   *
-   * @param input - Record ID and employee ID for validation
-   * @returns WorkRecordMutationResponse with success status
-   * @throws NotFoundException if employee or record not found
-   * @throws ForbiddenException if record is locked
-   */
-  async deleteWorkRecord(input: DeleteWorkRecordInput): Promise<WorkRecordMutationResponse> {
-    try {
-      // Fetch employee
-      const employee = await this.prisma.zamestnanci.findUnique({
+  async updateWorkRecord(input: UpdateWorkRecordInput): Promise<WorkRecordMutationResponse> {
+    const employee = await this.prisma.zamestnanci.findUnique({
         where: { ID: BigInt(input.employeeId) },
-        select: {
-          ID: true,
-          Meno: true,
-          Priezvisko: true,
-          ZamknuteK: true,
-        },
-      });
+        select: { Meno: true, Priezvisko: true, ZamknuteK: true },
+    });
 
-      if (!employee) {
+    if (!employee) {
         throw new NotFoundException(`Employee with ID ${input.employeeId} not found`);
-      }
+    }
 
-      const tableName = constructTableName(employee.Meno, employee.Priezvisko);
+    const tableName = constructTableName(employee.Meno, employee.Priezvisko);
+    const existingRecords: any[] = await this.prisma.$queryRawUnsafe(`SELECT * FROM "${tableName}" WHERE "ID" = $1`, BigInt(input.recordId));
 
-      // Fetch existing record to validate lock status
-      // OPRAVENÉ TS2347: Odstránené <any[]> z volania funkcie
-      const existingRecords: any[] = await this.prisma.$queryRawUnsafe(
-        `SELECT * FROM "${tableName}" WHERE "ID" = $1`,
-        BigInt(input.recordId)
-      );
-
-      if (!existingRecords || existingRecords.length === 0) {
+    if (!existingRecords.length) {
         throw new NotFoundException(`Work record with ID ${input.recordId} not found`);
-      }
+    }
 
-      const existingRecord = existingRecords[0];
+    const existingRecord = existingRecords[0];
+    if (existingRecord.Lock || (employee.ZamknuteK && new Date(existingRecord.StartDate) <= employee.ZamknuteK)) {
+        throw new ForbiddenException('Cannot edit locked record');
+    }
 
-      // Validate record je not locked
-      const isLocked =
-        existingRecord.Lock === true ||
-        (employee.ZamknuteK !== null && new Date(existingRecord.StartDate) <= employee.ZamknuteK);
+    const updateFields: string[] = [];
+    const updateValues: any[] = [];
+    let paramIndex = 1;
 
-      if (isLocked) {
+    const pushUpdate = (field: string, value: any) => {
+        updateFields.push(`"${field}" = $${paramIndex++}`);
+        updateValues.push(value);
+    };
+
+    if (input.date !== undefined) pushUpdate('StartDate', new Date(input.date));
+    if (input.absenceTypeId !== undefined) pushUpdate('CinnostTypID', BigInt(input.absenceTypeId));
+    if (input.projectId !== undefined) pushUpdate('ProjectID', BigInt(input.projectId));
+    if (input.productivityTypeId !== undefined) pushUpdate('HourTypeID', BigInt(input.productivityTypeId));
+    if (input.workTypeId !== undefined) pushUpdate('HourTypesID', BigInt(input.workTypeId));
+    if (input.startTime !== undefined) pushUpdate('StartTime', `${input.startTime.length === 5 ? input.startTime + ':00' : input.startTime}`);
+    if (input.endTime !== undefined) pushUpdate('EndTime', `${input.endTime.length === 5 ? input.endTime + ':00' : input.endTime}`);
+    if (input.description !== undefined) pushUpdate('Description', input.description || null);
+    if (input.km !== undefined) pushUpdate('km', input.km);
+    if (input.isTripFlag !== undefined) pushUpdate('DlhodobaSC', input.isTripFlag);
+
+    if (updateFields.length === 0) {
+        throw new BadRequestException('No fields to update');
+    }
+
+    updateValues.push(BigInt(input.recordId));
+    await this.prisma.$queryRawUnsafe(`UPDATE "${tableName}" SET ${updateFields.join(', ')} WHERE "ID" = $${paramIndex}`, ...updateValues);
+    
+    const updatedRecords: any[] = await this.prisma.$queryRawUnsafe(
+      `SELECT wr."ID", wr."StartDate", wr."StartTime"::TEXT, wr."EndTime"::TEXT, wr."Description", wr."km", wr."Lock", wr."DlhodobaSC",
+              ct."Alias" as "CinnostTyp_Alias", p."Number" as "Projects_Number", ht."HourType" as "HourType_HourType", hts."HourType" as "HourTypes_HourType"
+       FROM "${tableName}" wr
+       INNER JOIN "CinnostTyp" ct ON wr."CinnostTypID" = ct."ID"
+       LEFT JOIN "Projects" p ON wr."ProjectID" = p."ID"
+       LEFT JOIN "HourType" ht ON wr."HourTypeID" = ht."ID"
+       LEFT JOIN "HourTypes" hts ON wr."HourTypesID" = hts."ID"
+       WHERE wr."ID" = $1`,
+      BigInt(input.recordId)
+    );
+
+    const record = updatedRecords[0];
+    const workRecord: WorkRecord = {
+        id: record.ID.toString(),
+        date: new Date(record.StartDate).toISOString(),
+        absenceType: record.CinnostTyp_Alias,
+        project: record.Projects_Number || null,
+        productivityType: record.HourType_HourType || null,
+        workType: record.HourTypes_HourType || null,
+        startTime: record.StartTime,
+        endTime: record.EndTime,
+        hours: calculateHours(record.StartTime, record.EndTime),
+        description: record.Description || null,
+        km: record.km || 0,
+        isTripFlag: record.DlhodobaSC,
+        isLocked: false,
+        isOvernightShift: isOvernightShift(record.StartTime, record.EndTime),
+    };
+
+    return { success: true, message: 'Work record updated successfully', record: workRecord };
+  }
+
+  async deleteWorkRecord(input: DeleteWorkRecordInput): Promise<WorkRecordMutationResponse> {
+    const employee = await this.prisma.zamestnanci.findUnique({
+        where: { ID: BigInt(input.employeeId) },
+        select: { Meno: true, Priezvisko: true, ZamknuteK: true },
+    });
+
+    if (!employee) {
+        throw new NotFoundException(`Employee with ID ${input.employeeId} not found`);
+    }
+
+    const tableName = constructTableName(employee.Meno, employee.Priezvisko);
+    const existingRecords: any[] = await this.prisma.$queryRawUnsafe(`SELECT * FROM "${tableName}" WHERE "ID" = $1`, BigInt(input.recordId));
+
+    if (!existingRecords.length) {
+        throw new NotFoundException(`Work record with ID ${input.recordId} not found`);
+    }
+
+    const existingRecord = existingRecords[0];
+    if (existingRecord.Lock || (employee.ZamknuteK && new Date(existingRecord.StartDate) <= employee.ZamknuteK)) {
         throw new ForbiddenException('Cannot delete locked record');
-      }
-
-      // Execute DELETE
-      await this.prisma.$queryRawUnsafe(
-        `DELETE FROM "${tableName}" WHERE "ID" = $1`,
-        BigInt(input.recordId)
-      );
-
-      return {
-        success: true,
-        message: 'Work record deleted successfully',
-        record: undefined,
-      };
-    } catch (error) {
-      if (
-        error instanceof NotFoundException ||
-        error instanceof ForbiddenException
-      ) {
-        throw error;
-      }
-      this.logger.error('Failed to delete work record', error);
-      throw new Error('Failed to delete work record from database');
     }
+
+    await this.prisma.$queryRawUnsafe(`DELETE FROM "${tableName}" WHERE "ID" = $1`, BigInt(input.recordId));
+
+    return { success: true, message: 'Work record deleted successfully' };
   }
 
-  /**
-   * Get the next valid workday for a specific employee.
-   *
-   * Fetches the last work record date from the employee's table,
-   * then calculates the next valid workday (skipping weekends and Slovak holidays).
-   *
-   * @param employeeId - The ID of the employee
-   * @returns The next valid workday as a Date object
-   * @throws NotFoundException if employee not found
-   * @throws Error if database query fails
-   */
   async getNextWorkday(employeeId: number): Promise<Date> {
-    try {
-      // Fetch employee to get name for dynamic table
-      const employee = await this.prisma.zamestnanci.findUnique({
-        where: { ID: BigInt(employeeId) },
-        select: {
-          ID: true,
-          Meno: true,
-          Priezvisko: true,
-        },
-      });
+    const employee = await this.prisma.zamestnanci.findUnique({
+      where: { ID: BigInt(employeeId) },
+      select: { Meno: true, Priezvisko: true },
+    });
 
-      if (!employee) {
-        throw new NotFoundException(`Employee with ID ${employeeId} not found`);
-      }
-
-      // Construct dynamic table name
-      const tableName = constructTableName(employee.Meno, employee.Priezvisko);
-      this.logger.log(`Fetching last record date from table: ${tableName}`);
-
-      // Fetch last record date
-      // OPRAVENÉ TS2347: Odstránené <any[]> z volania funkcie
-      const lastRecords: any[] = await this.prisma.$queryRawUnsafe(
-        `
-        SELECT "StartDate"
-        FROM "${tableName}"
-        ORDER BY "StartDate" DESC
-        LIMIT 1
-        `,
-      );
-
-      // If no records exist, use today as starting point
-      const lastRecordDate = lastRecords.length > 0
-        ? new Date(lastRecords[0].StartDate)
-        : new Date();
-
-      // Calculate next workday using the utility
-      const nextWorkday = await calculateNextWorkday(lastRecordDate, this.prisma);
-
-      this.logger.log(`Next workday for employee ${employeeId}: ${nextWorkday.toISOString().split('T')[0]}`);
-
-      return nextWorkday;
-    } catch (error) {
-      if (error instanceof NotFoundException) {
-        throw error;
-      }
-      this.logger.error('Failed to get next workday', error);
-      throw new Error('Failed to get next workday from database');
+    if (!employee) {
+      throw new NotFoundException(`Employee with ID ${employeeId} not found`);
     }
+
+    const tableName = constructTableName(employee.Meno, employee.Priezvisko);
+    const lastRecords: any[] = await this.prisma.$queryRawUnsafe(`SELECT "StartDate" FROM "${tableName}" ORDER BY "StartDate" DESC LIMIT 1`);
+    const lastRecordDate = lastRecords.length > 0 ? new Date(lastRecords[0].StartDate) : new Date();
+
+    return calculateNextWorkday(lastRecordDate, this.prisma);
   }
 
-  /**
-   * Fetch active projects for filter dropdown options.
-   * Only returns projects where AllowAssignWorkingHours = true.
-   *
-   * @returns Array of Project entities with ID and Number fields
-   * @throws Error if database query fails
-   */
-  async getActiveProjects(): Promise<ProjectCatalogItem[]> { 
-    try {
-      const projects = await this.prisma.projects.findMany({
-        where: {
-          AllowAssignWorkingHours: true,
-        },
-        select: {
-          ID: true,
-          Number: true,
-          Name: true,
-        },
-        orderBy: {
-          Number: 'asc',
-        },
-      });
-
-      // OPRAVENÉ TS7006: Pridaný explicitný typ 'any' pre parameter 'project'
-      return projects.map((project: any) => ({
-        id: project.ID.toString(),
-        number: project.Number,
-        name: project.Name || null,
-      }));
-    } catch (error) {
-      this.logger.error('Failed to fetch active projects', error);
-      throw new Error('Failed to fetch active projects from database');
-    }
+  async getActiveProjects(): Promise<ProjectCatalogItem[]> {
+    const projects = await this.prisma.projects.findMany({
+        where: { AllowAssignWorkingHours: true },
+        select: { ID: true, Number: true, Name: true },
+        orderBy: { Number: 'asc' },
+    });
+    return projects.map((p: any) => ({ id: p.ID.toString(), number: p.Number, name: p.Name || null }));
   }
 
-  /**
-   * Fetch absence types for filter dropdown options.
-   * Excludes deleted entries (Zmazane = true).
-   *
-   * @returns Array of AbsenceType entities with ID and Alias fields
-   * @throws Error if database query fails
-   */
   async getAbsenceTypes(): Promise<AbsenceType[]> {
-    try {
-      const absenceTypes = await this.prisma.cinnostTyp.findMany({
-        where: {
-          Zmazane: false,
-        },
-        select: {
-          ID: true,
-          Alias: true,
-        },
-        orderBy: {
-          Alias: 'asc',
-        },
-      });
-
-      // OPRAVENÉ TS7006: Pridaný explicitný typ 'any' pre parameter 'type'
-      return absenceTypes.map((type: any) => ({
-        id: type.ID.toString(),
-        alias: type.Alias,
-      }));
-    } catch (error) {
-      this.logger.error('Failed to fetch absence types', error);
-      throw new Error('Failed to fetch absence types from database');
-    }
+    const absenceTypes = await this.prisma.cinnostTyp.findMany({
+        where: { Zmazane: false },
+        select: { ID: true, Alias: true },
+        orderBy: { Alias: 'asc' },
+    });
+    return absenceTypes.map((t: any) => ({ id: t.ID.toString(), alias: t.Alias }));
   }
 
-  /**
-   * Fetch productivity types for filter dropdown options.
-   *
-   * @returns Array of ProductivityType entities with ID and HourType fields
-   * @throws Error if database query fails
-   */
   async getProductivityTypes(): Promise<ProductivityType[]> {
-    try {
-      const productivityTypes = await this.prisma.hourType.findMany({
-        select: {
-          ID: true,
-          HourType: true,
-        },
-        orderBy: {
-          HourType: 'asc',
-        },
-      });
-
-      // OPRAVENÉ TS7006: Pridaný explicitný typ 'any' pre parameter 'type'
-      return productivityTypes.map((type: any) => ({
-        id: type.ID.toString(),
-        hourType: type.HourType,
-      }));
-    } catch (error) {
-      this.logger.error('Failed to fetch productivity types', error);
-      throw new Error('Failed to fetch productivity types from database');
-    }
+    const types = await this.prisma.hourType.findMany({
+        select: { ID: true, HourType: true },
+        orderBy: { HourType: 'asc' },
+    });
+    return types.map((t: any) => ({ id: t.ID.toString(), hourType: t.HourType }));
   }
 
-  /**
-   * Fetch work types for filter dropdown options.
-   *
-   * @returns Array of WorkType entities with ID and HourType fields
-   * @throws Error if database query fails
-   */
   async getWorkTypes(): Promise<WorkType[]> {
-    try {
-      const workTypes = await this.prisma.hourTypes.findMany({
-        select: {
-          ID: true,
-          HourType: true,
-        },
-        orderBy: {
-          HourType: 'asc',
-        },
-      });
-
-      // OPRAVENÉ TS7006: Pridaný explicitný typ 'any' pre parameter 'type'
-      return workTypes.map((type: any) => ({
-        id: type.ID.toString(),
-        hourType: type.HourType,
-      }));
-    } catch (error) {
-      this.logger.error('Failed to fetch work types', error);
-      throw new Error('Failed to fetch work types from database');
-    }
+    const types = await this.prisma.hourTypes.findMany({
+        select: { ID: true, HourType: true },
+        orderBy: { HourType: 'asc' },
+    });
+    return types.map((t: any) => ({ id: t.ID.toString(), hourType: t.HourType }));
   }
 }
