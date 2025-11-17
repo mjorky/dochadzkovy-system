@@ -12,10 +12,11 @@ import {
 } from '@/components/ui/select';
 
 interface EmployeeSelectorProps {
-  currentEmployeeId: string;
+  currentEmployeeId: string | null; // Allow null for initial state
   onEmployeeChange: (employeeId: string) => void;
   isAdmin: boolean;
   isManager: boolean;
+  placeholder?: string; // Add placeholder prop
 }
 
 /**
@@ -28,6 +29,7 @@ export function EmployeeSelector({
   onEmployeeChange,
   isAdmin,
   isManager,
+  placeholder = "Select an employee...", // Default placeholder
 }: EmployeeSelectorProps) {
   const { loading, error, data } = useQuery<EmployeesData>(EMPLOYEES_QUERY);
 
@@ -64,17 +66,14 @@ export function EmployeeSelector({
     return null;
   }
 
-  // Find current employee for display
-  const currentEmployee = data.employees.find((emp) => emp.id === currentEmployeeId);
-
   return (
     <div className="mb-6 p-4 bg-card rounded-lg border border-border">
       <label className="block text-sm font-medium text-foreground mb-2">
-        View Records For
+        Generate report for
       </label>
-      <Select value={currentEmployeeId} onValueChange={onEmployeeChange}>
+      <Select value={currentEmployeeId || ''} onValueChange={onEmployeeChange}>
         <SelectTrigger className="w-full md:w-auto min-w-[300px]">
-          <SelectValue />
+          <SelectValue placeholder={placeholder} />
         </SelectTrigger>
         <SelectContent>
           {data.employees.map((employee) => (
@@ -84,11 +83,6 @@ export function EmployeeSelector({
           ))}
         </SelectContent>
       </Select>
-      {currentEmployee && (
-        <p className="mt-2 text-xs text-muted-foreground">
-          Currently viewing: {currentEmployee.fullName}
-        </p>
-      )}
     </div>
   );
 }

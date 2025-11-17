@@ -9,16 +9,29 @@ import { Button } from './button';
 import { cn } from '@/lib/utils';
 
 interface DatePickerProps {
-  value: Date | null;
+  date: Date | null;
   onChange: (date: Date | null) => void;
   placeholder?: string;
+  captionLayout?: "dropdown" | "dropdown-buttons" | "buttons";
+  fromYear?: number;
+  toYear?: number;
 }
 
-export function DatePicker({ value, onChange, placeholder = 'Pick a date' }: DatePickerProps) {
+export function DatePicker({
+  date,
+  onChange,
+  placeholder = 'Pick a date',
+  captionLayout = "dropdown-buttons",
+  fromYear,
+  toYear,
+}: DatePickerProps) {
   const [open, setOpen] = React.useState(false);
 
-  const handleSelect = (date: Date | undefined) => {
-    onChange(date || null);
+  const handleSelect = (selectedDate: Date | undefined) => {
+    // Ensure that if only month/year is selected, it defaults to the first day
+    // The Calendar component from react-day-picker already handles this when using dropdowns
+    // If selectedDate is undefined, it means the user cleared the selection
+    onChange(selectedDate || null);
     setOpen(false);
   };
 
@@ -29,20 +42,23 @@ export function DatePicker({ value, onChange, placeholder = 'Pick a date' }: Dat
           variant="outline"
           className={cn(
             'w-full justify-start text-left font-normal',
-            !value && 'text-muted-foreground'
+            !date && 'text-muted-foreground'
           )}
         >
           <CalendarIcon className="mr-2 h-4 w-4" />
-          {value ? format(value, 'PPP') : <span>{placeholder}</span>}
+          {date ? format(date, 'PPP') : <span>{placeholder}</span>}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0">
         <Calendar
           mode="single"
-          selected={value || undefined}
+          selected={date || undefined}
           onSelect={handleSelect}
-          defaultMonth={value || undefined}
+          defaultMonth={date || undefined}
           initialFocus
+          captionLayout={captionLayout}
+          fromYear={fromYear}
+          toYear={toYear}
         />
       </PopoverContent>
     </Popover>
