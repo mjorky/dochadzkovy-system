@@ -41,7 +41,7 @@ export class EmployeesService {
     try {
       const managers = await this.prisma.zamestnanci.findMany({
         where: {
-          IsAdmin: true, 
+          IsAdmin: true,
         },
         include: {
           ZamestnanecTyp: true,
@@ -56,9 +56,7 @@ export class EmployeesService {
         lastRecordDate: manager.PoslednyZaznam
           ? manager.PoslednyZaznam.toISOString()
           : null,
-        lockedUntil: manager.ZamknuteK
-          ? manager.ZamknuteK.toISOString()
-          : null,
+        lockedUntil: manager.ZamknuteK ? manager.ZamknuteK.toISOString() : null,
         titlePrefix: manager.TitulPred || null,
         titleSuffix: manager.TitulZa || null,
       }));

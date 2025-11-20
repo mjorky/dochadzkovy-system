@@ -1,4 +1,7 @@
-import { normalizeForTableName, constructTableName } from './normalize-table-name';
+import {
+  normalizeForTableName,
+  constructTableName,
+} from './normalize-table-name';
 
 describe('normalizeForTableName', () => {
   describe('Slovak lowercase characters', () => {
@@ -183,7 +186,9 @@ describe('constructTableName', () => {
     });
 
     it('should match t_Martin_Ostrihon', () => {
-      expect(constructTableName('Martin', 'Ostrihoň')).toBe('t_Martin_Ostrihon');
+      expect(constructTableName('Martin', 'Ostrihoň')).toBe(
+        't_Martin_Ostrihon',
+      );
     });
 
     it('should match t_Martin_Krnac', () => {

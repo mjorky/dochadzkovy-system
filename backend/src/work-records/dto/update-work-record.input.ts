@@ -1,5 +1,14 @@
 import { InputType, Field, Int } from '@nestjs/graphql';
-import { IsNotEmpty, IsString, IsInt, Min, MaxLength, IsBoolean, IsOptional, Matches } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsString,
+  IsInt,
+  Min,
+  MaxLength,
+  IsBoolean,
+  IsOptional,
+  Matches,
+} from 'class-validator';
 
 /**
  * Input DTO for updating an existing work record.
@@ -48,7 +57,7 @@ export class UpdateWorkRecordInput {
   @IsOptional()
   @IsString()
   @Matches(/^\d{2}:\d{2}(:\d{2})?$/, {
-    message: 'Start time must be in HH:MM or HH:MM:SS format'
+    message: 'Start time must be in HH:MM or HH:MM:SS format',
   })
   startTime?: string;
 
@@ -56,7 +65,7 @@ export class UpdateWorkRecordInput {
   @IsOptional()
   @IsString()
   @Matches(/^\d{2}:\d{2}(:\d{2})?$/, {
-    message: 'End time must be in HH:MM or HH:MM:SS format'
+    message: 'End time must be in HH:MM or HH:MM:SS format',
   })
   endTime?: string;
 

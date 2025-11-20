@@ -51,12 +51,21 @@ describe('WorkRecords Integration Tests', () => {
     jest.clearAllMocks();
   });
 
-
   describe('Integration: Multiple Employees with Different Table Names', () => {
     it('should correctly query different employee tables', async () => {
       const employees = [
-        { ID: BigInt(1), Meno: 'Miroslav', Priezvisko: 'Boloz', ZamknuteK: null },
-        { ID: BigInt(2), Meno: 'Anna', Priezvisko: 'Lovasova', ZamknuteK: null },
+        {
+          ID: BigInt(1),
+          Meno: 'Miroslav',
+          Priezvisko: 'Boloz',
+          ZamknuteK: null,
+        },
+        {
+          ID: BigInt(2),
+          Meno: 'Anna',
+          Priezvisko: 'Lovasova',
+          ZamknuteK: null,
+        },
         { ID: BigInt(3), Meno: 'Jan', Priezvisko: 'Novak', ZamknuteK: null },
       ];
 
@@ -70,11 +79,15 @@ describe('WorkRecords Integration Tests', () => {
         };
 
         // Mock employee lookup
-        jest.spyOn(prismaService.zamestnanci, 'findUnique').mockResolvedValue(employee as any);
+        jest
+          .spyOn(prismaService.zamestnanci, 'findUnique')
+          .mockResolvedValue(employee as any);
 
         // Mock empty results
         jest.spyOn(prismaService, '$queryRawUnsafe').mockResolvedValueOnce([]);
-        jest.spyOn(prismaService, '$queryRawUnsafe').mockResolvedValueOnce([{ count: BigInt(0) }]);
+        jest
+          .spyOn(prismaService, '$queryRawUnsafe')
+          .mockResolvedValueOnce([{ count: BigInt(0) }]);
 
         const result = await service.getWorkRecords(input);
 
@@ -87,7 +100,7 @@ describe('WorkRecords Integration Tests', () => {
           expect.anything(),
           expect.anything(),
           expect.anything(),
-          expect.anything()
+          expect.anything(),
         );
       }
     });
@@ -109,9 +122,13 @@ describe('WorkRecords Integration Tests', () => {
         offset: 0,
       };
 
-      jest.spyOn(prismaService.zamestnanci, 'findUnique').mockResolvedValue(employee as any);
+      jest
+        .spyOn(prismaService.zamestnanci, 'findUnique')
+        .mockResolvedValue(employee as any);
       jest.spyOn(prismaService, '$queryRawUnsafe').mockResolvedValueOnce([]);
-      jest.spyOn(prismaService, '$queryRawUnsafe').mockResolvedValueOnce([{ count: BigInt(0) }]);
+      jest
+        .spyOn(prismaService, '$queryRawUnsafe')
+        .mockResolvedValueOnce([{ count: BigInt(0) }]);
 
       const result = await service.getWorkRecords(input);
 
@@ -122,7 +139,7 @@ describe('WorkRecords Integration Tests', () => {
         expect.anything(),
         expect.anything(),
         expect.anything(),
-        expect.anything()
+        expect.anything(),
       );
     });
   });
@@ -202,9 +219,15 @@ describe('WorkRecords Integration Tests', () => {
         offset: 0,
       };
 
-      jest.spyOn(prismaService.zamestnanci, 'findUnique').mockResolvedValue(employee as any);
-      jest.spyOn(prismaService, '$queryRawUnsafe').mockResolvedValueOnce(mockRecords as any);
-      jest.spyOn(prismaService, '$queryRawUnsafe').mockResolvedValueOnce([{ count: BigInt(3) }]);
+      jest
+        .spyOn(prismaService.zamestnanci, 'findUnique')
+        .mockResolvedValue(employee as any);
+      jest
+        .spyOn(prismaService, '$queryRawUnsafe')
+        .mockResolvedValueOnce(mockRecords as any);
+      jest
+        .spyOn(prismaService, '$queryRawUnsafe')
+        .mockResolvedValueOnce([{ count: BigInt(3) }]);
 
       const result = await service.getWorkRecords(input);
 
@@ -252,9 +275,13 @@ describe('WorkRecords Integration Tests', () => {
         offset: 0,
       };
 
-      jest.spyOn(prismaService.zamestnanci, 'findUnique').mockResolvedValue(employee as any);
+      jest
+        .spyOn(prismaService.zamestnanci, 'findUnique')
+        .mockResolvedValue(employee as any);
       jest.spyOn(prismaService, '$queryRawUnsafe').mockResolvedValueOnce([]);
-      jest.spyOn(prismaService, '$queryRawUnsafe').mockResolvedValueOnce([{ count: BigInt(500) }]);
+      jest
+        .spyOn(prismaService, '$queryRawUnsafe')
+        .mockResolvedValueOnce([{ count: BigInt(500) }]);
 
       const result = await service.getWorkRecords(input);
 
@@ -271,9 +298,13 @@ describe('WorkRecords Integration Tests', () => {
       ];
 
       for (const testCase of testCases) {
-        jest.spyOn(prismaService.zamestnanci, 'findUnique').mockResolvedValue(employee as any);
+        jest
+          .spyOn(prismaService.zamestnanci, 'findUnique')
+          .mockResolvedValue(employee as any);
         jest.spyOn(prismaService, '$queryRawUnsafe').mockResolvedValueOnce([]);
-        jest.spyOn(prismaService, '$queryRawUnsafe').mockResolvedValueOnce([{ count: BigInt(500) }]);
+        jest
+          .spyOn(prismaService, '$queryRawUnsafe')
+          .mockResolvedValueOnce([{ count: BigInt(500) }]);
 
         const paginationResult = await service.getWorkRecords({
           ...input,
@@ -353,9 +384,15 @@ describe('WorkRecords Integration Tests', () => {
           HourTypes_HourType: 'Programovanie',
         };
 
-        jest.spyOn(prismaService.zamestnanci, 'findUnique').mockResolvedValue(employee as any);
-        jest.spyOn(prismaService, '$queryRawUnsafe').mockResolvedValueOnce([mockRecord] as any);
-        jest.spyOn(prismaService, '$queryRawUnsafe').mockResolvedValueOnce([{ count: BigInt(1) }]);
+        jest
+          .spyOn(prismaService.zamestnanci, 'findUnique')
+          .mockResolvedValue(employee as any);
+        jest
+          .spyOn(prismaService, '$queryRawUnsafe')
+          .mockResolvedValueOnce([mockRecord] as any);
+        jest
+          .spyOn(prismaService, '$queryRawUnsafe')
+          .mockResolvedValueOnce([{ count: BigInt(1) }]);
 
         const result = await service.getWorkRecords({
           employeeId: 1,
@@ -447,9 +484,13 @@ describe('WorkRecords Integration Tests', () => {
       ];
 
       for (const edgeCase of edgeCases) {
-        jest.spyOn(prismaService.zamestnanci, 'findUnique').mockResolvedValue(employee as any);
+        jest
+          .spyOn(prismaService.zamestnanci, 'findUnique')
+          .mockResolvedValue(employee as any);
         jest.spyOn(prismaService, '$queryRawUnsafe').mockResolvedValueOnce([]);
-        jest.spyOn(prismaService, '$queryRawUnsafe').mockResolvedValueOnce([{ count: BigInt(0) }]);
+        jest
+          .spyOn(prismaService, '$queryRawUnsafe')
+          .mockResolvedValueOnce([{ count: BigInt(0) }]);
 
         const result = await service.getWorkRecords({
           employeeId: 1,
@@ -468,7 +509,7 @@ describe('WorkRecords Integration Tests', () => {
           expect.any(Date), // Service converts string to Date
           expect.any(Date),
           50,
-          0
+          0,
         );
       }
     });
@@ -476,7 +517,9 @@ describe('WorkRecords Integration Tests', () => {
 
   describe('Integration: Error Scenarios', () => {
     it('should throw NotFoundException for non-existent employee', async () => {
-      jest.spyOn(prismaService.zamestnanci, 'findUnique').mockResolvedValue(null);
+      jest
+        .spyOn(prismaService.zamestnanci, 'findUnique')
+        .mockResolvedValue(null);
 
       await expect(
         service.getWorkRecords({
@@ -485,7 +528,7 @@ describe('WorkRecords Integration Tests', () => {
           toDate: '2025-01-31',
           limit: 50,
           offset: 0,
-        })
+        }),
       ).rejects.toThrow(NotFoundException);
     });
 
@@ -497,7 +540,9 @@ describe('WorkRecords Integration Tests', () => {
         ZamknuteK: null,
       };
 
-      jest.spyOn(prismaService.zamestnanci, 'findUnique').mockResolvedValue(employee as any);
+      jest
+        .spyOn(prismaService.zamestnanci, 'findUnique')
+        .mockResolvedValue(employee as any);
       jest
         .spyOn(prismaService, '$queryRawUnsafe')
         .mockRejectedValue(new Error('Database connection failed'));
@@ -509,7 +554,7 @@ describe('WorkRecords Integration Tests', () => {
           toDate: '2025-01-31',
           limit: 50,
           offset: 0,
-        })
+        }),
       ).rejects.toThrow();
     });
   });
@@ -529,33 +574,101 @@ describe('WorkRecords Integration Tests', () => {
       };
 
       // Mock employee lookup
-      jest.spyOn(prismaService.zamestnanci, 'findUnique').mockResolvedValue(employee as any);
+      jest
+        .spyOn(prismaService.zamestnanci, 'findUnique')
+        .mockResolvedValue(employee as any);
 
       // Mock raw query for work records
       jest.spyOn(prismaService, '$queryRawUnsafe').mockResolvedValueOnce([
         // Jan 1: Holiday, no work
-        { date: new Date('2025-01-01T00:00:00.000Z'), day_of_week: 'Wednesday', day_of_week_iso: 3, holiday_date: new Date('2025-01-01T00:00:00.000Z'), start_time: null, end_time: null, absence_reason: null },
+        {
+          date: new Date('2025-01-01T00:00:00.000Z'),
+          day_of_week: 'Wednesday',
+          day_of_week_iso: 3,
+          holiday_date: new Date('2025-01-01T00:00:00.000Z'),
+          start_time: null,
+          end_time: null,
+          absence_reason: null,
+        },
         // Jan 2: Work day
-        { date: new Date('2025-01-02T00:00:00.000Z'), day_of_week: 'Thursday', day_of_week_iso: 4, holiday_date: null, start_time: '09:00:00', end_time: '17:00:00', absence_reason: 'Prítomný v práci' },
+        {
+          date: new Date('2025-01-02T00:00:00.000Z'),
+          day_of_week: 'Thursday',
+          day_of_week_iso: 4,
+          holiday_date: null,
+          start_time: '09:00:00',
+          end_time: '17:00:00',
+          absence_reason: 'Prítomný v práci',
+        },
         // Jan 3: Work day (part-time)
-        { date: new Date('2025-01-03T00:00:00.000Z'), day_of_week: 'Friday', day_of_week_iso: 5, holiday_date: null, start_time: '09:00:00', end_time: '13:00:00', absence_reason: 'Prítomný v práci' },
+        {
+          date: new Date('2025-01-03T00:00:00.000Z'),
+          day_of_week: 'Friday',
+          day_of_week_iso: 5,
+          holiday_date: null,
+          start_time: '09:00:00',
+          end_time: '13:00:00',
+          absence_reason: 'Prítomný v práci',
+        },
         // Jan 4: Weekend work
-        { date: new Date('2025-01-04T00:00:00.000Z'), day_of_week: 'Saturday', day_of_week_iso: 6, holiday_date: null, start_time: '10:00:00', end_time: '14:00:00', absence_reason: 'Prítomný v práci' },
+        {
+          date: new Date('2025-01-04T00:00:00.000Z'),
+          day_of_week: 'Saturday',
+          day_of_week_iso: 6,
+          holiday_date: null,
+          start_time: '10:00:00',
+          end_time: '14:00:00',
+          absence_reason: 'Prítomný v práci',
+        },
         // Jan 5: Weekend, no work
-        { date: new Date('2025-01-05T00:00:00.000Z'), day_of_week: 'Sunday', day_of_week_iso: 7, holiday_date: null, start_time: null, end_time: null, absence_reason: null },
+        {
+          date: new Date('2025-01-05T00:00:00.000Z'),
+          day_of_week: 'Sunday',
+          day_of_week_iso: 7,
+          holiday_date: null,
+          start_time: null,
+          end_time: null,
+          absence_reason: null,
+        },
         // Jan 6: Absence (Vacation)
-        { date: new Date('2025-01-06T00:00:00.000Z'), day_of_week: 'Monday', day_of_week_iso: 1, holiday_date: null, start_time: null, end_time: null, absence_reason: 'Dovolenka' },
+        {
+          date: new Date('2025-01-06T00:00:00.000Z'),
+          day_of_week: 'Monday',
+          day_of_week_iso: 1,
+          holiday_date: null,
+          start_time: null,
+          end_time: null,
+          absence_reason: 'Dovolenka',
+        },
         // Jan 7: Work day with overnight (Jan 6 22:00 - Jan 7 06:00)
-        { date: new Date('2025-01-07T00:00:00.000Z'), day_of_week: 'Tuesday', day_of_week_iso: 2, holiday_date: null, start_time: '22:00:00', end_time: '06:00:00', absence_reason: 'Prítomný v práci' },
+        {
+          date: new Date('2025-01-07T00:00:00.000Z'),
+          day_of_week: 'Tuesday',
+          day_of_week_iso: 2,
+          holiday_date: null,
+          start_time: '22:00:00',
+          end_time: '06:00:00',
+          absence_reason: 'Prítomný v práci',
+        },
         // ... rest of the month with no activity for simplicity
         // The SQL query generates all days, so we need to mock for each day in the month
         // Assuming a month has 31 days.
-        ...Array(24).fill(0).map((_, i) => ({
+        ...Array(24)
+          .fill(0)
+          .map((_, i) => ({
             date: new Date(2025, 0, 8 + i),
-            day_of_week: new Date(2025, 0, 8 + i).toLocaleString('en-US', { weekday: 'long' }),
-            day_of_week_iso: new Date(2025, 0, 8 + i).getDay() === 0 ? 7 : new Date(2025, 0, 8 + i).getDay(), // Sunday is 0, make it 7
-            holiday_date: null, start_time: null, end_time: null, absence_reason: null
-        }))
+            day_of_week: new Date(2025, 0, 8 + i).toLocaleString('en-US', {
+              weekday: 'long',
+            }),
+            day_of_week_iso:
+              new Date(2025, 0, 8 + i).getDay() === 0
+                ? 7
+                : new Date(2025, 0, 8 + i).getDay(), // Sunday is 0, make it 7
+            holiday_date: null,
+            start_time: null,
+            end_time: null,
+            absence_reason: null,
+          })),
       ] as any[]);
 
       const result = await service.getWorkReportData(input);
@@ -635,7 +748,9 @@ describe('WorkRecords Integration Tests', () => {
     });
 
     it('should throw NotFoundException if employee not found', async () => {
-      jest.spyOn(prismaService.zamestnanci, 'findUnique').mockResolvedValue(null);
+      jest
+        .spyOn(prismaService.zamestnanci, 'findUnique')
+        .mockResolvedValue(null);
 
       const input: WorkReportInput = {
         employeeId: 999,
@@ -643,7 +758,9 @@ describe('WorkRecords Integration Tests', () => {
         year: 2025,
       };
 
-      await expect(service.getWorkReportData(input)).rejects.toThrow(NotFoundException);
+      await expect(service.getWorkReportData(input)).rejects.toThrow(
+        NotFoundException,
+      );
       expect(prismaService.zamestnanci.findUnique).toHaveBeenCalledWith({
         where: { ID: BigInt(999) },
       });

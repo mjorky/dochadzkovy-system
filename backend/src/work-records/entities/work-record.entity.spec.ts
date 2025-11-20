@@ -31,7 +31,7 @@ describe('WorkRecord Entity', () => {
 
       // Add 24 hours (1440 minutes) for overnight
       const totalMinutes = isOvernight
-        ? (endMinutes + 1440) - startMinutes
+        ? endMinutes + 1440 - startMinutes
         : endMinutes - startMinutes;
 
       expect(totalMinutes).toBe(480); // 8 hours = 480 minutes
@@ -50,7 +50,7 @@ describe('WorkRecord Entity', () => {
       const isOvernight = endMinutes < startMinutes;
       expect(isOvernight).toBe(true);
 
-      const totalMinutes = (endMinutes + 1440) - startMinutes; // 465
+      const totalMinutes = endMinutes + 1440 - startMinutes; // 465
       const hours = totalMinutes / 60; // 7.75
       const roundedHours = Math.round(hours * 100) / 100;
 
@@ -84,7 +84,9 @@ describe('WorkRecord Entity', () => {
       const roundedHours = Math.round(hours * 100) / 100;
 
       expect(roundedHours).toBe(8.45);
-      expect(roundedHours.toString().split('.')[1]?.length || 0).toBeLessThanOrEqual(2);
+      expect(
+        roundedHours.toString().split('.')[1]?.length || 0,
+      ).toBeLessThanOrEqual(2);
     });
   });
 
@@ -143,7 +145,10 @@ describe('WorkRecord Entity', () => {
       const employeeLockedUntil = null;
 
       // isLocked = Lock === true OR StartDate <= ZamknuteK
-      const isLocked = lockFlag || (employeeLockedUntil !== null && recordDate <= new Date(employeeLockedUntil));
+      const isLocked =
+        lockFlag ||
+        (employeeLockedUntil !== null &&
+          recordDate <= new Date(employeeLockedUntil));
 
       expect(isLocked).toBe(true);
     });
@@ -154,7 +159,9 @@ describe('WorkRecord Entity', () => {
       const employeeLockedUntil = new Date('2025-01-31');
 
       // Record date is before locked-until date
-      const isLocked = lockFlag || (employeeLockedUntil !== null && recordDate <= employeeLockedUntil);
+      const isLocked =
+        lockFlag ||
+        (employeeLockedUntil !== null && recordDate <= employeeLockedUntil);
 
       expect(isLocked).toBe(true);
     });
@@ -165,7 +172,9 @@ describe('WorkRecord Entity', () => {
       const employeeLockedUntil = new Date('2025-01-31');
 
       // Record date is after locked-until date and Lock flag is false
-      const isLocked = lockFlag || (employeeLockedUntil !== null && recordDate <= employeeLockedUntil);
+      const isLocked =
+        lockFlag ||
+        (employeeLockedUntil !== null && recordDate <= employeeLockedUntil);
 
       expect(isLocked).toBe(false);
     });

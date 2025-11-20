@@ -54,7 +54,7 @@ describe('HealthController', () => {
     } catch (error) {
       expect(error).toBeInstanceOf(HttpException);
       expect(error.getStatus()).toBe(HttpStatus.SERVICE_UNAVAILABLE);
-      const response = error.getResponse() as any;
+      const response = error.getResponse();
       expect(response.status).toBe('error');
       expect(response.database).toBe('disconnected');
       expect(response.message).toBeDefined();

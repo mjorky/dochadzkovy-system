@@ -5,7 +5,11 @@ import { WorkRecordsInput } from './dto/work-records.input';
 import { CreateWorkRecordInput } from './dto/create-work-record.input';
 import { UpdateWorkRecordInput } from './dto/update-work-record.input';
 import { DeleteWorkRecordInput } from './dto/delete-work-record.input';
-import { NotFoundException, ForbiddenException, BadRequestException } from '@nestjs/common';
+import {
+  NotFoundException,
+  ForbiddenException,
+  BadRequestException,
+} from '@nestjs/common';
 
 describe('WorkRecordsService', () => {
   let service: WorkRecordsService;
@@ -75,9 +79,15 @@ describe('WorkRecordsService', () => {
         },
       ];
 
-      jest.spyOn(prismaService.zamestnanci, 'findUnique').mockResolvedValue(mockEmployee as any);
-      jest.spyOn(prismaService, '$queryRawUnsafe').mockResolvedValueOnce(mockRecords as any);
-      jest.spyOn(prismaService, '$queryRawUnsafe').mockResolvedValueOnce([{ count: BigInt(1) }] as any);
+      jest
+        .spyOn(prismaService.zamestnanci, 'findUnique')
+        .mockResolvedValue(mockEmployee as any);
+      jest
+        .spyOn(prismaService, '$queryRawUnsafe')
+        .mockResolvedValueOnce(mockRecords as any);
+      jest
+        .spyOn(prismaService, '$queryRawUnsafe')
+        .mockResolvedValueOnce([{ count: BigInt(1) }] as any);
 
       const result = await service.getWorkRecords(input);
 
@@ -105,9 +115,13 @@ describe('WorkRecordsService', () => {
         ZamknuteK: null,
       };
 
-      jest.spyOn(prismaService.zamestnanci, 'findUnique').mockResolvedValue(mockEmployee as any);
+      jest
+        .spyOn(prismaService.zamestnanci, 'findUnique')
+        .mockResolvedValue(mockEmployee as any);
       jest.spyOn(prismaService, '$queryRawUnsafe').mockResolvedValueOnce([]);
-      jest.spyOn(prismaService, '$queryRawUnsafe').mockResolvedValueOnce([{ count: BigInt(0) }]);
+      jest
+        .spyOn(prismaService, '$queryRawUnsafe')
+        .mockResolvedValueOnce([{ count: BigInt(0) }]);
 
       await service.getWorkRecords(input);
 
@@ -159,9 +173,15 @@ describe('WorkRecordsService', () => {
         },
       ];
 
-      jest.spyOn(prismaService.zamestnanci, 'findUnique').mockResolvedValue(mockEmployee as any);
-      jest.spyOn(prismaService, '$queryRawUnsafe').mockResolvedValueOnce(mockRecords as any);
-      jest.spyOn(prismaService, '$queryRawUnsafe').mockResolvedValueOnce([{ count: BigInt(1) }] as any);
+      jest
+        .spyOn(prismaService.zamestnanci, 'findUnique')
+        .mockResolvedValue(mockEmployee as any);
+      jest
+        .spyOn(prismaService, '$queryRawUnsafe')
+        .mockResolvedValueOnce(mockRecords as any);
+      jest
+        .spyOn(prismaService, '$queryRawUnsafe')
+        .mockResolvedValueOnce([{ count: BigInt(1) }] as any);
 
       const result = await service.getWorkRecords(input);
 
@@ -188,9 +208,13 @@ describe('WorkRecordsService', () => {
         ZamknuteK: null,
       };
 
-      jest.spyOn(prismaService.zamestnanci, 'findUnique').mockResolvedValue(mockEmployee as any);
+      jest
+        .spyOn(prismaService.zamestnanci, 'findUnique')
+        .mockResolvedValue(mockEmployee as any);
       jest.spyOn(prismaService, '$queryRawUnsafe').mockResolvedValueOnce([]);
-      jest.spyOn(prismaService, '$queryRawUnsafe').mockResolvedValueOnce([{ count: BigInt(100) }] as any);
+      jest
+        .spyOn(prismaService, '$queryRawUnsafe')
+        .mockResolvedValueOnce([{ count: BigInt(100) }] as any);
 
       const result = await service.getWorkRecords(input);
 
@@ -235,9 +259,15 @@ describe('WorkRecordsService', () => {
         },
       ];
 
-      jest.spyOn(prismaService.zamestnanci, 'findUnique').mockResolvedValue(mockEmployee as any);
-      jest.spyOn(prismaService, '$queryRawUnsafe').mockResolvedValueOnce(mockRecords as any);
-      jest.spyOn(prismaService, '$queryRawUnsafe').mockResolvedValueOnce([{ count: BigInt(1) }] as any);
+      jest
+        .spyOn(prismaService.zamestnanci, 'findUnique')
+        .mockResolvedValue(mockEmployee as any);
+      jest
+        .spyOn(prismaService, '$queryRawUnsafe')
+        .mockResolvedValueOnce(mockRecords as any);
+      jest
+        .spyOn(prismaService, '$queryRawUnsafe')
+        .mockResolvedValueOnce([{ count: BigInt(1) }] as any);
 
       const result = await service.getWorkRecords(input);
 
@@ -281,9 +311,15 @@ describe('WorkRecordsService', () => {
         },
       ];
 
-      jest.spyOn(prismaService.zamestnanci, 'findUnique').mockResolvedValue(mockEmployee as any);
-      jest.spyOn(prismaService, '$queryRawUnsafe').mockResolvedValueOnce(mockRecords as any);
-      jest.spyOn(prismaService, '$queryRawUnsafe').mockResolvedValueOnce([{ count: BigInt(1) }] as any);
+      jest
+        .spyOn(prismaService.zamestnanci, 'findUnique')
+        .mockResolvedValue(mockEmployee as any);
+      jest
+        .spyOn(prismaService, '$queryRawUnsafe')
+        .mockResolvedValueOnce(mockRecords as any);
+      jest
+        .spyOn(prismaService, '$queryRawUnsafe')
+        .mockResolvedValueOnce([{ count: BigInt(1) }] as any);
 
       const result = await service.getWorkRecords(input);
 
@@ -299,10 +335,16 @@ describe('WorkRecordsService', () => {
         offset: 0,
       };
 
-      jest.spyOn(prismaService.zamestnanci, 'findUnique').mockResolvedValue(null);
+      jest
+        .spyOn(prismaService.zamestnanci, 'findUnique')
+        .mockResolvedValue(null);
 
-      await expect(service.getWorkRecords(input)).rejects.toThrow(NotFoundException);
-      await expect(service.getWorkRecords(input)).rejects.toThrow('Employee with ID 999 not found');
+      await expect(service.getWorkRecords(input)).rejects.toThrow(
+        NotFoundException,
+      );
+      await expect(service.getWorkRecords(input)).rejects.toThrow(
+        'Employee with ID 999 not found',
+      );
     });
   });
 
@@ -350,8 +392,11 @@ describe('WorkRecordsService', () => {
         HourTypes_HourType: 'Programovanie',
       };
 
-      jest.spyOn(prismaService.zamestnanci, 'findUnique').mockResolvedValue(mockEmployee as any);
-      jest.spyOn(prismaService, '$queryRawUnsafe')
+      jest
+        .spyOn(prismaService.zamestnanci, 'findUnique')
+        .mockResolvedValue(mockEmployee as any);
+      jest
+        .spyOn(prismaService, '$queryRawUnsafe')
         .mockResolvedValueOnce([]) // Duplicate check returns empty
         .mockResolvedValueOnce(mockInsertResult as any) // INSERT
         .mockResolvedValueOnce([mockCreatedRecord] as any); // SELECT
@@ -386,10 +431,16 @@ describe('WorkRecordsService', () => {
         ZamknuteK: new Date('2025-01-15'), // Date is before this, so locked
       };
 
-      jest.spyOn(prismaService.zamestnanci, 'findUnique').mockResolvedValue(mockEmployee as any);
+      jest
+        .spyOn(prismaService.zamestnanci, 'findUnique')
+        .mockResolvedValue(mockEmployee as any);
 
-      await expect(service.createWorkRecord(input)).rejects.toThrow(ForbiddenException);
-      await expect(service.createWorkRecord(input)).rejects.toThrow('Cannot create record for locked date');
+      await expect(service.createWorkRecord(input)).rejects.toThrow(
+        ForbiddenException,
+      );
+      await expect(service.createWorkRecord(input)).rejects.toThrow(
+        'Cannot create record for locked date',
+      );
     });
 
     it('should handle overnight shift correctly', async () => {
@@ -432,8 +483,11 @@ describe('WorkRecordsService', () => {
         HourTypes_HourType: 'Programovanie',
       };
 
-      jest.spyOn(prismaService.zamestnanci, 'findUnique').mockResolvedValue(mockEmployee as any);
-      jest.spyOn(prismaService, '$queryRawUnsafe')
+      jest
+        .spyOn(prismaService.zamestnanci, 'findUnique')
+        .mockResolvedValue(mockEmployee as any);
+      jest
+        .spyOn(prismaService, '$queryRawUnsafe')
         .mockResolvedValueOnce([]) // Duplicate check returns empty
         .mockResolvedValueOnce(mockInsertResult as any) // INSERT
         .mockResolvedValueOnce([mockCreatedRecord] as any); // SELECT
@@ -457,10 +511,16 @@ describe('WorkRecordsService', () => {
         endTime: '16:00',
       };
 
-      jest.spyOn(prismaService.zamestnanci, 'findUnique').mockResolvedValue(null);
+      jest
+        .spyOn(prismaService.zamestnanci, 'findUnique')
+        .mockResolvedValue(null);
 
-      await expect(service.createWorkRecord(input)).rejects.toThrow(NotFoundException);
-      await expect(service.createWorkRecord(input)).rejects.toThrow('Employee with ID 999 not found');
+      await expect(service.createWorkRecord(input)).rejects.toThrow(
+        NotFoundException,
+      );
+      await expect(service.createWorkRecord(input)).rejects.toThrow(
+        'Employee with ID 999 not found',
+      );
     });
 
     it('should accept both HH:MM and HH:MM:SS time formats', async () => {
@@ -502,8 +562,11 @@ describe('WorkRecordsService', () => {
         HourTypes_HourType: 'Programovanie',
       };
 
-      jest.spyOn(prismaService.zamestnanci, 'findUnique').mockResolvedValue(mockEmployee as any);
-      jest.spyOn(prismaService, '$queryRawUnsafe')
+      jest
+        .spyOn(prismaService.zamestnanci, 'findUnique')
+        .mockResolvedValue(mockEmployee as any);
+      jest
+        .spyOn(prismaService, '$queryRawUnsafe')
         .mockResolvedValueOnce([]) // Duplicate check returns empty
         .mockResolvedValueOnce(mockInsertResult as any) // INSERT
         .mockResolvedValueOnce([mockCreatedRecord] as any); // SELECT
@@ -540,11 +603,19 @@ describe('WorkRecordsService', () => {
       // Mock duplicate check finding an existing record
       const mockDuplicateCheck = [{ ID: BigInt(999) }];
 
-      (prismaService.zamestnanci.findUnique as jest.Mock).mockResolvedValue(mockEmployee as any);
-      (prismaService.$queryRawUnsafe as jest.Mock).mockResolvedValue(mockDuplicateCheck as any[]);
+      (prismaService.zamestnanci.findUnique as jest.Mock).mockResolvedValue(
+        mockEmployee as any,
+      );
+      (prismaService.$queryRawUnsafe as jest.Mock).mockResolvedValue(
+        mockDuplicateCheck as any[],
+      );
 
-      await expect(service.createWorkRecord(input)).rejects.toThrow(BadRequestException);
-      await expect(service.createWorkRecord(input)).rejects.toThrow('This record already exists');
+      await expect(service.createWorkRecord(input)).rejects.toThrow(
+        BadRequestException,
+      );
+      await expect(service.createWorkRecord(input)).rejects.toThrow(
+        'This record already exists',
+      );
     });
 
     it('should allow creation when no duplicate exists', async () => {
@@ -590,8 +661,11 @@ describe('WorkRecordsService', () => {
       };
 
       // Mock duplicate check returning empty (no duplicate)
-      jest.spyOn(prismaService.zamestnanci, 'findUnique').mockResolvedValue(mockEmployee as any);
-      jest.spyOn(prismaService, '$queryRawUnsafe')
+      jest
+        .spyOn(prismaService.zamestnanci, 'findUnique')
+        .mockResolvedValue(mockEmployee as any);
+      jest
+        .spyOn(prismaService, '$queryRawUnsafe')
         .mockResolvedValueOnce([]) // Duplicate check returns empty
         .mockResolvedValueOnce(mockInsertResult as any) // INSERT
         .mockResolvedValueOnce([mockCreatedRecord] as any); // SELECT
@@ -627,10 +701,16 @@ describe('WorkRecordsService', () => {
       // Mock duplicate check finding a match
       const mockDuplicateCheck = [{ ID: BigInt(999) }];
 
-      (prismaService.zamestnanci.findUnique as jest.Mock).mockResolvedValue(mockEmployee as any);
-      (prismaService.$queryRawUnsafe as jest.Mock).mockResolvedValueOnce(mockDuplicateCheck as any[]);
+      (prismaService.zamestnanci.findUnique as jest.Mock).mockResolvedValue(
+        mockEmployee as any,
+      );
+      (prismaService.$queryRawUnsafe as jest.Mock).mockResolvedValueOnce(
+        mockDuplicateCheck as any[],
+      );
 
-      await expect(service.createWorkRecord(input)).rejects.toThrow(BadRequestException);
+      await expect(service.createWorkRecord(input)).rejects.toThrow(
+        BadRequestException,
+      );
 
       // Verify the duplicate check query was called with all fields
       expect(prismaService.$queryRawUnsafe).toHaveBeenCalledWith(
@@ -673,11 +753,19 @@ describe('WorkRecordsService', () => {
       // Mock duplicate check finding a match (with null description)
       const mockDuplicateCheck = [{ ID: BigInt(999) }];
 
-      (prismaService.zamestnanci.findUnique as jest.Mock).mockResolvedValue(mockEmployee as any);
-      (prismaService.$queryRawUnsafe as jest.Mock).mockResolvedValue(mockDuplicateCheck as any[]);
+      (prismaService.zamestnanci.findUnique as jest.Mock).mockResolvedValue(
+        mockEmployee as any,
+      );
+      (prismaService.$queryRawUnsafe as jest.Mock).mockResolvedValue(
+        mockDuplicateCheck as any[],
+      );
 
-      await expect(service.createWorkRecord(input)).rejects.toThrow(BadRequestException);
-      await expect(service.createWorkRecord(input)).rejects.toThrow('This record already exists');
+      await expect(service.createWorkRecord(input)).rejects.toThrow(
+        BadRequestException,
+      );
+      await expect(service.createWorkRecord(input)).rejects.toThrow(
+        'This record already exists',
+      );
     });
   });
 
@@ -722,8 +810,11 @@ describe('WorkRecordsService', () => {
         HourTypes_HourType: 'Programovanie',
       };
 
-      jest.spyOn(prismaService.zamestnanci, 'findUnique').mockResolvedValue(mockEmployee as any);
-      jest.spyOn(prismaService, '$queryRawUnsafe')
+      jest
+        .spyOn(prismaService.zamestnanci, 'findUnique')
+        .mockResolvedValue(mockEmployee as any);
+      jest
+        .spyOn(prismaService, '$queryRawUnsafe')
         .mockResolvedValueOnce([mockExistingRecord] as any) // Fetch existing
         .mockResolvedValueOnce(undefined as any) // UPDATE (no return)
         .mockResolvedValueOnce([mockUpdatedRecord] as any); // Fetch updated
@@ -756,12 +847,19 @@ describe('WorkRecordsService', () => {
         Lock: true, // Explicitly locked
       };
 
-      jest.spyOn(prismaService.zamestnanci, 'findUnique').mockResolvedValue(mockEmployee as any);
-      jest.spyOn(prismaService, '$queryRawUnsafe')
+      jest
+        .spyOn(prismaService.zamestnanci, 'findUnique')
+        .mockResolvedValue(mockEmployee as any);
+      jest
+        .spyOn(prismaService, '$queryRawUnsafe')
         .mockResolvedValue([mockExistingRecord] as any);
 
-      await expect(service.updateWorkRecord(input)).rejects.toThrow(ForbiddenException);
-      await expect(service.updateWorkRecord(input)).rejects.toThrow('Cannot edit locked record');
+      await expect(service.updateWorkRecord(input)).rejects.toThrow(
+        ForbiddenException,
+      );
+      await expect(service.updateWorkRecord(input)).rejects.toThrow(
+        'Cannot edit locked record',
+      );
     });
 
     it('should prevent updating a record locked by ZamknuteK', async () => {
@@ -784,12 +882,19 @@ describe('WorkRecordsService', () => {
         Lock: false,
       };
 
-      jest.spyOn(prismaService.zamestnanci, 'findUnique').mockResolvedValue(mockEmployee as any);
-      jest.spyOn(prismaService, '$queryRawUnsafe')
+      jest
+        .spyOn(prismaService.zamestnanci, 'findUnique')
+        .mockResolvedValue(mockEmployee as any);
+      jest
+        .spyOn(prismaService, '$queryRawUnsafe')
         .mockResolvedValue([mockExistingRecord] as any);
 
-      await expect(service.updateWorkRecord(input)).rejects.toThrow(ForbiddenException);
-      await expect(service.updateWorkRecord(input)).rejects.toThrow('Cannot edit locked record');
+      await expect(service.updateWorkRecord(input)).rejects.toThrow(
+        ForbiddenException,
+      );
+      await expect(service.updateWorkRecord(input)).rejects.toThrow(
+        'Cannot edit locked record',
+      );
     });
 
     it('should throw NotFoundException if employee not found', async () => {
@@ -799,10 +904,16 @@ describe('WorkRecordsService', () => {
         description: 'Test',
       };
 
-      jest.spyOn(prismaService.zamestnanci, 'findUnique').mockResolvedValue(null);
+      jest
+        .spyOn(prismaService.zamestnanci, 'findUnique')
+        .mockResolvedValue(null);
 
-      await expect(service.updateWorkRecord(input)).rejects.toThrow(NotFoundException);
-      await expect(service.updateWorkRecord(input)).rejects.toThrow('Employee with ID 999 not found');
+      await expect(service.updateWorkRecord(input)).rejects.toThrow(
+        NotFoundException,
+      );
+      await expect(service.updateWorkRecord(input)).rejects.toThrow(
+        'Employee with ID 999 not found',
+      );
     });
 
     it('should throw NotFoundException if record not found', async () => {
@@ -819,11 +930,19 @@ describe('WorkRecordsService', () => {
         ZamknuteK: null,
       };
 
-      jest.spyOn(prismaService.zamestnanci, 'findUnique').mockResolvedValue(mockEmployee as any);
-      jest.spyOn(prismaService, '$queryRawUnsafe').mockResolvedValueOnce([] as any);
+      jest
+        .spyOn(prismaService.zamestnanci, 'findUnique')
+        .mockResolvedValue(mockEmployee as any);
+      jest
+        .spyOn(prismaService, '$queryRawUnsafe')
+        .mockResolvedValueOnce([] as any);
 
-      await expect(service.updateWorkRecord(input)).rejects.toThrow(NotFoundException);
-      await expect(service.updateWorkRecord(input)).rejects.toThrow('Work record with ID 999 not found');
+      await expect(service.updateWorkRecord(input)).rejects.toThrow(
+        NotFoundException,
+      );
+      await expect(service.updateWorkRecord(input)).rejects.toThrow(
+        'Work record with ID 999 not found',
+      );
     });
 
     it('should throw BadRequestException if no fields to update', async () => {
@@ -846,12 +965,19 @@ describe('WorkRecordsService', () => {
         Lock: false,
       };
 
-      jest.spyOn(prismaService.zamestnanci, 'findUnique').mockResolvedValue(mockEmployee as any);
-      jest.spyOn(prismaService, '$queryRawUnsafe')
+      jest
+        .spyOn(prismaService.zamestnanci, 'findUnique')
+        .mockResolvedValue(mockEmployee as any);
+      jest
+        .spyOn(prismaService, '$queryRawUnsafe')
         .mockResolvedValue([mockExistingRecord] as any);
 
-      await expect(service.updateWorkRecord(input)).rejects.toThrow(BadRequestException);
-      await expect(service.updateWorkRecord(input)).rejects.toThrow('No fields to update');
+      await expect(service.updateWorkRecord(input)).rejects.toThrow(
+        BadRequestException,
+      );
+      await expect(service.updateWorkRecord(input)).rejects.toThrow(
+        'No fields to update',
+      );
     });
 
     it('should handle partial updates (only some fields)', async () => {
@@ -894,8 +1020,11 @@ describe('WorkRecordsService', () => {
         HourTypes_HourType: 'Programovanie',
       };
 
-      jest.spyOn(prismaService.zamestnanci, 'findUnique').mockResolvedValue(mockEmployee as any);
-      jest.spyOn(prismaService, '$queryRawUnsafe')
+      jest
+        .spyOn(prismaService.zamestnanci, 'findUnique')
+        .mockResolvedValue(mockEmployee as any);
+      jest
+        .spyOn(prismaService, '$queryRawUnsafe')
         .mockResolvedValueOnce([mockExistingRecord] as any)
         .mockResolvedValueOnce(undefined as any)
         .mockResolvedValueOnce([mockUpdatedRecord] as any);
@@ -929,8 +1058,11 @@ describe('WorkRecordsService', () => {
         Lock: false,
       };
 
-      jest.spyOn(prismaService.zamestnanci, 'findUnique').mockResolvedValue(mockEmployee as any);
-      jest.spyOn(prismaService, '$queryRawUnsafe')
+      jest
+        .spyOn(prismaService.zamestnanci, 'findUnique')
+        .mockResolvedValue(mockEmployee as any);
+      jest
+        .spyOn(prismaService, '$queryRawUnsafe')
         .mockResolvedValueOnce([mockExistingRecord] as any) // Fetch existing
         .mockResolvedValueOnce(undefined as any); // DELETE (no return)
 
@@ -960,12 +1092,19 @@ describe('WorkRecordsService', () => {
         Lock: true, // Explicitly locked
       };
 
-      jest.spyOn(prismaService.zamestnanci, 'findUnique').mockResolvedValue(mockEmployee as any);
-      jest.spyOn(prismaService, '$queryRawUnsafe')
+      jest
+        .spyOn(prismaService.zamestnanci, 'findUnique')
+        .mockResolvedValue(mockEmployee as any);
+      jest
+        .spyOn(prismaService, '$queryRawUnsafe')
         .mockResolvedValue([mockExistingRecord] as any);
 
-      await expect(service.deleteWorkRecord(input)).rejects.toThrow(ForbiddenException);
-      await expect(service.deleteWorkRecord(input)).rejects.toThrow('Cannot delete locked record');
+      await expect(service.deleteWorkRecord(input)).rejects.toThrow(
+        ForbiddenException,
+      );
+      await expect(service.deleteWorkRecord(input)).rejects.toThrow(
+        'Cannot delete locked record',
+      );
     });
 
     it('should prevent deleting a record locked by ZamknuteK', async () => {
@@ -987,12 +1126,19 @@ describe('WorkRecordsService', () => {
         Lock: false,
       };
 
-      jest.spyOn(prismaService.zamestnanci, 'findUnique').mockResolvedValue(mockEmployee as any);
-      jest.spyOn(prismaService, '$queryRawUnsafe')
+      jest
+        .spyOn(prismaService.zamestnanci, 'findUnique')
+        .mockResolvedValue(mockEmployee as any);
+      jest
+        .spyOn(prismaService, '$queryRawUnsafe')
         .mockResolvedValue([mockExistingRecord] as any);
 
-      await expect(service.deleteWorkRecord(input)).rejects.toThrow(ForbiddenException);
-      await expect(service.deleteWorkRecord(input)).rejects.toThrow('Cannot delete locked record');
+      await expect(service.deleteWorkRecord(input)).rejects.toThrow(
+        ForbiddenException,
+      );
+      await expect(service.deleteWorkRecord(input)).rejects.toThrow(
+        'Cannot delete locked record',
+      );
     });
 
     it('should throw NotFoundException if employee not found', async () => {
@@ -1001,10 +1147,16 @@ describe('WorkRecordsService', () => {
         recordId: 123,
       };
 
-      jest.spyOn(prismaService.zamestnanci, 'findUnique').mockResolvedValue(null);
+      jest
+        .spyOn(prismaService.zamestnanci, 'findUnique')
+        .mockResolvedValue(null);
 
-      await expect(service.deleteWorkRecord(input)).rejects.toThrow(NotFoundException);
-      await expect(service.deleteWorkRecord(input)).rejects.toThrow('Employee with ID 999 not found');
+      await expect(service.deleteWorkRecord(input)).rejects.toThrow(
+        NotFoundException,
+      );
+      await expect(service.deleteWorkRecord(input)).rejects.toThrow(
+        'Employee with ID 999 not found',
+      );
     });
 
     it('should throw NotFoundException if record not found', async () => {
@@ -1020,11 +1172,19 @@ describe('WorkRecordsService', () => {
         ZamknuteK: null,
       };
 
-      jest.spyOn(prismaService.zamestnanci, 'findUnique').mockResolvedValue(mockEmployee as any);
-      jest.spyOn(prismaService, '$queryRawUnsafe').mockResolvedValueOnce([] as any);
+      jest
+        .spyOn(prismaService.zamestnanci, 'findUnique')
+        .mockResolvedValue(mockEmployee as any);
+      jest
+        .spyOn(prismaService, '$queryRawUnsafe')
+        .mockResolvedValueOnce([] as any);
 
-      await expect(service.deleteWorkRecord(input)).rejects.toThrow(NotFoundException);
-      await expect(service.deleteWorkRecord(input)).rejects.toThrow('Work record with ID 999 not found');
+      await expect(service.deleteWorkRecord(input)).rejects.toThrow(
+        NotFoundException,
+      );
+      await expect(service.deleteWorkRecord(input)).rejects.toThrow(
+        'Work record with ID 999 not found',
+      );
     });
   });
 });
