@@ -9,7 +9,8 @@ import { Button } from './button';
 import { cn } from '@/lib/utils';
 
 interface DatePickerProps {
-  date: Date | null;
+  date?: Date | null;
+  value?: Date | null;
   onChange: (date: Date | null) => void;
   placeholder?: string;
   captionLayout?: "dropdown" | "dropdown-buttons" | "buttons";
@@ -19,12 +20,15 @@ interface DatePickerProps {
 
 export function DatePicker({
   date,
+  value,
   onChange,
   placeholder = 'Pick a date',
   captionLayout = "dropdown-buttons",
   fromYear,
   toYear,
 }: DatePickerProps) {
+  // Support both 'date' and 'value' props for compatibility
+  const selectedDate = date ?? value ?? null;
   const [open, setOpen] = React.useState(false);
 
   const handleSelect = (selectedDate: Date | undefined) => {
@@ -41,20 +45,20 @@ export function DatePicker({
         <Button
           variant="outline"
           className={cn(
-            'w-full justify-start text-left font-normal',
-            !date && 'text-muted-foreground'
+            'w-full justify-start text-left font-normal h-9',
+            !selectedDate && 'text-muted-foreground'
           )}
         >
           <CalendarIcon className="mr-2 h-4 w-4" />
-          {date ? format(date, 'PPP') : <span>{placeholder}</span>}
+          {selectedDate ? format(selectedDate, 'PPP') : <span>{placeholder}</span>}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0">
         <Calendar
           mode="single"
-          selected={date || undefined}
+          selected={selectedDate || undefined}
           onSelect={handleSelect}
-          defaultMonth={date || undefined}
+          defaultMonth={selectedDate || undefined}
           initialFocus
           captionLayout={captionLayout}
           fromYear={fromYear}
