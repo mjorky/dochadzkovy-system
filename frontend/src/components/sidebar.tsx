@@ -2,11 +2,12 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Users, Database, Clock, FolderKanban, FileText, Settings, CalendarCheck, ChevronDown, LucideIcon } from "lucide-react"
+import { Users, Database, Clock, FolderKanban, FileText, Settings, CalendarCheck, ChevronDown, LucideIcon, LogOut } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { ModeToggle } from "@/components/mode-toggle"
 import { cn } from "@/lib/utils"
 import { useState } from "react"
+import { useAuth } from "@/providers/auth-provider"
 
 // Definícia štruktúry pre podmenu položky
 interface SubMenuItem {
@@ -21,6 +22,7 @@ interface MenuItem {
   href: string;
   icon: LucideIcon;
   submenu?: SubMenuItem[];
+  adminOnly?: boolean;
 }
 
 const menuItems: MenuItem[] = [
@@ -40,6 +42,7 @@ const menuItems: MenuItem[] = [
     name: "Admin",
     href: "/admin",
     icon: Settings,
+    adminOnly: true,
     submenu: [
       // Tu je definovaná ikona Users
       { name: "Employees", href: "/admin/employees", icon: Users },
@@ -51,6 +54,7 @@ const menuItems: MenuItem[] = [
 export function Sidebar() {
   const pathname = usePathname()
   const [expandedMenu, setExpandedMenu] = useState<string | null>(null)
+  const { user, logout } = useAuth()
 
   const handleMenuClick = (menuName: string) => {
     setExpandedMenu(expandedMenu === menuName ? null : menuName)
@@ -65,6 +69,11 @@ export function Sidebar() {
       <nav className="flex-1 px-3 py-4">
         <ul className="space-y-1">
           {menuItems.map((item) => {
+            // Hide admin items if user is not admin
+            if (item.adminOnly && !user?.isAdmin) {
+              return null
+            }
+
             const isActive =
               pathname === item.href || (item.submenu && item.submenu.some((sub) => pathname === sub.href))
             const Icon = item.icon
@@ -149,6 +158,17 @@ export function Sidebar() {
           })}
         </ul>
       </nav>
+      <div className="p-4 border-t border-sidebar-border">
+         {user && (
+            <div className="mb-2 px-2 py-1 text-sm text-muted-foreground">
+              Logged in as: <span className="font-semibold text-foreground">{user.username}</span>
+            </div>
+         )}
+         <Button variant="ghost" className="w-full justify-start gap-3 text-red-500 hover:text-red-600 hover:bg-red-100 dark:hover:bg-red-900/20" onClick={logout}>
+            <LogOut className="h-5 w-5" />
+            <span>Logout</span>
+         </Button>
+      </div>
     </aside>
   )
 }

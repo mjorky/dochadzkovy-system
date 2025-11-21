@@ -3,10 +3,12 @@ import { ProjectsService } from './projects.service';
 import { Project } from './entities/projects.entity';
 import { CreateProjectInput } from './dto/create-project.input';
 import { UpdateProjectInput } from './dto/update-project.input';
-import { UsePipes, ValidationPipe } from '@nestjs/common';
+import { UsePipes, ValidationPipe, UseGuards } from '@nestjs/common';
+import { GqlAuthGuard } from '../auth/gql-auth.guard';
 
 @Resolver(() => Project)
 // V-- Uisti sa, že tu máš "export"
+@UseGuards(GqlAuthGuard)
 export class ProjectsResolver {
   constructor(private readonly projectsService: ProjectsService) {}
 

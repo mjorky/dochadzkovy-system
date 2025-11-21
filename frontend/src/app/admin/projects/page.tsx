@@ -1,5 +1,6 @@
 "use client"
 
+import { AdminGuard } from "@/components/admin-guard"
 import { useState, useMemo, useDeferredValue } from "react"
 import { useQuery } from "@apollo/client/react"
 import { Loader2, XCircle, FolderKanban } from "lucide-react"
@@ -69,13 +70,31 @@ export default function ProjectsPage() {
   const handleEditOpen = (project: Project) => { setSelectedProject(project); setDialogMode("edit"); };
   const handleSuccess = () => { setDialogMode(null); };
 
-  if (isLoadingProjects || isLoadingCountries || isLoadingManagers) { /* ... loading ... */ }
-  if (error) { /* ... error ... */ }
+  if (isLoadingProjects || isLoadingCountries || isLoadingManagers) { 
+    return (
+      <AdminGuard>
+        <div className="flex items-center justify-center min-h-screen">
+          <Loader2 className="h-8 w-8 animate-spin" />
+        </div>
+      </AdminGuard>
+    )
+  }
+  
+  if (error) {
+    return (
+      <AdminGuard>
+        <div className="flex items-center justify-center min-h-screen">
+          <p>Error loading projects</p>
+        </div>
+      </AdminGuard>
+    )
+  }
 
   const totalProjects = allProjects.length;
   const activeVariable = filters.activeFilter === 'all' ? undefined : filters.activeFilter === 'active';
 
   return (
+    <AdminGuard>
     <div className="p-8 space-y-4">
       <Breadcrumb>
         <BreadcrumbList>
@@ -154,5 +173,6 @@ export default function ProjectsPage() {
         currentFilters={{ active: activeVariable, search: filters.searchText }}
       />
     </div>
+    </AdminGuard>
   )
 }

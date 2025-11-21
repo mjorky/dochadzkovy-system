@@ -4,12 +4,17 @@ import { Employee } from './entities/employee.entity';
 import { CreateEmployeeInput } from './dto/create-employee.input';
 import { UpdateEmployeeInput } from './dto/update-employee.input';
 import { constructTableName } from '../work-records/utils/normalize-table-name';
+import { UsernameService } from '../auth/username.service';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class EmployeesService {
   private readonly logger = new Logger(EmployeesService.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly usernameService: UsernameService,
+  ) {}
 
   async findAll(): Promise<Employee[]> {
     try {
@@ -97,7 +102,20 @@ export class EmployeesService {
         include: { ZamestnanecTyp: true },
       });
 
-      // 2. Create personal table
+      // 2. Create UserCredentials
+      const username = await this.usernameService.generateUsername(input.firstName, input.lastName);
+      const defaultPassword = 'EmsT_2811'; 
+      const passwordHash = await bcrypt.hash(defaultPassword, 10);
+
+      await this.prisma.userCredentials.create({
+        data: {
+          ZamestnanecID: newEmployee.ID,
+          Username: username,
+          PasswordHash: passwordHash,
+        },
+      });
+
+      // 3. Create personal table
       const tableName = constructTableName(input.firstName, input.lastName);
       try {
         await this.prisma.$queryRawUnsafe(`
@@ -121,17 +139,14 @@ export class EmployeesService {
           );
         `);
         
-        // 3. Refresh AllTData view
-        // Note: In a real scenario, we'd construct the UNION view dynamically from all t_ tables.
-        // For this implementation, we'll assume there's a stored procedure or we just run a basic refresh if it's a materialized view.
-        // However, AllTData is likely a simple VIEW defined as UNION ALL.
-        // To "refresh" it, we effectively need to recreate it with the new table included.
-        // For safety in this MVP, we will call a helper function or just log that view needs refresh.
-        // Given requirements: "Refresh AllTData view"
+        // 4. Refresh AllTData view
         await this.refreshAllTDataView();
 
       } catch (dbError) {
-        // If table creation fails, we should probably delete the employee record to maintain consistency
+        // If table creation fails, we should delete the employee record to maintain consistency
+        // Cascade delete should remove UserCredentials too if configured, but let's rely on FK constraints or manual cleanup
+        // Prisma doesn't support cascade delete on deleteMany/delete unless configured in schema. 
+        // Here we just delete employee, UserCredentials should be deleted via Cascade in schema.
         await this.prisma.zamestnanci.delete({ where: { ID: newEmployee.ID } });
         this.logger.error(`Failed to create table ${tableName}, rolled back employee creation`, dbError);
         throw new InternalServerErrorException('Failed to create employee work record table');
@@ -150,7 +165,7 @@ export class EmployeesService {
   async update(input: UpdateEmployeeInput): Promise<Employee> {
     const existingEmployee = await this.prisma.zamestnanci.findUnique({
         where: { ID: BigInt(input.id) },
-        include: { ZamestnanecTyp: true },
+        include: { ZamestnanecTyp: true, UserCredentials: true },
     });
 
     if (!existingEmployee) {
@@ -181,19 +196,39 @@ export class EmployeesService {
             include: { ZamestnanecTyp: true },
         });
 
-        // Name Change Logic - Table Rename
+        // Name Change Logic
         if (
             (input.firstName && input.firstName !== existingEmployee.Meno) ||
             (input.lastName && input.lastName !== existingEmployee.Priezvisko)
         ) {
+            // 1. Rename Table
             const oldTableName = constructTableName(existingEmployee.Meno, existingEmployee.Priezvisko);
             const newTableName = constructTableName(updatedEmployee.Meno, updatedEmployee.Priezvisko);
 
             if (oldTableName !== newTableName) {
+                // Check if old table exists to avoid error
+                try {
                 await this.prisma.$queryRawUnsafe(`ALTER TABLE "${oldTableName}" RENAME TO "${newTableName}"`);
                 await this.refreshAllTDataView();
+                } catch (e) {
+                   this.logger.warn(`Could not rename table ${oldTableName} to ${newTableName}. It might not exist.`, e);
+                }
+            }
+
+            // 2. Update UserCredentials Username
+            // Spec: "Trigger: Occurs when an Admin creates a new employee or updates an employee's name"
+            if (existingEmployee.UserCredentials) {
+                const newUsername = await this.usernameService.generateUsername(updatedEmployee.Meno, updatedEmployee.Priezvisko);
+                if (newUsername !== existingEmployee.UserCredentials.Username) {
+                    await this.prisma.userCredentials.update({
+                        where: { ID: existingEmployee.UserCredentials.ID },
+                        data: { Username: newUsername },
+                    });
+                }
             }
         }
+
+        // Also update isAdmin in credentials payload/cache if we had one, but we query DB on login so it's fine.
 
         return this.mapToEntity(updatedEmployee);
     } catch (error) {
@@ -217,7 +252,7 @@ export class EmployeesService {
           // Drop table
           await this.prisma.$queryRawUnsafe(`DROP TABLE IF EXISTS "${tableName}"`);
           
-          // Delete record
+          // Delete record (Cascade will delete UserCredentials)
           await this.prisma.zamestnanci.delete({ where: { ID: BigInt(id) } });
 
           // Refresh view
@@ -231,12 +266,6 @@ export class EmployeesService {
   }
 
   private async refreshAllTDataView() {
-    // In a real production app, we would dynamically build the UNION query by querying information_schema
-    // For this spec, we will simulate the view refresh call or execute a placeholder.
-    // Since we don't have the full logic to rebuild the view dynamically in this context without querying all tables,
-    // we will implement a simplified version or assume a stored procedure exists.
-    
-    // Attempt to rebuild view dynamically:
     try {
         const tables: {table_name: string}[] = await this.prisma.$queryRaw`
             SELECT table_name 
@@ -246,7 +275,6 @@ export class EmployeesService {
         `;
         
         if (tables.length === 0) {
-             // If no tables, create dummy view
              await this.prisma.$queryRawUnsafe(`CREATE OR REPLACE VIEW "AllTData" AS SELECT 1 AS "ID" WHERE 1=0`);
              return;
         }
@@ -256,7 +284,6 @@ export class EmployeesService {
 
     } catch (e) {
         this.logger.error('Failed to refresh AllTData view', e);
-        // Don't block the main operation if view refresh fails, but log it
     }
   }
 

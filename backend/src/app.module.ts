@@ -12,6 +12,7 @@ import { WorkRecordsModule } from './work-records/work-records.module';
 import { ProjectsModule } from './projects/projects.module';
 import { CountriesModule } from './countries/countries.module';
 import { ReportsModule } from './reports/reports.module';
+import { AuthModule } from './auth/auth.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -34,6 +35,7 @@ import { ReportsModule } from './reports/reports.module';
     ProjectsModule,
     CountriesModule,
     ReportsModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

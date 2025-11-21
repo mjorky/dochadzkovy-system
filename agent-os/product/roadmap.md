@@ -472,7 +472,7 @@ This roadmap prioritizes quick delivery of legacy application functionality usin
 
 **Goal:** Generate project-specific hour statistics for billing and analysis.
 
-### 32. [ ] Work List Data Query — Create GraphQL query that aggregates work records for selected employee and month grouped by project Number, sums hours by HourType productivity buckets (Produktívne, Neproduktívne, ProduktívneOutSKCZ, NeproduktívneZ, Produktívne70), sums km traveled, includes project manager full name from Projects.Manager FK. `M`
+### 32. [x] Work List Data Query — Create GraphQL query that aggregates work records for selected employee and month grouped by project Number, sums hours by HourType productivity buckets (Produktívne, Neproduktívne, ProduktívneOutSKCZ, NeproduktívneZ, Produktívne70), sums km traveled, includes project manager full name from Projects.Manager FK. `M`
 
 **Testing Guide (Manager/Admin User):**
 - Your developer will test this query in GraphQL Playground
@@ -480,7 +480,7 @@ This roadmap prioritizes quick delivery of legacy application functionality usin
 - Query returns projects with hour breakdowns: Productive hours, Non-productive hours, Travel hours, etc.
 - Check: do the project numbers and hour totals look correct?
 
-### 33. [ ] Work List PDF Generation & UI — Implement PDF generation for work list with table: Project Number, hour columns (Produktívne, Neproduktívne, ProduktívneZ, NeproduktívneZ, Produktívne70), KM column, Project Manager column, employee signature. Build UI screen "Reports > Work List" with form: Employee dropdown, Month picker, "Generate PDF" button, preview table before PDF. `M`
+### 33. [x] Work List PDF Generation & UI — Implement PDF generation for work list with table: Project Number, hour columns (Produktívne, Neproduktívne, ProduktívneZ, NeproduktívneZ, Produktívne70), KM column, Project Manager column, employee signature. Build UI screen "Reports > Work List" with form: Employee dropdown, Month picker, "Generate PDF" button, preview table before PDF. `M`
 
 **Testing Guide (Manager/Admin User):**
 - Go to "Reports" → "Work List"

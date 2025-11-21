@@ -1,11 +1,13 @@
 'use client';
 
+import { AdminGuard } from "@/components/admin-guard";
 import { useState, useMemo, useDeferredValue } from 'react';
 import { useQuery } from '@apollo/client/react';
 import { Loader2, XCircle, Users, Plus } from 'lucide-react';
 import { EMPLOYEES_QUERY, EmployeesData, Employee } from '@/graphql/queries/employees';
 import { EmployeeTable } from '@/components/employee-table';
 import { EmployeeDialog } from '@/components/employee-dialog';
+import { ResetPasswordDialog } from '@/components/reset-password-dialog';
 import { useDeleteEmployee } from '@/hooks/use-delete-employee';
 import { Button } from '@/components/ui/button';
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator, BreadcrumbPage } from '@/components/ui/breadcrumb';
@@ -26,7 +28,7 @@ export default function EmployeesPage() {
   const { loading, error, data, refetch } = useQuery<EmployeesData>(EMPLOYEES_QUERY);
   const { deleteEmployee } = useDeleteEmployee();
   
-  const [dialogMode, setDialogMode] = useState<"create" | "edit" | null>(null);
+  const [dialogMode, setDialogMode] = useState<"create" | "edit" | "reset-password" | null>(null);
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
 
@@ -67,6 +69,11 @@ export default function EmployeesPage() {
     setDialogMode("edit");
   };
 
+  const handleResetPassword = (employee: Employee) => {
+    setSelectedEmployee(employee);
+    setDialogMode("reset-password");
+  };
+
   const handleDelete = (employee: Employee) => {
     setDeleteId(employee.id);
   };
@@ -84,17 +91,20 @@ export default function EmployeesPage() {
 
   if (loading) {
     return (
+      <AdminGuard>
       <div className="flex items-center justify-center min-h-screen">
         <div className="flex flex-col items-center gap-3">
           <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
           <p className="text-sm text-muted-foreground">Loading...</p>
         </div>
       </div>
+      </AdminGuard>
     );
   }
 
   if (error) {
     return (
+      <AdminGuard>
       <div className="flex items-center justify-center min-h-screen">
         <Card className="max-w-md border-destructive">
           <CardContent className="flex flex-col items-center gap-4 text-center p-6">
@@ -107,10 +117,12 @@ export default function EmployeesPage() {
           </CardContent>
         </Card>
       </div>
+      </AdminGuard>
     );
   }
 
   return (
+    <AdminGuard>
     <div className="p-8">
       <Breadcrumb className="mb-2">
         <BreadcrumbList>
@@ -200,16 +212,23 @@ export default function EmployeesPage() {
             employees={filteredEmployees} 
             onEdit={handleEdit}
             onDelete={handleDelete}
+            onResetPassword={handleResetPassword}
           />
         </>
       )}
 
       <EmployeeDialog
-        open={dialogMode !== null}
+        open={dialogMode === 'create' || dialogMode === 'edit'}
         onOpenChange={(open) => !open && setDialogMode(null)}
-        mode={dialogMode || 'create'}
+        mode={(dialogMode === 'create' || dialogMode === 'edit') ? dialogMode : 'create'}
         initialData={selectedEmployee}
         onSuccess={handleSuccess}
+      />
+
+      <ResetPasswordDialog
+        open={dialogMode === 'reset-password'}
+        onOpenChange={(open) => !open && setDialogMode(null)}
+        employee={selectedEmployee}
       />
 
       <AlertDialog open={deleteId !== null} onOpenChange={(open) => !open && setDeleteId(null)}>
@@ -230,5 +249,6 @@ export default function EmployeesPage() {
         </AlertDialogContent>
       </AlertDialog>
     </div>
+    </AdminGuard>
   );
 }
