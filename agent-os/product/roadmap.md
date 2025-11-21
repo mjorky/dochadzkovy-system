@@ -208,7 +208,7 @@ This roadmap prioritizes quick delivery of legacy application functionality usin
 
 **Goal:** Administrators can manage projects without touching the database directly.
 
-### 16. [ ] Projects List Screen — Build "Admin > Projects" screen with table showing all projects: Number, Name, Description, Country, Manager (full name), Active checkbox. Add filtering by active status and search by name/number. `S`
+### 16. [x] Projects List Screen — Build "Admin > Projects" screen with table showing all projects: Number, Name, Description, Country, Manager (full name), Active checkbox. Add filtering by active status and search by name/number. `S`
 
 **Testing Guide (Admin User):**
 - Log in and click "Admin" → "Projects" in menu
@@ -221,7 +221,7 @@ This roadmap prioritizes quick delivery of legacy application functionality usin
 - Is each manager's name shown correctly?
 - Does the Active column show checkmarks for active projects?
 
-### 17. [ ] Project Create/Edit Dialog & Mutations — Add "Add Project" button opening form with fields: Number (unique), Name, Description, Country dropdown, Manager dropdown (all employees), Active checkbox. Implement create and update mutations with validation. `M`
+### 17. [x] Project Create/Edit Dialog & Mutations — Add "Add Project" button opening form with fields: Number (unique), Name, Description, Country dropdown, Manager dropdown (all employees), Active checkbox. Implement create and update mutations with validation. `M`
 
 **Testing Guide (Admin User):**
 - Click "+ Add Project" button
@@ -236,7 +236,7 @@ This roadmap prioritizes quick delivery of legacy application functionality usin
 - Can you edit existing projects?
 - Do your changes save properly?
 
-### 18. [ ] Project Activation Toggle — Allow clicking Active checkbox in table to toggle AllowAssignWorkingHours without opening edit dialog, update backend immediately, show success/error notification, reflect in work record project dropdowns. `S`
+### 18. [x] Project Activation Toggle — Allow clicking Active checkbox in table to toggle AllowAssignWorkingHours without opening edit dialog, update backend immediately, show success/error notification, reflect in work record project dropdowns. `S`
 
 **Testing Guide (Admin User):**
 - In the Projects table, click the Active checkbox on a project to uncheck it
@@ -257,7 +257,7 @@ This roadmap prioritizes quick delivery of legacy application functionality usin
 
 **Goal:** Administrators can manage employee data and see overtime totals.
 
-### 19. [ ] Employees List Screen — Build "Admin > Employees" screen with table showing all employees: Full Name (with titles), Employment Type, Vacation balance, Admin flag, Total Overtime (sum from Nadcasy), Last Entry date, Locked Until date. Add search and sorting. `S`
+### 19. [x] Employees List Screen — Build "Admin > Employees" screen with table showing all employees: Full Name (with titles), Employment Type, Vacation balance, Admin flag, Total Overtime (sum from Nadcasy), Last Entry date, Locked Until date. Add search and sorting. `S`
 
 **Testing Guide (Admin User):**
 - Click "Admin" → "Employees" in menu
@@ -420,7 +420,7 @@ This roadmap prioritizes quick delivery of legacy application functionality usin
 
 **Goal:** Generate legally-compliant Slovak work reports as PDF.
 
-### 29. [ ] Work Report Data Query — Create GraphQL query that aggregates work records for selected employee and month, computes total workdays (excluding weekends and Holidays), calculates total hours with overnight support, groups absences by CinnostTyp category, calculates weekend/holiday work hours. `M`
+### 29. [x] Work Report Data Query — Create GraphQL query that aggregates work records for selected employee and month, computes total workdays (excluding weekends and Holidays), calculates total hours with overnight support, groups absences by CinnostTyp category, calculates weekend/holiday work hours. `M`
 
 **Testing Guide (Manager/Admin User):**
 - Your developer will test this in GraphQL Playground
@@ -428,7 +428,7 @@ This roadmap prioritizes quick delivery of legacy application functionality usin
 - Query should return summary data: total work days, total hours, breakdown by absence type
 - Check with your knowledge: do the numbers make sense?
 
-### 30. [ ] Work Report PDF Generation — Implement server-side PDF generation (using library like pdfkit or puppeteer) with two-page layout: Page 1 - daily table (date, weekday, time from/to, hours, absence reason), Page 2 - four summary tables (Work, Weekend, Holiday, Business trips) with category rows matching legacy format. Include employee signature if available. `L`
+### 30. [x] Work Report PDF Generation — Implement server-side PDF generation (using library like pdfkit or puppeteer) with two-page layout: Page 1 - daily table (date, weekday, time from/to, hours, absence reason), Page 2 - four summary tables (Work, Weekend, Holiday, Business trips) with category rows matching legacy format. Include employee signature if available. `L`
 
 **Testing Guide (Manager/Admin User):**
 - Go to "Reports" → "Work Report" screen
@@ -447,7 +447,7 @@ This roadmap prioritizes quick delivery of legacy application functionality usin
 - Does it match Slovak legal requirements (compare to old reports)?
 - Is employee signature included if available?
 
-### 31. [ ] Work Report UI Screen — Build "Reports > Work Report" screen with form: Employee dropdown, Month picker, "Generate PDF" button, preview area showing summary stats (total days, total hours) before generating PDF. Add loading state during PDF generation. `S`
+### 31. [x] Work Report UI Screen — Build "Reports > Work Report" screen with form: Employee dropdown, Month picker, "Generate PDF" button, preview area showing summary stats (total days, total hours) before generating PDF. Add loading state during PDF generation. `S`
 
 **Testing Guide (Manager/Admin User):**
 - Click "Reports" → "Work Report" in menu
