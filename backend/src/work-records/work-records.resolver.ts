@@ -1,4 +1,4 @@
-import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
+import { Resolver, Query, Mutation, Args, Int, InputType, Field } from '@nestjs/graphql';
 import { WorkRecordsService } from './work-records.service';
 import { WorkRecordsResponse } from './entities/work-records-response.entity';
 import { WorkRecordsInput } from './dto/work-records.input';
@@ -12,6 +12,23 @@ import { ProjectCatalogItem } from '../projects/entities/project-catalog-item.en
 import { AbsenceType } from './entities/absence-type.entity';
 import { ProductivityType } from './entities/productivity-type.entity';
 import { WorkType } from './entities/work-type.entity';
+
+// --- TU DEFINUJEME INPUT TYPE PRIAMO (aby sme sa vyhli chybám s importmi) ---
+@InputType()
+export class WorkReportPdfInput {
+  @Field(() => Int)
+  employeeId: number;
+
+  @Field(() => Int)
+  month: number;
+
+  @Field(() => Int)
+  year: number;
+
+  @Field(() => String, { nullable: true })
+  signatureImage?: string;
+}
+// -------------------------------------------------------------------------
 
 @Resolver()
 export class WorkRecordsResolver {
@@ -74,16 +91,17 @@ export class WorkRecordsResolver {
     return this.workRecordsService.getProductivityTypes();
   }
 
-      @Query(() => [WorkType], { name: 'getWorkTypes' })
+  @Query(() => [WorkType], { name: 'getWorkTypes' })
+  async getWorkTypes(): Promise<WorkType[]> {
+    return this.workRecordsService.getWorkTypes();
+  }
 
-      async getWorkTypes(): Promise<WorkType[]> {
-
-        return this.workRecordsService.getWorkTypes();
-
-      }
-
-    }
-
-    
-
-  
+  // --- TOTO JE TVOJA NOVÁ QUERY ---
+  @Query(() => String, { name: 'getWorkReportPDF' })
+  async getWorkReportPDF(
+    @Args('input') input: WorkReportPdfInput,
+  ): Promise<string> {
+    // Pozor: service musí očakávať tento typ, alebo 'any' ak import v service nesedí
+    return this.workRecordsService.getWorkReportPDF(input);
+  }
+}

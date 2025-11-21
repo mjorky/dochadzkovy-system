@@ -33,6 +33,7 @@ const menuItems: MenuItem[] = [
     icon: FileText,
     submenu: [
       { name: "Work Report", href: "/reports/work-report", icon: FileText },
+      { name: "Work List", href: "/reports/work-list", icon: FileText },
     ],
   },
   {
@@ -42,7 +43,7 @@ const menuItems: MenuItem[] = [
     submenu: [
       // Tu je definovaná ikona Users
       { name: "Employees", href: "/admin/employees", icon: Users },
-      { name: "Projects", href: "/admin/projects", icon: FolderKanban }, 
+      { name: "Projects", href: "/admin/projects", icon: FolderKanban },
     ],
   },
 ]
@@ -79,9 +80,9 @@ export function Sidebar() {
                       className={cn(
                         "w-full justify-between gap-3",
                         isActive &&
-                          "bg-sidebar-primary text-sidebar-primary-foreground font-medium hover:bg-sidebar-primary/90",
+                        "bg-sidebar-primary text-sidebar-primary-foreground font-medium hover:bg-sidebar-primary/90",
                         !isActive &&
-                          "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+                        "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
                       )}
                     >
                       <span className="flex items-center gap-3">
@@ -90,14 +91,14 @@ export function Sidebar() {
                       </span>
                       <ChevronDown className={cn("h-4 w-4 transition-transform", isExpanded && "rotate-180")} />
                     </Button>
-                    
+
                     {isExpanded && (
                       <ul className="space-y-1 mt-2 ml-4">
                         {item.submenu.map((subitem) => {
                           const isSubActive = pathname === subitem.href
-                          
-                          const SubIcon = subitem.icon 
-                          
+
+                          const SubIcon = subitem.icon
+
                           return (
                             <li key={subitem.href}>
                               <Button
@@ -105,9 +106,9 @@ export function Sidebar() {
                                 className={cn(
                                   "w-full justify-start gap-3 text-sm",
                                   isSubActive &&
-                                    "bg-sidebar-primary text-sidebar-primary-foreground font-medium hover:bg-sidebar-primary/90",
+                                  "bg-sidebar-primary text-sidebar-primary-foreground font-medium hover:bg-sidebar-primary/90",
                                   !isSubActive &&
-                                    "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+                                  "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
                                 )}
                                 asChild
                               >
@@ -131,9 +132,9 @@ export function Sidebar() {
                     className={cn(
                       "w-full justify-start gap-3",
                       isActive &&
-                        "bg-sidebar-primary text-sidebar-primary-foreground font-medium hover:bg-sidebar-primary/90",
+                      "bg-sidebar-primary text-sidebar-primary-foreground font-medium hover:bg-sidebar-primary/90",
                       !isActive &&
-                        "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+                      "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
                     )}
                     asChild
                   >

@@ -1,9 +1,20 @@
 import { WorkReport } from '../../work-records/entities/work-report.entity';
 
-export function getWorkReportHTML(data: WorkReport, employeeName: string, month: number, year: number): string {
-  const reportMonth = new Date(year, month - 1).toLocaleString('sk-SK', { month: 'long', year: 'numeric' });
+export function getWorkReportHTML(
+  data: WorkReport,
+  employeeName: string,
+  month: number,
+  year: number,
+  signatureImage?: string,
+): string {
+  const reportMonth = new Date(year, month - 1).toLocaleString('sk-SK', {
+    month: 'long',
+    year: 'numeric',
+  });
 
-  const dailyRows = data.dailyRecords.map(record => `
+  const dailyRows = data.dailyRecords
+    .map(
+      (record) => `
     <tr>
       <td>${record.date}</td>
       <td>${record.dayOfWeek}</td>
@@ -12,22 +23,32 @@ export function getWorkReportHTML(data: WorkReport, employeeName: string, month:
       <td><strong>${record.hours?.toFixed(2) || '-'}</strong></td>
       <td>${record.absenceReason || '-'}</td>
     </tr>
-  `).join('');
+  `,
+    )
+    .join('');
 
-  const absenceRows = data.absenceSummary.map(summary => `
+  const absenceRows = data.absenceSummary
+    .map(
+      (summary) => `
     <tr>
       <td>${summary.category}</td>
       <td>${summary.days}</td>
       <td>${summary.hours.toFixed(2)}</td>
     </tr>
-  `).join('');
+  `,
+    )
+    .join('');
 
-  const activityRows = data.activitySummary.map(summary => `
+  const activityRows = data.activitySummary
+    .map(
+      (summary) => `
     <tr>
       <td>${summary.activityType}</td>
       <td><strong>${summary.hours.toFixed(2)}</strong></td>
     </tr>
-  `).join('');
+  `,
+    )
+    .join('');
 
   return `
     <!DOCTYPE html>
@@ -48,6 +69,11 @@ export function getWorkReportHTML(data: WorkReport, employeeName: string, month:
           padding: 15mm;
           box-sizing: border-box;
           page-break-after: always;
+          display: flex;
+          flex-direction: column;
+        }
+        .content-wrapper {
+          flex-grow: 1;
         }
         .header {
           text-align: center;
@@ -123,60 +149,78 @@ export function getWorkReportHTML(data: WorkReport, employeeName: string, month:
             font-size: 11px;
             color: #64748b;
         }
+        .footer {
+          margin-top: auto;
+          padding-top: 20px;
+          border-top: 1px solid #e2e8f0;
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-end;
+        }
       </style>
     </head>
     <body>
       <div class="page">
-        <div class="header">
-          <h1>Mesačný výkaz dochádzky</h1>
-          <p>${employeeName} - ${reportMonth}</p>
+        <div class="content-wrapper">
+          <div class="header">
+            <h1>Mesačný výkaz dochádzky</h1>
+            <p>${employeeName} - ${reportMonth}</p>
+            <p style="font-size: 9px; color: #64748b; margin-top: 5px;">Evidencia pracovného času podľa §99 zákona č. 311/2001 Z.z. Zákonník práce v z.n.p.</p>
+          </div>
+
+          <div class="summary-grid">
+              <div class="summary-card">
+                  <div class="value">${data.totalWorkDays}</div>
+                  <div class="label">Pracovné dni</div>
+              </div>
+              <div class="summary-card">
+                  <div class="value">${data.totalHours.toFixed(2)}</div>
+                  <div class="label">Celkovo hodín</div>
+              </div>
+              <div class="summary-card">
+                  <div class="value">${data.weekendWorkHours.toFixed(2)}</div>
+                  <div class="label">Víkendové hodiny</div>
+              </div>
+              <div class="summary-card">
+                  <div class="value">${data.holidayWorkHours.toFixed(2)}</div>
+                  <div class="label">Sviatočné hodiny</div>
+              </div>
+          </div>
+          
+          <div class="card">
+            <h2>Záznamy dochádzky</h2>
+            <table>
+              <thead>
+                <tr>
+                  <th>Dátum</th>
+                  <th>Deň</th>
+                  <th>Začiatok</th>
+                  <th>Koniec</th>
+                  <th>Hodiny</th>
+                  <th>Dôvod/Činnosť</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${dailyRows}
+              </tbody>
+            </table>
+
+          </div>
         </div>
 
-        <div class="summary-grid">
-            <div class="summary-card">
-                <div class="value">${data.totalWorkDays}</div>
-                <div class="label">Pracovné dni</div>
-            </div>
-            <div class="summary-card">
-                <div class="value">${data.totalHours.toFixed(2)}</div>
-                <div class="label">Celkovo hodín</div>
-            </div>
-            <div class="summary-card">
-                <div class="value">${data.weekendWorkHours.toFixed(2)}</div>
-                <div class="label">Víkendové hodiny</div>
-            </div>
-             <div class="summary-card">
-                <div class="value">${data.holidayWorkHours.toFixed(2)}</div>
-                <div class="label">Sviatočné hodiny</div>
-            </div>
-        </div>
-        
-        <div class="card">
-          <h2>Záznamy dochádzky</h2>
-          <table>
-            <thead>
-              <tr>
-                <th>Dátum</th>
-                <th>Deň</th>
-                <th>Začiatok</th>
-                <th>Koniec</th>
-                <th>Hodiny</th>
-                <th>Dôvod/Činnosť</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${dailyRows}
-            </tbody>
-          </table>
+        <div class="footer">
         </div>
       </div>
       
-      ${data.activitySummary.length > 0 ? `
+      ${
+        data.activitySummary.length > 0
+          ? `
       <div class="page">
         <div class="header">
             <h1>Sumár hodín podľa typov činností</h1>
+            <p style="font-size: 9px; color: #64748b; margin-top: 5px;">Evidencia pracovného času podľa §99 zákona č. 311/2001 Z.z. Zákonník práce v z.n.p.</p>
         </div>
-        <div class="card">
+        <div class="card" style="flex-grow: 1;">
           <table>
             <thead>
               <tr>
@@ -189,13 +233,26 @@ export function getWorkReportHTML(data: WorkReport, employeeName: string, month:
             </tbody>
           </table>
         </div>
+        <!-- Signature block inserted here -->
+        <div style="width: 100%; text-align: right; margin-top: auto; padding-top: 50px; padding-bottom: 20px;">
+          <div style="display: inline-block; text-align: center;">
+            ${signatureImage ? `<img src="data:image/png;base64,${signatureImage}" alt="signature" style="height: 40px; margin-bottom: -5px;"/>` : ''}
+            <p style="margin-bottom: 5px; border-bottom: 1px solid #334155; width: 250px;">&nbsp;</p>
+            <p style="margin: 0;">Podpis zamestnanca</p>
+          </div>
+        </div>
       </div>
-      ` : ''}
+      `
+          : ''
+      }
       
-      ${data.absenceSummary.length > 0 ? `
+      ${
+        data.absenceSummary.length > 0
+          ? `
       <div class="page">
         <div class="header">
             <h1>Súhrn neprítomností</h1>
+            <p style="font-size: 9px; color: #64748b; margin-top: 5px;">Evidencia pracovného času podľa §99 zákona č. 311/2001 Z.z. Zákonník práce v z.n.p.</p>
         </div>
         <div class="card">
           <table>
@@ -212,7 +269,9 @@ export function getWorkReportHTML(data: WorkReport, employeeName: string, month:
           </table>
         </div>
       </div>
-      ` : ''}
+      `
+          : ''
+      }
     </body>
     </html>
   `;

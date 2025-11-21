@@ -7,19 +7,26 @@ export class Project {
   @Field(() => ID)
   id: string;
 
-  @Field() 
+  @Field()
   name: string;
 
   @Field()
   number: string;
 
-  @Field(() => String, { nullable: true, description: 'Optional project description.' })
+  @Field(() => String, {
+    nullable: true,
+    description: 'Optional project description.',
+  })
   description: string | null;
 
-  @Field(() => Boolean, { description: 'Allows assigning working hours to this project.' })
+  @Field(() => Boolean, {
+    description: 'Allows assigning working hours to this project.',
+  })
   active: boolean;
 
-  @Field(() => Country, { description: 'The country associated with the project.' })
+  @Field(() => Country, {
+    description: 'The country associated with the project.',
+  })
   country: Country;
 
   @Field(() => Employee, { description: 'The employee managing the project.' })

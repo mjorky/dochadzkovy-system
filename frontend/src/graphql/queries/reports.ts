@@ -1,8 +1,24 @@
 import { gql } from '@apollo/client';
 
 export const GET_WORK_REPORT_PDF = gql`
-  query GetWorkReportPDF($employeeId: Int!, $month: Int!, $year: Int!) {
-    getWorkReportPDF(input: { employeeId: $employeeId, month: $month, year: $year })
+  query GetWorkReportPDF(
+    $employeeId: Int!
+    $month: Int!
+    $year: Int!
+    $signatureImage: String
+    $isLegalReport: Boolean
+    $legalReportTime: String
+  ) {
+    getWorkReportPDF(
+      input: {
+        employeeId: $employeeId
+        month: $month
+        year: $year
+        signatureImage: $signatureImage
+        isLegalReport: $isLegalReport
+        legalReportTime: $legalReportTime
+      }
+    )
   }
 `;
 

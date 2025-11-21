@@ -19,21 +19,58 @@ export function normalizeForTableName(name: string): string {
   // Map Slovak/Czech/German special characters to their ASCII equivalents
   const charMap: Record<string, string> = {
     // Lowercase
-    'á': 'a', 'ä': 'a', 'č': 'c', 'ď': 'd', 'é': 'e', 'ě': 'e',
-    'í': 'i', 'ľ': 'l', 'ĺ': 'l', 'ň': 'n', 'ó': 'o', 'ô': 'o',
-    'ŕ': 'r', 'š': 's', 'ť': 't', 'ú': 'u', 'ů': 'u', 'ü': 'u',
-    'ý': 'y', 'ž': 'z', 'ö': 'o',
+    á: 'a',
+    ä: 'a',
+    č: 'c',
+    ď: 'd',
+    é: 'e',
+    ě: 'e',
+    í: 'i',
+    ľ: 'l',
+    ĺ: 'l',
+    ň: 'n',
+    ó: 'o',
+    ô: 'o',
+    ŕ: 'r',
+    š: 's',
+    ť: 't',
+    ú: 'u',
+    ů: 'u',
+    ü: 'u',
+    ý: 'y',
+    ž: 'z',
+    ö: 'o',
     // Uppercase
-    'Á': 'A', 'Ä': 'A', 'Č': 'C', 'Ď': 'D', 'É': 'E', 'Ě': 'E',
-    'Í': 'I', 'Ľ': 'L', 'Ĺ': 'L', 'Ň': 'N', 'Ó': 'O', 'Ô': 'O',
-    'Ŕ': 'R', 'Š': 'S', 'Ť': 'T', 'Ú': 'U', 'Ů': 'U', 'Ü': 'U',
-    'Ý': 'Y', 'Ž': 'Z', 'Ö': 'O',
+    Á: 'A',
+    Ä: 'A',
+    Č: 'C',
+    Ď: 'D',
+    É: 'E',
+    Ě: 'E',
+    Í: 'I',
+    Ľ: 'L',
+    Ĺ: 'L',
+    Ň: 'N',
+    Ó: 'O',
+    Ô: 'O',
+    Ŕ: 'R',
+    Š: 'S',
+    Ť: 'T',
+    Ú: 'U',
+    Ů: 'U',
+    Ü: 'U',
+    Ý: 'Y',
+    Ž: 'Z',
+    Ö: 'O',
   };
 
   // Replace each special character with its ASCII equivalent
-  return name.replace(/[áäčďéěíľĺňóôŕšťúůüýžöÁÄČĎÉĚÍĽĹŇÓÔŔŠŤÚŮÜÝŽÖ]/g, (char) => {
-    return charMap[char] || char;
-  });
+  return name.replace(
+    /[áäčďéěíľĺňóôŕšťúůüýžöÁÄČĎÉĚÍĽĹŇÓÔŔŠŤÚŮÜÝŽÖ]/g,
+    (char) => {
+      return charMap[char] || char;
+    },
+  );
 }
 
 /**
@@ -47,7 +84,10 @@ export function normalizeForTableName(name: string): string {
  * constructTableName('Milan', 'Šmotlák') // Returns 't_Milan_Smotlak'
  * constructTableName('Martin', 'Ostrihoň') // Returns 't_Martin_Ostrihon'
  */
-export function constructTableName(firstName: string, lastName: string): string {
+export function constructTableName(
+  firstName: string,
+  lastName: string,
+): string {
   const normalizedFirstName = normalizeForTableName(firstName);
   const normalizedLastName = normalizeForTableName(lastName);
   return `t_${normalizedFirstName}_${normalizedLastName}`;

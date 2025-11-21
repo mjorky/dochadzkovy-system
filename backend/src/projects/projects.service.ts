@@ -49,7 +49,9 @@ export class ProjectsService {
         orderBy: { Name: 'asc' },
       });
 
-      return dbProjects.map((p: ProjectWithRelations) => this.mapToProjectEntity(p));
+      return dbProjects.map((p: ProjectWithRelations) =>
+        this.mapToProjectEntity(p),
+      );
     } catch (error) {
       this.logger.error('Failed to fetch projects', error);
       throw new Error('Could not fetch projects from the database.');
@@ -57,15 +59,23 @@ export class ProjectsService {
   }
 
   async create(input: CreateProjectInput): Promise<Project> {
-    const existing = await this.prisma.projects.findUnique({ where: { Number: input.number } });
+    const existing = await this.prisma.projects.findUnique({
+      where: { Number: input.number },
+    });
     if (existing) {
-      throw new ConflictException(`Project with number "${input.number}" already exists.`);
+      throw new ConflictException(
+        `Project with number "${input.number}" already exists.`,
+      );
     }
     try {
       const newProject = await this.prisma.projects.create({
         data: {
-          Name: input.name, Number: input.number, Description: input.description,
-          AllowAssignWorkingHours: input.active, CountryCode: input.countryCode, Manager: BigInt(input.managerId),
+          Name: input.name,
+          Number: input.number,
+          Description: input.description,
+          AllowAssignWorkingHours: input.active,
+          CountryCode: input.countryCode,
+          Manager: BigInt(input.managerId),
         },
         include: { Zamestnanci: true, Countries: true },
       });
@@ -82,14 +92,21 @@ export class ProjectsService {
       const updatedProject = await this.prisma.projects.update({
         where: { ID: BigInt(id) },
         data: {
-          Name: data.name, Number: data.number, Description: data.description, AllowAssignWorkingHours: data.active,
-          CountryCode: data.countryCode, Manager: data.managerId ? BigInt(data.managerId) : undefined,
+          Name: data.name,
+          Number: data.number,
+          Description: data.description,
+          AllowAssignWorkingHours: data.active,
+          CountryCode: data.countryCode,
+          Manager: data.managerId ? BigInt(data.managerId) : undefined,
         },
         include: { Zamestnanci: true, Countries: true },
       });
       return this.mapToProjectEntity(updatedProject);
     } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === 'P2025'
+      ) {
         throw new NotFoundException(`Project with ID "${id}" not found.`);
       }
       this.logger.error(`Failed to update project ${id}`, error);
@@ -106,10 +123,16 @@ export class ProjectsService {
       });
       return this.mapToProjectEntity(updatedProject);
     } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === 'P2025'
+      ) {
         throw new NotFoundException(`Project with ID "${id}" not found.`);
       }
-      this.logger.error(`Failed to toggle active status for project ${id}`, error);
+      this.logger.error(
+        `Failed to toggle active status for project ${id}`,
+        error,
+      );
       throw new Error('Could not update the project status.');
     }
   }
