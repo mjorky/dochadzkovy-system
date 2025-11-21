@@ -1,8 +1,8 @@
-'use client';
+'use client'
 
-import { useState } from 'react';
-import { ChevronUp, ChevronDown } from 'lucide-react';
-import { Employee } from '@/graphql/queries/employees';
+import { useState } from 'react'
+import { ChevronUp, ChevronDown } from 'lucide-react'
+import { Employee } from '@/graphql/queries/employees'
 import {
   Table,
   TableBody,
@@ -10,17 +10,24 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
+} from '@/components/ui/table'
+import { Badge } from '@/components/ui/badge'
+import { Button } from "@/components/ui/button"
+import { Icons } from "@/lib/icons"
 
 type SortColumn = keyof Employee;
 type SortDirection = 'asc' | 'desc';
 
 interface EmployeeTableProps {
   employees: Employee[];
+  onEdit?: (employee: Employee) => void;
+  onDelete?: (employee: Employee) => void;
 }
 
-export function EmployeeTable({ employees }: EmployeeTableProps) {
+const EditIcon = Icons.edit;
+const TrashIcon = Icons.trash;
+
+export function EmployeeTable({ employees, onEdit, onDelete }: EmployeeTableProps) {
   const [sortColumn, setSortColumn] = useState<SortColumn>('fullName');
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
 
@@ -157,6 +164,7 @@ export function EmployeeTable({ employees }: EmployeeTableProps) {
               <SortIndicator column="titleSuffix" />
             </div>
           </TableHead>
+          <TableHead className="w-[80px] text-right">Actions</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -178,6 +186,21 @@ export function EmployeeTable({ employees }: EmployeeTableProps) {
             <TableCell className="w-[120px]">{formatDate(employee.lockedUntil)}</TableCell>
             <TableCell className="w-[100px] text-muted-foreground">{employee.titlePrefix || '—'}</TableCell>
             <TableCell className="w-[100px] text-muted-foreground">{employee.titleSuffix || '—'}</TableCell>
+            <TableCell className="w-[80px]">
+              <div className="flex justify-end gap-2">
+                <Button variant="ghost" size="sm" onClick={() => onEdit?.(employee)} className="h-8 w-8 p-0">
+                  <EditIcon className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => onDelete?.(employee)}
+                  className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+                >
+                  <TrashIcon className="h-4 w-4" />
+                </Button>
+              </div>
+            </TableCell>
           </TableRow>
         ))}
       </TableBody>
