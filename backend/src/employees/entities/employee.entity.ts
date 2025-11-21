@@ -8,6 +8,12 @@ export class Employee {
   @Field(() => String)
   fullName: string;
 
+  @Field(() => String, { nullable: true })
+  firstName?: string;
+
+  @Field(() => String, { nullable: true })
+  lastName?: string;
+
   @Field(() => Float)
   vacationDays: number;
 

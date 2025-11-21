@@ -155,6 +155,8 @@ export class ProjectsService {
   private mapToEmployeeEntity(dbEmployee: Zamestnanci): Employee {
     return {
       id: dbEmployee.ID.toString(),
+      firstName: dbEmployee.Meno,
+      lastName: dbEmployee.Priezvisko,
       fullName: `${dbEmployee.Meno} ${dbEmployee.Priezvisko}`,
       isAdmin: dbEmployee.IsAdmin,
       vacationDays: dbEmployee.Dovolenka,

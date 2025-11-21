@@ -536,12 +536,17 @@ export default function WorkRecordsPage() {
       </div>
 
       {/* Employee selector (for managers/admins only) */}
-      <EmployeeSelector
-        currentEmployeeId={selectedEmployeeId}
-        onEmployeeChange={handleEmployeeChange}
-        isAdmin={mockUser.isAdmin}
-        isManager={mockUser.isManager}
-      />
+      {(mockUser.isAdmin || mockUser.isManager) && (
+        <div className="mb-6">
+          <label className="text-sm font-medium mb-2 block">Employee</label>
+          <EmployeeSelector
+            currentEmployeeId={selectedEmployeeId}
+            onEmployeeChange={handleEmployeeChange}
+            isAdmin={mockUser.isAdmin}
+            isManager={mockUser.isManager}
+          />
+        </div>
+      )}
 
       {/* Filter controls */}
       <WorkRecordsFilterControls

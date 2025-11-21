@@ -2,9 +2,11 @@
 
 import { useState, useMemo, useDeferredValue } from 'react';
 import { useQuery } from '@apollo/client/react';
-import { Loader2, XCircle, Users } from 'lucide-react';
+import { Loader2, XCircle, Users, Plus } from 'lucide-react';
 import { EMPLOYEES_QUERY, EmployeesData, Employee } from '@/graphql/queries/employees';
 import { EmployeeTable } from '@/components/employee-table';
+import { EmployeeDialog } from '@/components/employee-dialog';
+import { useDeleteEmployee } from '@/hooks/use-delete-employee';
 import { Button } from '@/components/ui/button';
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator, BreadcrumbPage } from '@/components/ui/breadcrumb';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -12,6 +14,7 @@ import { FilterControls } from '@/components/ui/filter-controls';
 import { SearchInput } from '@/components/ui/search-input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 
 interface FilterState {
   searchText: string;
@@ -21,7 +24,12 @@ interface FilterState {
 
 export default function EmployeesPage() {
   const { loading, error, data, refetch } = useQuery<EmployeesData>(EMPLOYEES_QUERY);
+  const { deleteEmployee } = useDeleteEmployee();
   
+  const [dialogMode, setDialogMode] = useState<"create" | "edit" | null>(null);
+  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+
   const [filters, setFilters] = useState<FilterState>({
     searchText: '',
     adminFilter: 'all',
@@ -48,6 +56,31 @@ export default function EmployeesPage() {
       return true;
     });
   }, [data?.employees, deferredSearchText, filters.adminFilter, filters.employeeTypeFilter]);
+
+  const handleCreate = () => {
+    setSelectedEmployee(null);
+    setDialogMode("create");
+  };
+
+  const handleEdit = (employee: Employee) => {
+    setSelectedEmployee(employee);
+    setDialogMode("edit");
+  };
+
+  const handleDelete = (employee: Employee) => {
+    setDeleteId(employee.id);
+  };
+
+  const confirmDelete = async () => {
+    if (deleteId) {
+      await deleteEmployee(deleteId);
+      setDeleteId(null);
+    }
+  };
+
+  const handleSuccess = () => {
+    setDialogMode(null);
+  };
 
   if (loading) {
     return (
@@ -77,25 +110,6 @@ export default function EmployeesPage() {
     );
   }
 
-  if (!data?.employees || data.employees.length === 0) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="flex flex-col items-center gap-4 text-center">
-          <Users className="h-16 w-16 text-muted-foreground" />
-          <div>
-            <h2 className="text-xl font-semibold text-foreground mb-2">No employees found</h2>
-            <p className="text-sm text-muted-foreground">Add your first employee to get started</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  const hasActiveFilters =
-    filters.searchText !== '' ||
-    filters.adminFilter !== 'all' ||
-    filters.employeeTypeFilter !== 'all';
-
   return (
     <div className="p-8">
       <Breadcrumb className="mb-2">
@@ -108,7 +122,13 @@ export default function EmployeesPage() {
         </BreadcrumbList>
       </Breadcrumb>
 
-      <h1 className="text-3xl font-bold text-foreground mb-6">Employees</h1>
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-3xl font-bold text-foreground">Employees</h1>
+        <Button onClick={handleCreate} className="gap-2">
+          <Plus className="h-4 w-4" />
+          Add Employee
+        </Button>
+      </div>
 
       <FilterControls>
         <SearchInput
@@ -145,7 +165,7 @@ export default function EmployeesPage() {
             <SelectContent>
               <SelectItem value="all">All</SelectItem>
               <SelectItem value="Zamestnanec">Zamestnanec</SelectItem>
-              <SelectItem value="SZCO">SZCO</SelectItem>
+              <SelectItem value="SZČO">SZČO</SelectItem>
               <SelectItem value="Študent">Študent</SelectItem>
               <SelectItem value="Brigádnik">Brigádnik</SelectItem>
             </SelectContent>
@@ -153,15 +173,21 @@ export default function EmployeesPage() {
         </div>
       </FilterControls>
 
-      {filteredEmployees.length === 0 ? (
+      {!data?.employees || data.employees.length === 0 ? (
+        <div className="flex flex-col items-center gap-4 py-12 text-center">
+          <Users className="h-16 w-16 text-muted-foreground" />
+          <div>
+            <h2 className="text-xl font-semibold text-foreground mb-2">No employees found</h2>
+            <p className="text-sm text-muted-foreground">Add your first employee to get started</p>
+          </div>
+        </div>
+      ) : filteredEmployees.length === 0 ? (
         <div className="flex flex-col items-center gap-4 py-12 text-center">
           <Users className="h-16 w-16 text-muted-foreground" />
           <div>
             <h2 className="text-xl font-semibold text-foreground mb-2">No employees match your filters</h2>
             <p className="text-sm text-muted-foreground">
-              {hasActiveFilters
-                ? 'Try adjusting your filters to see more results'
-                : 'No employees found in the database'}
+              Try adjusting your filters to see more results
             </p>
           </div>
         </div>
@@ -170,9 +196,39 @@ export default function EmployeesPage() {
           <div className="mb-4 text-sm text-muted-foreground">
             Showing {filteredEmployees.length} of {data.employees.length} employees
           </div>
-          <EmployeeTable employees={filteredEmployees} />
+          <EmployeeTable 
+            employees={filteredEmployees} 
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+          />
         </>
       )}
+
+      <EmployeeDialog
+        open={dialogMode !== null}
+        onOpenChange={(open) => !open && setDialogMode(null)}
+        mode={dialogMode || 'create'}
+        initialData={selectedEmployee}
+        onSuccess={handleSuccess}
+      />
+
+      <AlertDialog open={deleteId !== null} onOpenChange={(open) => !open && setDeleteId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete the employee
+              and all their work records from the database.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

@@ -4,6 +4,8 @@ export const EMPLOYEES_QUERY = gql`
   query GetEmployees {
     employees {
       id
+      firstName
+      lastName
       fullName
       vacationDays
       isAdmin
@@ -34,8 +36,52 @@ export const GET_EMPLOYEES_CATALOG = gql`
   }
 `;
 
+export const CREATE_EMPLOYEE = gql`
+  mutation CreateEmployee($createEmployeeInput: CreateEmployeeInput!) {
+    createEmployee(createEmployeeInput: $createEmployeeInput) {
+      id
+      fullName
+      firstName
+      lastName
+      vacationDays
+      isAdmin
+      employeeType
+      lastRecordDate
+      lockedUntil
+      titlePrefix
+      titleSuffix
+    }
+  }
+`;
+
+export const UPDATE_EMPLOYEE = gql`
+  mutation UpdateEmployee($updateEmployeeInput: UpdateEmployeeInput!) {
+    updateEmployee(updateEmployeeInput: $updateEmployeeInput) {
+      id
+      fullName
+      firstName
+      lastName
+      vacationDays
+      isAdmin
+      employeeType
+      lastRecordDate
+      lockedUntil
+      titlePrefix
+      titleSuffix
+    }
+  }
+`;
+
+export const DELETE_EMPLOYEE = gql`
+  mutation DeleteEmployee($id: ID!) {
+    deleteEmployee(id: $id)
+  }
+`;
+
 export interface Employee {
   id: string;
+  firstName?: string;
+  lastName?: string;
   fullName: string;
   vacationDays: number;
   isAdmin: boolean;
