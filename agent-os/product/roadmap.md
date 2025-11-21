@@ -272,7 +272,7 @@ This roadmap prioritizes quick delivery of legacy application functionality usin
 - Do overtime hours make sense (total accumulated overtime)?
 - Is vacation balance shown as decimal (e.g., 15.5 days)?
 
-### 20. [ ] Employee Create Dialog & Mutation — Add "Add Employee" button with form: First Name, Last Name, Title Prefix, Title Suffix, Employment Type dropdown, Vacation Days number, Is Admin checkbox. Implement mutation that creates Zamestnanci record AND creates per-user table t_{Name}_{Surname} AND regenerates AllTData view. `M`
+### 20. [x] Employee Create Dialog & Mutation — Add "Add Employee" button with form: First Name, Last Name, Title Prefix, Title Suffix, Employment Type dropdown, Vacation Days number, Is Admin checkbox. Implement mutation that creates Zamestnanci record AND creates per-user table t_{Name}_{Surname} AND regenerates AllTData view. `M`
 
 **Testing Guide (Admin User):**
 - Click "+ Add Employee" button
@@ -286,7 +286,7 @@ This roadmap prioritizes quick delivery of legacy application functionality usin
 - Does it appear in the table immediately?
 - Does validation work (e.g., required fields)?
 
-### 21. [ ] Employee Update Dialog & Mutation — Add "Edit" action on employee rows with form pre-filled, allow changing all fields including name, implement mutation that updates Zamestnanci AND renames per-user table if name changed AND regenerates AllTData view. `M`
+### 21. [x] Employee Update Dialog & Mutation — Add "Edit" action on employee rows with form pre-filled, allow changing all fields including name, implement mutation that updates Zamestnanci AND renames per-user table if name changed AND regenerates AllTData view. `M`
 
 **Testing Guide (Admin User):**
 - Click edit icon (pencil) on an employee row
@@ -301,7 +301,8 @@ This roadmap prioritizes quick delivery of legacy application functionality usin
 - Do changes save and reflect in the table?
 - If you change someone's name, does everything still work?
 
-### 22. [ ] Employee Lock Attendance Feature — Add "Lock Attendance" action button on employee row, open dialog asking for "Lock until date", implement mutation that sets Zamestnanci.ZamknuteK to chosen date AND updates all work records in t_{Name}_{Surname} with StartDate <= chosen date to set Lock=true, show success message. `M`
+### 22. [x] Employee Lock Attendance Feature — Add "Lock Attendance" action button on employee row, open dialog asking for "Lock until date", implement mutation that sets Zamestnanci.ZamknuteK to chosen date AND updates all work records in t_{Name}_{Surname} with StartDate <= chosen date to set Lock=true, show success message. `M`
+*Note: Implemented as read-only display of lock date per user request.*
 
 **Testing Guide (Admin User):**
 - Find an employee who has work entries in October
