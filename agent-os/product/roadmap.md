@@ -507,7 +507,7 @@ This roadmap prioritizes quick delivery of legacy application functionality usin
 
 **Goal:** Protect the application with login and role-based permissions.
 
-### 34. [ ] JWT Authentication Backend — Implement JWT token generation and validation in NestJS using @nestjs/jwt and @nestjs/passport, create login mutation accepting email/password (or username/password), return access token and refresh token, create auth guard for protecting resolvers. `M`
+### 34. [x] JWT Authentication Backend — Implement JWT token generation and validation in NestJS using @nestjs/jwt and @nestjs/passport, create login mutation accepting email/password (or username/password), return access token and refresh token, create auth guard for protecting resolvers. `M`
 
 **Testing Guide (Admin User - Initial Setup):**
 - Your developer will set up initial admin credentials in database
@@ -515,7 +515,7 @@ This roadmap prioritizes quick delivery of legacy application functionality usin
 - Developer will show you how to log in and get token
 - This is backend-only testing - frontend comes next
 
-### 35. [ ] Login Screen & Auth State Management — Build login screen with email/password form, implement login flow using Apollo Client, store JWT tokens in localStorage or httpOnly cookies, create auth context/hook for global auth state, redirect to Data screen after successful login. `M`
+### 35. [x] Login Screen & Auth State Management — Build login screen with email/password form, implement login flow using Apollo Client, store JWT tokens in localStorage or httpOnly cookies, create auth context/hook for global auth state, redirect to Data screen after successful login. `M`
 
 **Testing Guide (All Users - First Real Login):**
 - Open `http://localhost:3000` in a FRESH browser (or incognito mode)
@@ -531,7 +531,7 @@ This roadmap prioritizes quick delivery of legacy application functionality usin
 - Does logout work properly?
 - Are wrong credentials rejected with clear error message?
 
-### 36. [ ] Role-Based Access Control (RBAC) — Implement authorization guards checking IsAdmin flag and Projects.Manager relationships, protect admin mutations (create/update/delete employees, lock attendance, bulk overtime delete), protect manager mutations (approve overtime, edit others' records), regular employees can only edit their own data. `M`
+### 36. [x] Role-Based Access Control (RBAC) — Implement authorization guards checking IsAdmin flag and Projects.Manager relationships, protect admin mutations (create/update/delete employees, lock attendance, bulk overtime delete), protect manager mutations (approve overtime, edit others' records), regular employees can only edit their own data. `M`
 
 **Testing Guide (Test with 3 Users):**
 - **As Regular Employee:** Log in, try to access "Admin" menu - should be hidden or show "Access Denied"
