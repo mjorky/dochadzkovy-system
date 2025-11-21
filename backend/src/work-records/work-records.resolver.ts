@@ -30,7 +30,11 @@ export class WorkReportPdfInput {
 }
 // -------------------------------------------------------------------------
 
+import { UseGuards } from '@nestjs/common';
+import { GqlAuthGuard } from '../auth/gql-auth.guard';
+
 @Resolver()
+@UseGuards(GqlAuthGuard)
 export class WorkRecordsResolver {
   constructor(private readonly workRecordsService: WorkRecordsService) {}
 

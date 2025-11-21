@@ -2,8 +2,11 @@ import { Resolver, Query, Args } from '@nestjs/graphql';
 import { ReportsService } from './reports.service';
 import { WorkReportInput } from '../work-records/dto/work-report.input';
 import { WorkListReportResponse } from './entities/work-list-report.entity';
+import { UseGuards } from '@nestjs/common';
+import { GqlAuthGuard } from '../auth/gql-auth.guard';
 
 @Resolver()
+@UseGuards(GqlAuthGuard)
 export class ReportsResolver {
   constructor(private readonly reportsService: ReportsService) { }
 

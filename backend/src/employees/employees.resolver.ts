@@ -3,9 +3,11 @@ import { EmployeesService } from './employees.service';
 import { Employee } from './entities/employee.entity';
 import { CreateEmployeeInput } from './dto/create-employee.input';
 import { UpdateEmployeeInput } from './dto/update-employee.input';
-import { UsePipes, ValidationPipe } from '@nestjs/common';
+import { UsePipes, ValidationPipe, UseGuards } from '@nestjs/common';
+import { GqlAuthGuard } from '../auth/gql-auth.guard';
 
 @Resolver(() => Employee)
+@UseGuards(GqlAuthGuard)
 export class EmployeesResolver {
   constructor(private readonly employeesService: EmployeesService) {}
 

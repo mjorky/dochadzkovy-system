@@ -180,24 +180,34 @@ model Verzia {
 }
 
 model Zamestnanci {
-  ID                                         BigInt         @id @default(autoincrement())
-  Meno                                       String         @db.VarChar(20)
-  Priezvisko                                 String         @db.VarChar(50)
-  TitulPred                                  String?        @db.VarChar(10)
-  TitulZa                                    String?        @db.VarChar(10)
-  Dovolenka                                  Float          @default(20) @db.Real
-  IsAdmin                                    Boolean        @default(false)
-  TypZamestnanca                             String         @db.VarChar(20)
+  ID                                         BigInt           @id @default(autoincrement())
+  Meno                                       String           @db.VarChar(20)
+  Priezvisko                                 String           @db.VarChar(50)
+  TitulPred                                  String?          @db.VarChar(10)
+  TitulZa                                    String?          @db.VarChar(10)
+  Dovolenka                                  Float            @default(20) @db.Real
+  IsAdmin                                    Boolean          @default(false)
+  TypZamestnanca                             String           @db.VarChar(20)
   Podpis                                     Bytes?
   RocnyNadcasVPlate                          Int?
-  PoslednyZaznam                             DateTime?      @db.Date
-  ZamknuteK                                  DateTime?      @db.Date
-  Nadcasy_Nadcasy_SchvalilToZamestnanci      Nadcasy[]      @relation("Nadcasy_SchvalilToZamestnanci")
-  Nadcasy_Nadcasy_ZamestnanecIDToZamestnanci Nadcasy[]      @relation("Nadcasy_ZamestnanecIDToZamestnanci")
+  PoslednyZaznam                             DateTime?        @db.Date
+  ZamknuteK                                  DateTime?        @db.Date
+  UserCredentials                            UserCredentials?
+  Nadcasy_Nadcasy_SchvalilToZamestnanci      Nadcasy[]        @relation("Nadcasy_SchvalilToZamestnanci")
+  Nadcasy_Nadcasy_ZamestnanecIDToZamestnanci Nadcasy[]        @relation("Nadcasy_ZamestnanecIDToZamestnanci")
   Projects                                   Projects[]
-  ZamestnanecTyp                             ZamestnanecTyp @relation(fields: [TypZamestnanca], references: [Typ], onDelete: NoAction, onUpdate: NoAction)
+  ZamestnanecTyp                             ZamestnanecTyp   @relation(fields: [TypZamestnanca], references: [Typ], onDelete: NoAction, onUpdate: NoAction)
 
   @@unique([Meno, Priezvisko])
+}
+
+model UserCredentials {
+  ID            BigInt      @id @default(autoincrement())
+  ZamestnanecID BigInt      @unique
+  Username      String      @unique @db.VarChar(100)
+  PasswordHash  String      @db.VarChar(255)
+  LastLogin     DateTime?
+  Zamestnanci   Zamestnanci @relation(fields: [ZamestnanecID], references: [ID], onDelete: Cascade)
 }
 
 model ZamestnanecTyp {

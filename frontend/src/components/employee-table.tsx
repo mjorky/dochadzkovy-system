@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { ChevronUp, ChevronDown } from 'lucide-react'
+import { ChevronUp, ChevronDown, Lock } from 'lucide-react'
 import { Employee } from '@/graphql/queries/employees'
 import {
   Table,
@@ -22,12 +22,13 @@ interface EmployeeTableProps {
   employees: Employee[];
   onEdit?: (employee: Employee) => void;
   onDelete?: (employee: Employee) => void;
+  onResetPassword?: (employee: Employee) => void;
 }
 
 const EditIcon = Icons.edit;
 const TrashIcon = Icons.trash;
 
-export function EmployeeTable({ employees, onEdit, onDelete }: EmployeeTableProps) {
+export function EmployeeTable({ employees, onEdit, onDelete, onResetPassword }: EmployeeTableProps) {
   const [sortColumn, setSortColumn] = useState<SortColumn>('fullName');
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
 
@@ -188,6 +189,9 @@ export function EmployeeTable({ employees, onEdit, onDelete }: EmployeeTableProp
             <TableCell className="w-[100px] text-muted-foreground">{employee.titleSuffix || '—'}</TableCell>
             <TableCell className="w-[80px]">
               <div className="flex justify-end gap-2">
+                <Button variant="ghost" size="sm" onClick={() => onResetPassword?.(employee)} className="h-8 w-8 p-0" title="Reset Password">
+                  <Lock className="h-4 w-4" />
+                </Button>
                 <Button variant="ghost" size="sm" onClick={() => onEdit?.(employee)} className="h-8 w-8 p-0">
                   <EditIcon className="h-4 w-4" />
                 </Button>

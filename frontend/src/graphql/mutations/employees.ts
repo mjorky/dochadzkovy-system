@@ -30,3 +30,9 @@ export const DELETE_EMPLOYEE = gql`
   }
 `;
 
+export const RESET_PASSWORD = gql`
+  mutation ResetPassword($employeeId: ID!, $newPassword: String!) {
+    resetPassword(employeeId: $employeeId, newPassword: $newPassword)
+  }
+`;
+
