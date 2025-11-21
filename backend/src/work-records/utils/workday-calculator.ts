@@ -23,7 +23,7 @@ export async function calculateNextWorkday(
   prisma: PrismaService,
 ): Promise<Date> {
   // Start from the day after the last record
-  let candidateDate = new Date(lastRecordDate);
+  const candidateDate = new Date(lastRecordDate);
   candidateDate.setDate(candidateDate.getDate() + 1);
 
   // Query holidays between last record and 60 days ahead (reasonable range)

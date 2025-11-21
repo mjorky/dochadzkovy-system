@@ -27,7 +27,9 @@ describe('Time Calculation Utilities', () => {
     });
 
     it('should throw error for invalid time format (missing colons)', () => {
-      expect(() => convertTimeToMinutes('093000')).toThrow('Invalid time format');
+      expect(() => convertTimeToMinutes('093000')).toThrow(
+        'Invalid time format',
+      );
     });
 
     it('should throw error for invalid hours (hours > 23)', () => {

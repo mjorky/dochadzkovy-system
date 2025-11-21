@@ -36,7 +36,9 @@ export function convertTimeToMinutes(time: string): number {
 
   // Validate parsed values
   if (isNaN(hours) || isNaN(minutes) || isNaN(seconds)) {
-    throw new Error(`Invalid time values: cannot parse hours, minutes, or seconds from ${time}`);
+    throw new Error(
+      `Invalid time values: cannot parse hours, minutes, or seconds from ${time}`,
+    );
   }
 
   if (hours < 0 || hours > 23) {
@@ -44,11 +46,15 @@ export function convertTimeToMinutes(time: string): number {
   }
 
   if (minutes < 0 || minutes > 59) {
-    throw new Error(`Invalid minutes: must be between 0 and 59, got ${minutes}`);
+    throw new Error(
+      `Invalid minutes: must be between 0 and 59, got ${minutes}`,
+    );
   }
 
   if (seconds < 0 || seconds > 59) {
-    throw new Error(`Invalid seconds: must be between 0 and 59, got ${seconds}`);
+    throw new Error(
+      `Invalid seconds: must be between 0 and 59, got ${seconds}`,
+    );
   }
 
   // Convert to minutes since midnight
@@ -97,7 +103,7 @@ export function calculateHours(startTime: string, endTime: string): number {
   // Check for overnight shift
   if (endMinutes < startMinutes) {
     // Overnight: add 24 hours (1440 minutes)
-    totalMinutes = (endMinutes + 1440) - startMinutes;
+    totalMinutes = endMinutes + 1440 - startMinutes;
   } else {
     // Same day
     totalMinutes = endMinutes - startMinutes;

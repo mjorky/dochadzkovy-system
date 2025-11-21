@@ -1,5 +1,5 @@
 import { InputType, Field, Int } from '@nestjs/graphql';
-import { IsInt, Min, Max } from 'class-validator';
+import { IsInt, Min, Max, IsString, IsOptional } from 'class-validator';
 
 @InputType()
 export class WorkReportInput {
@@ -18,4 +18,18 @@ export class WorkReportInput {
   @Min(2000)
   @Max(2100)
   year: number;
+
+  @Field(() => String, { nullable: true })
+  @IsString()
+  @IsOptional()
+  signatureImage?: string;
+
+  @Field(() => Boolean, { nullable: true })
+  @IsOptional()
+  isLegalReport?: boolean;
+
+  @Field(() => String, { nullable: true })
+  @IsString()
+  @IsOptional()
+  legalReportTime?: string;
 }

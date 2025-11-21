@@ -1,40 +1,166 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useQuery, useLazyQuery } from '@apollo/client/react';
-import { Loader2, FileDown, FileText } from 'lucide-react';
+import { Clock, X } from 'lucide-react'; // CalendarIcon a ostatné sú teraz v Configuration komponente
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { MonthPicker } from '@/components/ui/month-picker';
-import { EmployeeSelector } from '@/components/employee-selector';
+import { Dropzone, DropzoneContent, DropzoneEmptyState } from '@/components/ui/shadcn-io/dropzone';
 import { GET_EMPLOYEES_CATALOG, EmployeesCatalogData } from '@/graphql/queries/employees';
 import { GET_WORK_REPORT_PDF, GET_WORK_REPORT_DATA, WorkReportSummaryData } from '@/graphql/queries/reports';
 import { toast } from 'sonner';
 import dynamic from 'next/dynamic';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
+import { Separator } from '@/components/ui/separator';
+import { cn } from '@/lib/utils';
 
-// Dynamic import for PdfViewerDialog component to ensure it's rendered only on the client
+// CUSTOM COMPONENTS
+import { ReportGenerateButton, ReportSuccessCard } from '@/components/report-actions';
+import { ReportConfiguration } from '@/components/report-configuration';
+
+// Dynamic import for PdfViewerDialog component
 const PdfViewerDialog = dynamic(() => import('@/components/pdf-viewer-dialog').then(mod => ({ default: mod.PdfViewerDialog })), { ssr: false });
 
-// Mock user context - will be replaced by actual auth context
+// Mock user context
 const mockUser = {
-  id: '', // No default selected user
+  id: '', 
   isAdmin: true,
   isManager: false,
 };
 
+const fileToBase64 = (file: File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => {
+      const result = reader.result as string;
+      const base64 = result.split(',')[1];
+      resolve(base64);
+    }
+    reader.onerror = error => reject(error);
+  });
+};
+
+// --- Time Picker Component ---
+interface TimePickerProps {
+    value: string;
+    onChange: (time: string) => void;
+}
+
+function TimePickerPopover({ value, onChange }: TimePickerProps) {
+    const [hours, minutes] = value.split(':').map(Number);
+    const [isOpen, setIsOpen] = useState(false);
+    const hourScrollRef = useRef<HTMLDivElement>(null);
+    const minuteScrollRef = useRef<HTMLDivElement>(null);
+    const hoursList = Array.from({ length: 24 }, (_, i) => i);
+    const minutesList = Array.from({ length: 60 }, (_, i) => i);
+
+    useEffect(() => {
+        if (isOpen) {
+            setTimeout(() => {
+                if (hourScrollRef.current) {
+                    const selectedHourBtn = hourScrollRef.current.querySelector(`[data-value="${hours}"]`);
+                    selectedHourBtn?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+                }
+                if (minuteScrollRef.current) {
+                    const selectedMinBtn = minuteScrollRef.current.querySelector(`[data-value="${minutes}"]`);
+                    selectedMinBtn?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+                }
+            }, 100);
+        }
+    }, [isOpen, hours, minutes]);
+
+    const handleTimeChange = (type: 'hour' | 'minute', val: number) => {
+        let newH = hours;
+        let newM = minutes;
+        if (type === 'hour') newH = val;
+        if (type === 'minute') {
+            newM = val;
+            setIsOpen(false); 
+        }
+        const formatted = `${newH.toString().padStart(2, '0')}:${newM.toString().padStart(2, '0')}`;
+        onChange(formatted);
+    };
+
+    return (
+        <Popover open={isOpen} onOpenChange={setIsOpen}>
+            <PopoverTrigger asChild>
+                <Button 
+                    variant="outline" 
+                    className={cn("w-full justify-start text-left font-normal", !value && "text-muted-foreground")}
+                >
+                    <Clock className="mr-2 h-4 w-4" />
+                    {value || "Select time"}
+                </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0 bg-popover" align="start">
+                <div className="flex h-[300px] divide-x">
+                    <div className="flex flex-col w-20">
+                        <div className="flex-none py-2 text-center border-b bg-muted/30 z-10"><span className="text-xs font-medium text-muted-foreground">Hr</span></div>
+                        <div 
+                            ref={hourScrollRef}
+                            className="flex-1 overflow-y-auto p-2 no-scrollbar space-y-1"
+                            style={{ maskImage: 'linear-gradient(to bottom, transparent, black 20%, black 80%, transparent)', WebkitMaskImage: 'linear-gradient(to bottom, transparent, black 20%, black 80%, transparent)' }}
+                        >
+                            <div className="h-[100px] w-full"></div> 
+                            {hoursList.map((h) => (
+                                <Button
+                                    key={h}
+                                    data-value={h}
+                                    size="sm"
+                                    variant={hours === h ? "default" : "ghost"}
+                                    className={cn("w-full justify-center rounded-full font-normal", hours !== h && "text-muted-foreground opacity-50 hover:opacity-100")}
+                                    onClick={() => handleTimeChange('hour', h)}
+                                >{h.toString().padStart(2, '0')}</Button>
+                            ))}
+                            <div className="h-[100px] w-full"></div>
+                        </div>
+                    </div>
+                    <div className="flex flex-col w-20">
+                        <div className="flex-none py-2 text-center border-b bg-muted/30 z-10"><span className="text-xs font-medium text-muted-foreground">Min</span></div>
+                        <div 
+                            ref={minuteScrollRef}
+                            className="flex-1 overflow-y-auto p-2 no-scrollbar space-y-1"
+                            style={{ maskImage: 'linear-gradient(to bottom, transparent, black 20%, black 80%, transparent)', WebkitMaskImage: 'linear-gradient(to bottom, transparent, black 20%, black 80%, transparent)' }}
+                        >
+                            <div className="h-[100px] w-full"></div>
+                            {minutesList.map((m) => (
+                                <Button
+                                    key={m}
+                                    data-value={m}
+                                    size="sm"
+                                    variant={minutes === m ? "default" : "ghost"}
+                                    className={cn("w-full justify-center rounded-full font-normal", minutes !== m && "text-muted-foreground opacity-50 hover:opacity-100")}
+                                    onClick={() => handleTimeChange('minute', m)}
+                                >{m.toString().padStart(2, '0')}</Button>
+                            ))}
+                            <div className="h-[100px] w-full"></div>
+                        </div>
+                    </div>
+                </div>
+            </PopoverContent>
+        </Popover>
+    );
+}
+
+// --- Main Page Component ---
+
 export default function WorkReportPage() {
   const [selectedEmployeeId, setSelectedEmployeeId] = useState<string | null>(null);
   const [selectedMonth, setSelectedMonth] = useState<Date>(new Date());
-  const [monthPickerOpen, setMonthPickerOpen] = useState(false);
-  const [pdfBase64, setPdfBase64] = useState<string | null>(null);
-  const [pdfFileBlob, setPdfFileBlob] = useState<Blob | null>(null); // State for PDF Blob
-  const [isPdfViewerOpen, setIsPdfViewerOpen] = useState(false); // State to control PDF dialog
+  const [pdfFileBlob, setPdfFileBlob] = useState<Blob | null>(null);
+  const [isPdfViewerOpen, setIsPdfViewerOpen] = useState(false);
+  
+  const [signatureFile, setSignatureFile] = useState<File[] | undefined>();
+  const [signaturePreview, setSignaturePreview] = useState<string | null>(null);
+  
+  const [isLegalReport, setIsLegalReport] = useState(false);
+  const [legalReportTime, setLegalReportTime] = useState('08:00');
 
-  // Fetch employees for the dropdown
   const { data: employeesData } = useQuery<EmployeesCatalogData>(GET_EMPLOYEES_CATALOG);
 
-  // Fetch summary data for preview
   const {
     data: summaryData,
     loading: summaryLoading,
@@ -52,49 +178,61 @@ export default function WorkReportPage() {
     },
   });
 
-  // Lazy query for PDF generation
-  const [generatePdf, { loading: pdfLoading, error: pdfError, data: pdfData }] = useLazyQuery(GET_WORK_REPORT_PDF, {
-    fetchPolicy: 'network-only', // Ensure fresh data always fetched
+  const [generateDetailedWorkReportPdf, { loading: detailedPdfLoading, data: detailedPdfData }] = useLazyQuery(GET_WORK_REPORT_PDF, {
+    fetchPolicy: 'network-only',
     onError: (error) => {
       toast.error(`Failed to generate PDF: ${error.message}`);
     },
   });
 
-  // Process the generated PDF data when it's available
+  const handleSignatureDrop = (files: File[]) => {
+    setSignatureFile(files);
+    if (files && files[0]) {
+      const previewUrl = URL.createObjectURL(files[0]);
+      setSignaturePreview(previewUrl);
+    } else {
+      setSignaturePreview(null);
+    }
+  };
+
+  const clearSignature = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setSignatureFile(undefined);
+    setSignaturePreview(null);
+  };
+
   useEffect(() => {
-    if (pdfData?.getWorkReportPDF) {
-      try {
-        const byteCharacters = atob(pdfData.getWorkReportPDF);
-        const byteNumbers = new Array(byteCharacters.length);
-        for (let i = 0; i < byteCharacters.length; i++) {
-          byteNumbers[i] = byteCharacters.charCodeAt(i);
+    return () => {
+      if (signaturePreview) URL.revokeObjectURL(signaturePreview);
+    };
+  }, [signaturePreview]);
+
+  useEffect(() => {
+    if (detailedPdfData?.getWorkReportPDF) {
+        try {
+          const byteCharacters = atob(detailedPdfData.getWorkReportPDF);
+          const byteNumbers = new Array(byteCharacters.length);
+          for (let i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i);
+          }
+          const byteArray = new Uint8Array(byteNumbers);
+          const blob = new Blob([byteArray], { type: 'application/pdf' });
+          setPdfFileBlob(blob);
+          toast.success('PDF report generated successfully!');
+        } catch (blobError) {
+          console.error("Error converting base64 to Blob:", blobError);
+          toast.error("Failed to process PDF data.");
+          setPdfFileBlob(null);
         }
-        const byteArray = new Uint8Array(byteNumbers);
-        const blob = new Blob([byteArray], { type: 'application/pdf' });
-        setPdfFileBlob(blob);
-        setPdfBase64(pdfData.getWorkReportPDF);
-        toast.success('PDF report generated successfully!');
-      } catch (blobError) {
-        console.error("Error converting base64 to Blob:", blobError);
-        toast.error("Failed to process PDF data for viewing.");
+      } else if (detailedPdfData) {
+        toast.error('Received empty data for PDF report.');
         setPdfFileBlob(null);
       }
-    } else if (pdfData) {
-      toast.error('Received empty data for PDF report.');
-      setPdfFileBlob(null);
-    }
-  }, [pdfData]);
-
-  const handleMonthSelect = (date: Date) => {
-    const firstDayOfMonth = new Date(date.getFullYear(), date.getMonth(), 1);
-    setSelectedMonth(firstDayOfMonth);
-    setMonthPickerOpen(false);
-  };
+  }, [detailedPdfData]);
 
   useEffect(() => {
     if (selectedEmployeeId && selectedMonth) {
       refetchSummary();
-      setPdfBase64(null);
       setPdfFileBlob(null);
       setIsPdfViewerOpen(false);
     }
@@ -102,173 +240,231 @@ export default function WorkReportPage() {
 
   const handleDownloadPdf = () => {
     if (!pdfFileBlob) {
-      toast.error('No PDF to download. Please generate it first.');
-      return;
-    }
-
-    try {
-      const url = URL.createObjectURL(pdfFileBlob);
-      
-      const link = document.createElement('a');
-      link.href = url;
-      const employeeName = employeesData?.employees.find(e => e.id === selectedEmployeeId)?.fullName || 'report';
-      const month = selectedMonth.toLocaleString('en', { month: 'long' });
-      link.download = `work-report-${employeeName.replace(/ /g, '_')}-${month}-${selectedMonth.getFullYear()}.pdf`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-      toast.success('PDF downloaded successfully!');
-    } catch (error) {
-      console.error("Failed to download PDF:", error);
-      toast.error('Failed to download PDF. It might be corrupted.');
-    }
+        toast.error('No PDF to download. Please generate it first.');
+        return;
+      }
+      try {
+        const url = URL.createObjectURL(pdfFileBlob);
+        const link = document.createElement('a');
+        link.href = url;
+        const employeeName = employeesData?.employees.find(e => e.id === selectedEmployeeId)?.fullName || 'report';
+        const month = selectedMonth.toLocaleString('en', { month: 'long' });
+        link.download = `work-report-${employeeName.replace(/ /g, '_')}-${month}-${selectedMonth.getFullYear()}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+        toast.success('PDF downloaded successfully!');
+      } catch (error) {
+        console.error("Failed to download PDF:", error);
+        toast.error('Failed to download PDF.');
+      }
   };
 
-  const handleGenerateClick = () => {
+  const handleGenerateClick = async () => {
     if (!selectedEmployeeId || !selectedMonth) {
-      toast.warning('Please select an employee and a month.');
-      return;
-    }
-    generatePdf({
-      variables: {
-        employeeId: parseInt(selectedEmployeeId, 10),
-        month: selectedMonth.getMonth() + 1,
-        year: selectedMonth.getFullYear(),
-      },
-    });
+        toast.warning('Please select an employee and a month.');
+        return;
+      }
+  
+      let signatureImageBase64: string | undefined = undefined;
+      if (signatureFile && signatureFile[0]) {
+        try {
+          signatureImageBase64 = await fileToBase64(signatureFile[0]);
+        } catch (error) {
+          toast.error('Failed to read signature file.');
+          return;
+        }
+      }
+  
+      generateDetailedWorkReportPdf({
+        variables: {
+          employeeId: parseInt(selectedEmployeeId, 10),
+          month: selectedMonth.getMonth() + 1,
+          year: selectedMonth.getFullYear(),
+          signatureImage: signatureImageBase64,
+          isLegalReport: isLegalReport,
+          legalReportTime: legalReportTime,
+        },
+      });
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-4 md:p-8">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-foreground">Work Reports</h1>
-        <p className="text-muted-foreground mt-2">Generate monthly PDF reports for employees.</p>
+    <div className="w-full px-4 md:px-8 py-8 space-y-8">
+      
+      {/* Header */}
+      <div className="flex flex-col gap-2">
+        <h1 className="text-3xl font-bold tracking-tight text-foreground">Attendance Reports</h1>
+        <p className="text-muted-foreground">
+           Generate monthly attendance and legal work reports for employees.
+        </p>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Generate Report</CardTitle>
-          <CardDescription>Select an employee and a month to generate their work report.</CardDescription>
-        </CardHeader>
-        <CardContent className="grid gap-6">
-          <div className="grid md:grid-cols-2 gap-4">
-            <EmployeeSelector
-              currentEmployeeId={selectedEmployeeId}
-              onEmployeeChange={setSelectedEmployeeId}
-              isAdmin={mockUser.isAdmin}
-              isManager={mockUser.isManager}
-              placeholder="Select an employee..."
-            />
-            <Popover open={monthPickerOpen} onOpenChange={setMonthPickerOpen}>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="w-full justify-start text-left font-normal"
-                >
-                  {selectedMonth ? (
-                    selectedMonth.toLocaleString('sk-SK', { month: 'long', year: 'numeric' })
-                  ) : (
-                    <span>Select month</span>
-                  )}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
-                <MonthPicker
-                  selectedMonth={selectedMonth}
-                  onMonthSelect={handleMonthSelect}
-                  minDate={new Date(2020, 0)}
-                  maxDate={new Date(new Date().getFullYear() + 1, 11)}
-                />
-              </PopoverContent>
-            </Popover>
-          </div>
-          <div className="flex gap-2">
-            <Button 
-              onClick={handleGenerateClick} 
-              disabled={pdfLoading || summaryLoading || !!summaryError || !selectedEmployeeId}
-              className="flex-1"
-            >
-              {pdfLoading ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                <FileDown className="mr-2 h-4 w-4" />
-              )}
-              {pdfLoading ? 'Generating...' : 'Generate PDF'}
-            </Button>
-            <Button
-              onClick={() => setIsPdfViewerOpen(true)}
-              disabled={!pdfFileBlob}
-              variant="outline"
-              className="flex-shrink-0"
-            >
-              <FileText className="mr-2 h-4 w-4" />
-              View PDF
-            </Button>
-            <Button
-              onClick={handleDownloadPdf}
-              disabled={!pdfFileBlob}
-              variant="outline"
-              className="flex-shrink-0"
-            >
-              <FileDown className="mr-2 h-4 w-4" />
-              Download
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+      <Separator />
 
-      {/* Report Summary Preview */}
-      {(selectedEmployeeId && selectedMonth) && ( // Only show if employee and month are selected
-        <Card className="mt-8">
-          <CardHeader>
-            <CardTitle>Report Summary Preview</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {summaryLoading && (
-              <div className="flex items-center justify-center gap-2">
-                <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
-                <span className="text-sm text-muted-foreground">Loading summary...</span>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        {/* Left Column */}
+        <div className="lg:col-span-1 space-y-6">
+          
+          {/* NOVÝ ZJEDNOTENÝ CONFIGURATION KOMPONENT */}
+          <ReportConfiguration 
+            selectedEmployeeId={selectedEmployeeId}
+            onEmployeeChange={setSelectedEmployeeId}
+            selectedMonth={selectedMonth}
+            onMonthChange={setSelectedMonth}
+            isAdmin={mockUser.isAdmin}
+            isManager={mockUser.isManager}
+          />
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Report Options</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              
+              <div className="space-y-4 p-4 border rounded-lg bg-muted/30">
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="legal-report-checkbox"
+                    checked={isLegalReport}
+                    onCheckedChange={(checked) => setIsLegalReport(checked as boolean)}
+                  />
+                  <Label htmlFor="legal-report-checkbox" className="font-medium cursor-pointer">
+                    Legal Report
+                  </Label>
+                </div>
+                
+                {isLegalReport && (
+                  <div className="pt-2 animate-in slide-in-from-top-2 fade-in duration-200">
+                    <Label className="text-xs text-muted-foreground mb-1.5 block">
+                      Work Start Time
+                    </Label>
+                    
+                    <TimePickerPopover 
+                        value={legalReportTime}
+                        onChange={setLegalReportTime}
+                    />
+
+                  </div>
+                )}
               </div>
-            )}
-            {summaryError && (
-              <div className="text-red-500 text-sm">Error loading summary: {summaryError.message}</div>
-            )}
-            {summaryData && summaryData.getWorkReportData ? (
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-                <div>
-                  <div className="text-2xl font-bold">{summaryData.getWorkReportData.totalWorkDays}</div>
-                  <div className="text-sm text-muted-foreground">Total Work Days</div>
-                </div>
-                <div>
-                  <div className="text-2xl font-bold">{summaryData.getWorkReportData.totalHours.toFixed(2)}</div>
-                  <div className="text-sm text-muted-foreground">Total Hours</div>
-                </div>
-                <div>
-                  <div className="text-2xl font-bold">{summaryData.getWorkReportData.weekendWorkHours.toFixed(2)}</div>
-                  <div className="text-sm text-muted-foreground">Weekend Hours</div>
-                </div>
-                <div>
-                  <div className="text-2xl font-bold">{summaryData.getWorkReportData.holidayWorkHours.toFixed(2)}</div>
-                  <div className="text-sm text-muted-foreground">Holiday Hours</div>
-                </div>
+
+              <div className="space-y-2">
+                <Label>Digital Signature (Optional)</Label>
+                <Dropzone
+                    accept={{ 'image/*': [] }}
+                    onDrop={handleSignatureDrop}
+                    onError={console.error}
+                    src={signatureFile}
+                    maxFiles={1}
+                    className="w-full"
+                >
+                    {!signaturePreview && (
+                        <>
+                            <DropzoneEmptyState />
+                            <DropzoneContent />
+                        </>
+                    )}
+                    {signaturePreview && (
+                        <div className="relative w-full h-full flex justify-center items-center p-2">
+                             <Button
+                                variant="secondary"
+                                size="icon"
+                                className="absolute top-1 right-1 h-6 w-6 z-10"
+                                onClick={clearSignature}
+                            >
+                                <X className="h-4 w-4" />
+                            </Button>
+                            <img src={signaturePreview} alt="Signature Preview" className="max-h-[100px] object-contain" />
+                        </div>
+                    )}
+                </Dropzone>
+              </div>
+
+              <Separator className="my-4" />
+
+              {/* REUSABLE GENERATE BUTTON */}
+              <ReportGenerateButton 
+                onGenerate={handleGenerateClick}
+                isLoading={detailedPdfLoading}
+                isDisabled={detailedPdfLoading || summaryLoading || !!summaryError || !selectedEmployeeId}
+                label="Generate PDF Report"
+                loadingLabel="Generating Report..."
+              />
+
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Right Column */}
+        <div className="lg:col-span-2 space-y-6">
+            
+            {(selectedEmployeeId && selectedMonth) ? (
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {summaryLoading ? (
+                      Array(4).fill(0).map((_, i) => (
+                          <Card key={i} className="animate-pulse">
+                              <CardContent className="h-24" />
+                          </Card>
+                      ))
+                  ) : summaryData?.getWorkReportData ? (
+                      <>
+                          <Card>
+                              <CardContent className="pt-6 text-center">
+                                  <div className="text-2xl font-bold">{summaryData.getWorkReportData.totalWorkDays}</div>
+                                  <div className="text-xs text-muted-foreground uppercase tracking-wider mt-1">Work Days</div>
+                              </CardContent>
+                          </Card>
+                          <Card>
+                              <CardContent className="pt-6 text-center">
+                                  <div className="text-2xl font-bold">{summaryData.getWorkReportData.totalHours.toFixed(2)}</div>
+                                  <div className="text-xs text-muted-foreground uppercase tracking-wider mt-1">Total Hours</div>
+                              </CardContent>
+                          </Card>
+                          <Card>
+                              <CardContent className="pt-6 text-center">
+                                  <div className="text-2xl font-bold">{summaryData.getWorkReportData.weekendWorkHours.toFixed(2)}</div>
+                                  <div className="text-xs text-muted-foreground uppercase tracking-wider mt-1">Weekend Hours</div>
+                              </CardContent>
+                          </Card>
+                          <Card>
+                              <CardContent className="pt-6 text-center">
+                                  <div className="text-2xl font-bold">{summaryData.getWorkReportData.holidayWorkHours.toFixed(2)}</div>
+                                  <div className="text-xs text-muted-foreground uppercase tracking-wider mt-1">Holiday Hours</div>
+                              </CardContent>
+                          </Card>
+                      </>
+                  ) : (
+                      <div className="col-span-4 text-center p-8 text-muted-foreground border border-dashed rounded-lg">
+                          No data found for selected period.
+                      </div>
+                  )}
               </div>
             ) : (
-              !summaryLoading && !summaryError && ( // Only show message if no data and not loading/error
-                 <p className="text-sm text-muted-foreground text-center">No summary data found for the selected criteria.</p>
-              )
+                <Card className="bg-muted/5 border-dashed">
+                    <CardContent className="flex flex-col items-center justify-center h-48 text-center">
+                        <p className="text-muted-foreground">Select an employee and month to view summary.</p>
+                    </CardContent>
+                </Card>
             )}
-          </CardContent>
-        </Card>
-      )}
 
+            {/* REUSABLE SUCCESS CARD */}
+            {pdfFileBlob && (
+                <ReportSuccessCard 
+                    onView={() => setIsPdfViewerOpen(true)}
+                    onDownload={handleDownloadPdf}
+                />
+            )}
 
-      {/* PDF Viewer Dialog */}
-      <PdfViewerDialog 
-        open={isPdfViewerOpen} 
+        </div>
+      </div>
+
+      <PdfViewerDialog
+        open={isPdfViewerOpen}
         onOpenChange={setIsPdfViewerOpen}
-        pdfFileBlob={pdfFileBlob} 
-        handleDownloadPdf={handleDownloadPdf} 
+        pdfFileBlob={pdfFileBlob}
+        handleDownloadPdf={handleDownloadPdf}
       />
     </div>
   );

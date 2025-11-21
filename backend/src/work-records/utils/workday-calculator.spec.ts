@@ -58,7 +58,9 @@ describe('calculateNextWorkday', () => {
       { Den: new Date('2026-01-06') }, // Epiphany
     ];
 
-    jest.spyOn(prismaService.holidays, 'findMany').mockResolvedValue(mockHolidays as any);
+    jest
+      .spyOn(prismaService.holidays, 'findMany')
+      .mockResolvedValue(mockHolidays as any);
 
     const result = await calculateNextWorkday(lastRecordDate, prismaService);
 
@@ -76,7 +78,9 @@ describe('calculateNextWorkday', () => {
       { Den: new Date('2027-12-26') }, // Boxing Day
     ];
 
-    jest.spyOn(prismaService.holidays, 'findMany').mockResolvedValue(mockHolidays as any);
+    jest
+      .spyOn(prismaService.holidays, 'findMany')
+      .mockResolvedValue(mockHolidays as any);
 
     const result = await calculateNextWorkday(lastRecordDate, prismaService);
 
@@ -103,11 +107,11 @@ describe('calculateNextWorkday', () => {
     const lastRecordDate = new Date('2025-08-29');
 
     // Mock Aug 29 as Slovak National Uprising Day (actual holiday)
-    const mockHolidays = [
-      { Den: new Date('2025-08-29') },
-    ];
+    const mockHolidays = [{ Den: new Date('2025-08-29') }];
 
-    jest.spyOn(prismaService.holidays, 'findMany').mockResolvedValue(mockHolidays as any);
+    jest
+      .spyOn(prismaService.holidays, 'findMany')
+      .mockResolvedValue(mockHolidays as any);
 
     const result = await calculateNextWorkday(lastRecordDate, prismaService);
 
