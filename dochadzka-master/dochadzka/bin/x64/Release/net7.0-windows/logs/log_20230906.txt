@@ -1,0 +1,39 @@
+2023-09-06 09:31:43.209 +02:00 [INF] 
+
+2023-09-06 09:31:43.237 +02:00 [INF] --------------------------------------------------------------------------------
+2023-09-06 09:31:43.238 +02:00 [INF]  Current versions:
+2023-09-06 09:31:43.238 +02:00 [INF]        OS: 10.0.22621.0
+2023-09-06 09:31:43.238 +02:00 [INF]       App: 1.2.2.0
+2023-09-06 09:31:43.238 +02:00 [INF] --------------------------------------------------------------------------------
+2023-09-06 09:31:44.257 +02:00 [INF] Current user: U:Ing. Milan Šmotlák ; D:25; A:True
+2023-09-06 09:32:38.020 +02:00 [INF] 
+
+2023-09-06 09:32:38.040 +02:00 [INF] --------------------------------------------------------------------------------
+2023-09-06 09:32:38.041 +02:00 [INF]  Current versions:
+2023-09-06 09:32:38.041 +02:00 [INF]        OS: 10.0.22621.0
+2023-09-06 09:32:38.041 +02:00 [INF]       App: 1.2.2.0
+2023-09-06 09:32:38.041 +02:00 [INF] --------------------------------------------------------------------------------
+2023-09-06 09:32:38.961 +02:00 [INF] Current user: U:Ing. Krnáč Martin ; D:0; A:True
+2023-09-06 09:33:03.424 +02:00 [ERR] PostgreSQL.DB_t_UserAdd:
+System.FormatException: The input string ' ' was not in a correct format.
+   at System.Number.ThrowOverflowOrFormatException(ParsingStatus status, ReadOnlySpan`1 value, TypeCode type)
+   at System.Convert.ToInt32(String value)
+   at dochadzka.MainWindow.<>c__DisplayClass58_0.<NacitajCSV>b__4(String line) in D:\B\VSProjects\dochadzka\dochadzka\MainWindow.xaml.cs:line 532
+   at System.Linq.Enumerable.SelectArrayIterator`2.MoveNext()
+   at dochadzka.PostgreSQL.DB_t_UserAdd(IEnumerable`1 t_users, String tableFullName, Boolean vymazatDataPredPridanim, Int64 userID) in D:\B\VSProjects\dochadzka\dochadzka\PostgreSQLobjects.cs:line 355
+2023-09-06 10:09:12.063 +02:00 [INF] 
+
+2023-09-06 10:09:12.081 +02:00 [INF] --------------------------------------------------------------------------------
+2023-09-06 10:09:12.081 +02:00 [INF]  Current versions:
+2023-09-06 10:09:12.081 +02:00 [INF]        OS: 10.0.22621.0
+2023-09-06 10:09:12.081 +02:00 [INF]       App: 1.2.2.0
+2023-09-06 10:09:12.082 +02:00 [INF] --------------------------------------------------------------------------------
+2023-09-06 10:09:13.284 +02:00 [INF] Current user: U:Ing. Branislav Škrada ; D:0; A:False
+2023-09-06 10:17:42.842 +02:00 [INF] 
+
+2023-09-06 10:17:42.861 +02:00 [INF] --------------------------------------------------------------------------------
+2023-09-06 10:17:42.861 +02:00 [INF]  Current versions:
+2023-09-06 10:17:42.861 +02:00 [INF]        OS: 10.0.22621.0
+2023-09-06 10:17:42.861 +02:00 [INF]       App: 1.2.2.0
+2023-09-06 10:17:42.861 +02:00 [INF] --------------------------------------------------------------------------------
+2023-09-06 10:17:43.854 +02:00 [INF] Current user: U:Ing. Branislav Škrada ; D:0; A:False

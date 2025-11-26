@@ -1,0 +1,326 @@
+2023-08-01 10:22:33.072 +02:00 [INF] 
+
+2023-08-01 10:22:33.086 +02:00 [INF] --------------------------------------------------------------------------------
+2023-08-01 10:22:33.086 +02:00 [INF]  Current versions:
+2023-08-01 10:22:33.086 +02:00 [INF]        OS: 10.0.22621.0
+2023-08-01 10:22:33.086 +02:00 [INF]       App: 1.2.0.0
+2023-08-01 10:22:33.086 +02:00 [INF] --------------------------------------------------------------------------------
+2023-08-01 10:22:33.264 +02:00 [INF] Current user: U:Ing. Branislav Škrada ; D:0; A:False
+2023-08-01 10:31:57.866 +02:00 [INF] 
+
+2023-08-01 10:31:57.881 +02:00 [INF] --------------------------------------------------------------------------------
+2023-08-01 10:31:57.881 +02:00 [INF]  Current versions:
+2023-08-01 10:31:57.881 +02:00 [INF]        OS: 10.0.22621.0
+2023-08-01 10:31:57.881 +02:00 [INF]       App: 1.2.0.0
+2023-08-01 10:31:57.881 +02:00 [INF] --------------------------------------------------------------------------------
+2023-08-01 10:31:58.135 +02:00 [INF] Current user: U:Ing. Milan Šmotlák ; D:25; A:True
+2023-08-01 10:32:30.450 +02:00 [ERR] PostgreSQL.ZamknuteKSet:
+Npgsql.PostgresException (0x80004005): 42703: column "ZamknuteK" of relation "Zamestnanci" does not exist
+
+POSITION: 26
+   at Npgsql.Internal.NpgsqlConnector.<ReadMessage>g__ReadMessageLong|234_0(NpgsqlConnector connector, Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlDataReader.NextResult()
+   at Npgsql.NpgsqlCommand.ExecuteReader(CommandBehavior behavior, Boolean async, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(CommandBehavior behavior, Boolean async, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteNonQuery(Boolean async, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteNonQuery()
+   at dochadzka.PostgreSQL.ZamknuteKSet(Int64 id, DateTime date) in D:\B\VSProjects\dochadzka\dochadzka\PostgreSQLobjects.cs:line 856
+  Exception data:
+    Severity: ERROR
+    SqlState: 42703
+    MessageText: column "ZamknuteK" of relation "Zamestnanci" does not exist
+    Position: 26
+    File: analyze.c
+    Line: 2466
+    Routine: transformUpdateTargetList
+2023-08-01 10:32:30.468 +02:00 [INF] Úspešne uzaknutá dochádzka pre 'Milan Šmotlák' ku dňu 30. 6. 2023 0:00:00.
+2023-08-01 11:19:21.116 +02:00 [INF] 
+
+2023-08-01 11:19:21.130 +02:00 [INF] --------------------------------------------------------------------------------
+2023-08-01 11:19:21.131 +02:00 [INF]  Current versions:
+2023-08-01 11:19:21.131 +02:00 [INF]        OS: 10.0.22621.0
+2023-08-01 11:19:21.131 +02:00 [INF]       App: 1.2.0.0
+2023-08-01 11:19:21.131 +02:00 [INF] --------------------------------------------------------------------------------
+2023-08-01 11:19:21.316 +02:00 [INF] Current user: U:Ing. Branislav Škrada ; D:0; A:False
+2023-08-01 11:29:08.854 +02:00 [ERR] DispatcherUnhandledException 
+System.DivideByZeroException: Attempted to divide by zero.
+   at dochadzka.MainWindow.ProcessVykaz(Boolean zakonny, Nullable`1 startFromHour) in D:\B\VSProjects\dochadzka\dochadzka\MainWindow.xaml.cs:line 271
+   at dochadzka.MainWindow.chkZakonnyVykaz_Checked(Object sender, RoutedEventArgs e) in D:\B\VSProjects\dochadzka\dochadzka\MainWindow.xaml.cs:line 2345
+   at System.Windows.EventRoute.InvokeHandlersImpl(Object source, RoutedEventArgs args, Boolean reRaised)
+   at System.Windows.UIElement.RaiseEventImpl(DependencyObject sender, RoutedEventArgs args)
+   at System.Windows.Controls.Primitives.ToggleButton.OnIsCheckedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+   at System.Windows.DependencyObject.OnPropertyChanged(DependencyPropertyChangedEventArgs e)
+   at System.Windows.FrameworkElement.OnPropertyChanged(DependencyPropertyChangedEventArgs e)
+   at System.Windows.DependencyObject.NotifyPropertyChange(DependencyPropertyChangedEventArgs args)
+   at System.Windows.DependencyObject.UpdateEffectiveValue(EntryIndex entryIndex, DependencyProperty dp, PropertyMetadata metadata, EffectiveValueEntry oldEntry, EffectiveValueEntry& newEntry, Boolean coerceWithDeferredReference, Boolean coerceWithCurrentValue, OperationType operationType)
+   at System.Windows.DependencyObject.SetValueCommon(DependencyProperty dp, Object value, PropertyMetadata metadata, Boolean coerceWithDeferredReference, Boolean coerceWithCurrentValue, OperationType operationType, Boolean isInternal)
+   at System.Windows.DependencyObject.SetCurrentValueInternal(DependencyProperty dp, Object value)
+   at System.Windows.Controls.Primitives.ToggleButton.OnToggle()
+   at System.Windows.Controls.Primitives.ToggleButton.OnClick()
+   at System.Windows.Controls.Primitives.ButtonBase.OnMouseLeftButtonUp(MouseButtonEventArgs e)
+   at System.Windows.RoutedEventArgs.InvokeHandler(Delegate handler, Object target)
+   at System.Windows.EventRoute.InvokeHandlersImpl(Object source, RoutedEventArgs args, Boolean reRaised)
+   at System.Windows.UIElement.ReRaiseEventAs(DependencyObject sender, RoutedEventArgs args, RoutedEvent newEvent)
+   at System.Windows.RoutedEventArgs.InvokeHandler(Delegate handler, Object target)
+   at System.Windows.EventRoute.InvokeHandlersImpl(Object source, RoutedEventArgs args, Boolean reRaised)
+   at System.Windows.UIElement.RaiseEventImpl(DependencyObject sender, RoutedEventArgs args)
+   at System.Windows.UIElement.RaiseTrustedEvent(RoutedEventArgs args)
+   at System.Windows.Input.InputManager.ProcessStagingArea()
+   at System.Windows.Input.InputProviderSite.ReportInput(InputReport inputReport)
+   at System.Windows.Interop.HwndMouseInputProvider.ReportInput(IntPtr hwnd, InputMode mode, Int32 timestamp, RawMouseActions actions, Int32 x, Int32 y, Int32 wheel)
+   at System.Windows.Interop.HwndMouseInputProvider.FilterMessage(IntPtr hwnd, WindowMessage msg, IntPtr wParam, IntPtr lParam, Boolean& handled)
+   at System.Windows.Interop.HwndSource.InputFilterMessage(IntPtr hwnd, Int32 msg, IntPtr wParam, IntPtr lParam, Boolean& handled)
+   at MS.Win32.HwndWrapper.WndProc(IntPtr hwnd, Int32 msg, IntPtr wParam, IntPtr lParam, Boolean& handled)
+   at MS.Win32.HwndSubclass.DispatcherCallbackOperation(Object o)
+   at System.Windows.Threading.ExceptionWrapper.InternalRealCall(Delegate callback, Object args, Int32 numArgs)
+   at System.Windows.Threading.ExceptionWrapper.TryCatchWhen(Object source, Delegate callback, Object args, Int32 numArgs, Delegate catchHandler)
+2023-08-01 11:29:18.931 +02:00 [ERR] DispatcherUnhandledException 
+System.DivideByZeroException: Attempted to divide by zero.
+   at dochadzka.MainWindow.ProcessVykaz(Boolean zakonny, Nullable`1 startFromHour) in D:\B\VSProjects\dochadzka\dochadzka\MainWindow.xaml.cs:line 271
+   at dochadzka.MainWindow.chkZakonnyVykaz_Checked(Object sender, RoutedEventArgs e) in D:\B\VSProjects\dochadzka\dochadzka\MainWindow.xaml.cs:line 2345
+   at System.Windows.EventRoute.InvokeHandlersImpl(Object source, RoutedEventArgs args, Boolean reRaised)
+   at System.Windows.UIElement.RaiseEventImpl(DependencyObject sender, RoutedEventArgs args)
+   at System.Windows.Controls.Primitives.ToggleButton.OnIsCheckedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+   at System.Windows.DependencyObject.OnPropertyChanged(DependencyPropertyChangedEventArgs e)
+   at System.Windows.FrameworkElement.OnPropertyChanged(DependencyPropertyChangedEventArgs e)
+   at System.Windows.DependencyObject.NotifyPropertyChange(DependencyPropertyChangedEventArgs args)
+   at System.Windows.DependencyObject.UpdateEffectiveValue(EntryIndex entryIndex, DependencyProperty dp, PropertyMetadata metadata, EffectiveValueEntry oldEntry, EffectiveValueEntry& newEntry, Boolean coerceWithDeferredReference, Boolean coerceWithCurrentValue, OperationType operationType)
+   at System.Windows.DependencyObject.SetValueCommon(DependencyProperty dp, Object value, PropertyMetadata metadata, Boolean coerceWithDeferredReference, Boolean coerceWithCurrentValue, OperationType operationType, Boolean isInternal)
+   at System.Windows.DependencyObject.SetCurrentValueInternal(DependencyProperty dp, Object value)
+   at System.Windows.Controls.Primitives.ToggleButton.OnToggle()
+   at System.Windows.Controls.Primitives.ToggleButton.OnClick()
+   at System.Windows.Controls.Primitives.ButtonBase.OnMouseLeftButtonUp(MouseButtonEventArgs e)
+   at System.Windows.RoutedEventArgs.InvokeHandler(Delegate handler, Object target)
+   at System.Windows.EventRoute.InvokeHandlersImpl(Object source, RoutedEventArgs args, Boolean reRaised)
+   at System.Windows.UIElement.ReRaiseEventAs(DependencyObject sender, RoutedEventArgs args, RoutedEvent newEvent)
+   at System.Windows.RoutedEventArgs.InvokeHandler(Delegate handler, Object target)
+   at System.Windows.EventRoute.InvokeHandlersImpl(Object source, RoutedEventArgs args, Boolean reRaised)
+   at System.Windows.UIElement.RaiseEventImpl(DependencyObject sender, RoutedEventArgs args)
+   at System.Windows.UIElement.RaiseTrustedEvent(RoutedEventArgs args)
+   at System.Windows.Input.InputManager.ProcessStagingArea()
+   at System.Windows.Input.InputProviderSite.ReportInput(InputReport inputReport)
+   at System.Windows.Interop.HwndMouseInputProvider.ReportInput(IntPtr hwnd, InputMode mode, Int32 timestamp, RawMouseActions actions, Int32 x, Int32 y, Int32 wheel)
+   at System.Windows.Interop.HwndMouseInputProvider.FilterMessage(IntPtr hwnd, WindowMessage msg, IntPtr wParam, IntPtr lParam, Boolean& handled)
+   at System.Windows.Interop.HwndSource.InputFilterMessage(IntPtr hwnd, Int32 msg, IntPtr wParam, IntPtr lParam, Boolean& handled)
+   at MS.Win32.HwndWrapper.WndProc(IntPtr hwnd, Int32 msg, IntPtr wParam, IntPtr lParam, Boolean& handled)
+   at MS.Win32.HwndSubclass.DispatcherCallbackOperation(Object o)
+   at System.Windows.Threading.ExceptionWrapper.InternalRealCall(Delegate callback, Object args, Int32 numArgs)
+   at System.Windows.Threading.ExceptionWrapper.TryCatchWhen(Object source, Delegate callback, Object args, Int32 numArgs, Delegate catchHandler)
+2023-08-01 11:29:36.328 +02:00 [ERR] DispatcherUnhandledException 
+System.DivideByZeroException: Attempted to divide by zero.
+   at dochadzka.MainWindow.ProcessVykaz(Boolean zakonny, Nullable`1 startFromHour) in D:\B\VSProjects\dochadzka\dochadzka\MainWindow.xaml.cs:line 271
+   at dochadzka.MainWindow.chkZakonnyVykaz_Checked(Object sender, RoutedEventArgs e) in D:\B\VSProjects\dochadzka\dochadzka\MainWindow.xaml.cs:line 2345
+   at System.Windows.EventRoute.InvokeHandlersImpl(Object source, RoutedEventArgs args, Boolean reRaised)
+   at System.Windows.UIElement.RaiseEventImpl(DependencyObject sender, RoutedEventArgs args)
+   at System.Windows.Controls.Primitives.ToggleButton.OnIsCheckedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+   at System.Windows.DependencyObject.OnPropertyChanged(DependencyPropertyChangedEventArgs e)
+   at System.Windows.FrameworkElement.OnPropertyChanged(DependencyPropertyChangedEventArgs e)
+   at System.Windows.DependencyObject.NotifyPropertyChange(DependencyPropertyChangedEventArgs args)
+   at System.Windows.DependencyObject.UpdateEffectiveValue(EntryIndex entryIndex, DependencyProperty dp, PropertyMetadata metadata, EffectiveValueEntry oldEntry, EffectiveValueEntry& newEntry, Boolean coerceWithDeferredReference, Boolean coerceWithCurrentValue, OperationType operationType)
+   at System.Windows.DependencyObject.SetValueCommon(DependencyProperty dp, Object value, PropertyMetadata metadata, Boolean coerceWithDeferredReference, Boolean coerceWithCurrentValue, OperationType operationType, Boolean isInternal)
+   at System.Windows.DependencyObject.SetCurrentValueInternal(DependencyProperty dp, Object value)
+   at System.Windows.Controls.Primitives.ToggleButton.OnToggle()
+   at System.Windows.Controls.Primitives.ToggleButton.OnClick()
+   at System.Windows.Controls.Primitives.ButtonBase.OnMouseLeftButtonUp(MouseButtonEventArgs e)
+   at System.Windows.RoutedEventArgs.InvokeHandler(Delegate handler, Object target)
+   at System.Windows.EventRoute.InvokeHandlersImpl(Object source, RoutedEventArgs args, Boolean reRaised)
+   at System.Windows.UIElement.ReRaiseEventAs(DependencyObject sender, RoutedEventArgs args, RoutedEvent newEvent)
+   at System.Windows.RoutedEventArgs.InvokeHandler(Delegate handler, Object target)
+   at System.Windows.EventRoute.InvokeHandlersImpl(Object source, RoutedEventArgs args, Boolean reRaised)
+   at System.Windows.UIElement.RaiseEventImpl(DependencyObject sender, RoutedEventArgs args)
+   at System.Windows.UIElement.RaiseTrustedEvent(RoutedEventArgs args)
+   at System.Windows.Input.InputManager.ProcessStagingArea()
+   at System.Windows.Input.InputProviderSite.ReportInput(InputReport inputReport)
+   at System.Windows.Interop.HwndMouseInputProvider.ReportInput(IntPtr hwnd, InputMode mode, Int32 timestamp, RawMouseActions actions, Int32 x, Int32 y, Int32 wheel)
+   at System.Windows.Interop.HwndMouseInputProvider.FilterMessage(IntPtr hwnd, WindowMessage msg, IntPtr wParam, IntPtr lParam, Boolean& handled)
+   at System.Windows.Interop.HwndSource.InputFilterMessage(IntPtr hwnd, Int32 msg, IntPtr wParam, IntPtr lParam, Boolean& handled)
+   at MS.Win32.HwndWrapper.WndProc(IntPtr hwnd, Int32 msg, IntPtr wParam, IntPtr lParam, Boolean& handled)
+   at MS.Win32.HwndSubclass.DispatcherCallbackOperation(Object o)
+   at System.Windows.Threading.ExceptionWrapper.InternalRealCall(Delegate callback, Object args, Int32 numArgs)
+   at System.Windows.Threading.ExceptionWrapper.TryCatchWhen(Object source, Delegate callback, Object args, Int32 numArgs, Delegate catchHandler)
+2023-08-01 11:48:58.736 +02:00 [ERR] DispatcherUnhandledException 
+System.DivideByZeroException: Attempted to divide by zero.
+   at dochadzka.MainWindow.ProcessVykaz(Boolean zakonny, Nullable`1 startFromHour) in D:\B\VSProjects\dochadzka\dochadzka\MainWindow.xaml.cs:line 271
+   at dochadzka.MainWindow.chkZakonnyVykaz_Checked(Object sender, RoutedEventArgs e) in D:\B\VSProjects\dochadzka\dochadzka\MainWindow.xaml.cs:line 2345
+   at System.Windows.EventRoute.InvokeHandlersImpl(Object source, RoutedEventArgs args, Boolean reRaised)
+   at System.Windows.UIElement.RaiseEventImpl(DependencyObject sender, RoutedEventArgs args)
+   at System.Windows.Controls.Primitives.ToggleButton.OnIsCheckedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+   at System.Windows.DependencyObject.OnPropertyChanged(DependencyPropertyChangedEventArgs e)
+   at System.Windows.FrameworkElement.OnPropertyChanged(DependencyPropertyChangedEventArgs e)
+   at System.Windows.DependencyObject.NotifyPropertyChange(DependencyPropertyChangedEventArgs args)
+   at System.Windows.DependencyObject.UpdateEffectiveValue(EntryIndex entryIndex, DependencyProperty dp, PropertyMetadata metadata, EffectiveValueEntry oldEntry, EffectiveValueEntry& newEntry, Boolean coerceWithDeferredReference, Boolean coerceWithCurrentValue, OperationType operationType)
+   at System.Windows.DependencyObject.SetValueCommon(DependencyProperty dp, Object value, PropertyMetadata metadata, Boolean coerceWithDeferredReference, Boolean coerceWithCurrentValue, OperationType operationType, Boolean isInternal)
+   at System.Windows.DependencyObject.SetCurrentValueInternal(DependencyProperty dp, Object value)
+   at System.Windows.Controls.Primitives.ToggleButton.OnToggle()
+   at System.Windows.Controls.Primitives.ToggleButton.OnClick()
+   at System.Windows.Controls.Primitives.ButtonBase.OnMouseLeftButtonUp(MouseButtonEventArgs e)
+   at System.Windows.RoutedEventArgs.InvokeHandler(Delegate handler, Object target)
+   at System.Windows.EventRoute.InvokeHandlersImpl(Object source, RoutedEventArgs args, Boolean reRaised)
+   at System.Windows.UIElement.ReRaiseEventAs(DependencyObject sender, RoutedEventArgs args, RoutedEvent newEvent)
+   at System.Windows.RoutedEventArgs.InvokeHandler(Delegate handler, Object target)
+   at System.Windows.EventRoute.InvokeHandlersImpl(Object source, RoutedEventArgs args, Boolean reRaised)
+   at System.Windows.UIElement.RaiseEventImpl(DependencyObject sender, RoutedEventArgs args)
+   at System.Windows.UIElement.RaiseTrustedEvent(RoutedEventArgs args)
+   at System.Windows.Input.InputManager.ProcessStagingArea()
+   at System.Windows.Input.InputProviderSite.ReportInput(InputReport inputReport)
+   at System.Windows.Interop.HwndMouseInputProvider.ReportInput(IntPtr hwnd, InputMode mode, Int32 timestamp, RawMouseActions actions, Int32 x, Int32 y, Int32 wheel)
+   at System.Windows.Interop.HwndMouseInputProvider.FilterMessage(IntPtr hwnd, WindowMessage msg, IntPtr wParam, IntPtr lParam, Boolean& handled)
+   at System.Windows.Interop.HwndSource.InputFilterMessage(IntPtr hwnd, Int32 msg, IntPtr wParam, IntPtr lParam, Boolean& handled)
+   at MS.Win32.HwndWrapper.WndProc(IntPtr hwnd, Int32 msg, IntPtr wParam, IntPtr lParam, Boolean& handled)
+   at MS.Win32.HwndSubclass.DispatcherCallbackOperation(Object o)
+   at System.Windows.Threading.ExceptionWrapper.InternalRealCall(Delegate callback, Object args, Int32 numArgs)
+   at System.Windows.Threading.ExceptionWrapper.TryCatchWhen(Object source, Delegate callback, Object args, Int32 numArgs, Delegate catchHandler)
+2023-08-01 12:18:57.912 +02:00 [INF] 
+
+2023-08-01 12:18:57.925 +02:00 [INF] --------------------------------------------------------------------------------
+2023-08-01 12:18:57.926 +02:00 [INF]  Current versions:
+2023-08-01 12:18:57.926 +02:00 [INF]        OS: 10.0.22621.0
+2023-08-01 12:18:57.926 +02:00 [INF]       App: 1.2.0.0
+2023-08-01 12:18:57.926 +02:00 [INF] --------------------------------------------------------------------------------
+2023-08-01 12:18:58.119 +02:00 [INF] Current user: U:Ing. Branislav Škrada ; D:0; A:False
+2023-08-01 13:07:24.616 +02:00 [INF] 
+
+2023-08-01 13:07:24.633 +02:00 [INF] --------------------------------------------------------------------------------
+2023-08-01 13:07:24.633 +02:00 [INF]  Current versions:
+2023-08-01 13:07:24.633 +02:00 [INF]        OS: 10.0.22621.0
+2023-08-01 13:07:24.633 +02:00 [INF]       App: 1.2.0.0
+2023-08-01 13:07:24.633 +02:00 [INF] --------------------------------------------------------------------------------
+2023-08-01 13:07:24.816 +02:00 [INF] Current user: U:Ing. Branislav Škrada ; D:0; A:False
+2023-08-01 13:07:36.063 +02:00 [INF] 
+
+2023-08-01 13:07:36.076 +02:00 [INF] --------------------------------------------------------------------------------
+2023-08-01 13:07:36.077 +02:00 [INF]  Current versions:
+2023-08-01 13:07:36.077 +02:00 [INF]        OS: 10.0.22621.0
+2023-08-01 13:07:36.077 +02:00 [INF]       App: 1.2.0.0
+2023-08-01 13:07:36.077 +02:00 [INF] --------------------------------------------------------------------------------
+2023-08-01 13:07:36.250 +02:00 [INF] Current user: U:Ing. Branislav Škrada ; D:0; A:False
+2023-08-01 15:50:14.844 +02:00 [INF] 
+
+2023-08-01 15:50:14.858 +02:00 [INF] --------------------------------------------------------------------------------
+2023-08-01 15:50:14.858 +02:00 [INF]  Current versions:
+2023-08-01 15:50:14.858 +02:00 [INF]        OS: 10.0.22621.0
+2023-08-01 15:50:14.858 +02:00 [INF]       App: 1.2.0.0
+2023-08-01 15:50:14.858 +02:00 [INF] --------------------------------------------------------------------------------
+2023-08-01 15:50:15.041 +02:00 [INF] Current user: U:Ing. Branislav Škrada ; D:0; A:False
+2023-08-01 15:50:43.662 +02:00 [ERR] DispatcherUnhandledException 
+System.DivideByZeroException: Attempted to divide by zero.
+   at dochadzka.MainWindow.ProcessVykaz(Boolean zakonny, Nullable`1 startFromHour) in D:\B\VSProjects\dochadzka\dochadzka\MainWindow.xaml.cs:line 271
+   at dochadzka.MainWindow.chkZakonnyVykaz_Checked(Object sender, RoutedEventArgs e) in D:\B\VSProjects\dochadzka\dochadzka\MainWindow.xaml.cs:line 2345
+   at System.Windows.EventRoute.InvokeHandlersImpl(Object source, RoutedEventArgs args, Boolean reRaised)
+   at System.Windows.UIElement.RaiseEventImpl(DependencyObject sender, RoutedEventArgs args)
+   at System.Windows.Controls.Primitives.ToggleButton.OnIsCheckedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+   at System.Windows.DependencyObject.OnPropertyChanged(DependencyPropertyChangedEventArgs e)
+   at System.Windows.FrameworkElement.OnPropertyChanged(DependencyPropertyChangedEventArgs e)
+   at System.Windows.DependencyObject.NotifyPropertyChange(DependencyPropertyChangedEventArgs args)
+   at System.Windows.DependencyObject.UpdateEffectiveValue(EntryIndex entryIndex, DependencyProperty dp, PropertyMetadata metadata, EffectiveValueEntry oldEntry, EffectiveValueEntry& newEntry, Boolean coerceWithDeferredReference, Boolean coerceWithCurrentValue, OperationType operationType)
+   at System.Windows.DependencyObject.SetValueCommon(DependencyProperty dp, Object value, PropertyMetadata metadata, Boolean coerceWithDeferredReference, Boolean coerceWithCurrentValue, OperationType operationType, Boolean isInternal)
+   at System.Windows.DependencyObject.SetCurrentValueInternal(DependencyProperty dp, Object value)
+   at System.Windows.Controls.Primitives.ToggleButton.OnToggle()
+   at System.Windows.Controls.Primitives.ToggleButton.OnClick()
+   at System.Windows.Controls.Primitives.ButtonBase.OnMouseLeftButtonUp(MouseButtonEventArgs e)
+   at System.Windows.RoutedEventArgs.InvokeHandler(Delegate handler, Object target)
+   at System.Windows.EventRoute.InvokeHandlersImpl(Object source, RoutedEventArgs args, Boolean reRaised)
+   at System.Windows.UIElement.ReRaiseEventAs(DependencyObject sender, RoutedEventArgs args, RoutedEvent newEvent)
+   at System.Windows.RoutedEventArgs.InvokeHandler(Delegate handler, Object target)
+   at System.Windows.EventRoute.InvokeHandlersImpl(Object source, RoutedEventArgs args, Boolean reRaised)
+   at System.Windows.UIElement.RaiseEventImpl(DependencyObject sender, RoutedEventArgs args)
+   at System.Windows.UIElement.RaiseTrustedEvent(RoutedEventArgs args)
+   at System.Windows.Input.InputManager.ProcessStagingArea()
+   at System.Windows.Input.InputProviderSite.ReportInput(InputReport inputReport)
+   at System.Windows.Interop.HwndMouseInputProvider.ReportInput(IntPtr hwnd, InputMode mode, Int32 timestamp, RawMouseActions actions, Int32 x, Int32 y, Int32 wheel)
+   at System.Windows.Interop.HwndMouseInputProvider.FilterMessage(IntPtr hwnd, WindowMessage msg, IntPtr wParam, IntPtr lParam, Boolean& handled)
+   at System.Windows.Interop.HwndSource.InputFilterMessage(IntPtr hwnd, Int32 msg, IntPtr wParam, IntPtr lParam, Boolean& handled)
+   at MS.Win32.HwndWrapper.WndProc(IntPtr hwnd, Int32 msg, IntPtr wParam, IntPtr lParam, Boolean& handled)
+   at MS.Win32.HwndSubclass.DispatcherCallbackOperation(Object o)
+   at System.Windows.Threading.ExceptionWrapper.InternalRealCall(Delegate callback, Object args, Int32 numArgs)
+   at System.Windows.Threading.ExceptionWrapper.TryCatchWhen(Object source, Delegate callback, Object args, Int32 numArgs, Delegate catchHandler)
+2023-08-01 18:11:47.101 +02:00 [INF] 
+
+2023-08-01 18:11:47.114 +02:00 [INF] --------------------------------------------------------------------------------
+2023-08-01 18:11:47.114 +02:00 [INF]  Current versions:
+2023-08-01 18:11:47.114 +02:00 [INF]        OS: 10.0.22621.0
+2023-08-01 18:11:47.114 +02:00 [INF]       App: 1.2.0.0
+2023-08-01 18:11:47.115 +02:00 [INF] --------------------------------------------------------------------------------
+2023-08-01 18:11:47.297 +02:00 [INF] Current user: U:Ing. Branislav Škrada ; D:0; A:False
+2023-08-01 21:08:52.022 +02:00 [INF] 
+
+2023-08-01 21:08:52.034 +02:00 [INF] --------------------------------------------------------------------------------
+2023-08-01 21:08:52.035 +02:00 [INF]  Current versions:
+2023-08-01 21:08:52.035 +02:00 [INF]        OS: 10.0.22621.0
+2023-08-01 21:08:52.035 +02:00 [INF]       App: 1.2.0.0
+2023-08-01 21:08:52.035 +02:00 [INF] --------------------------------------------------------------------------------
+2023-08-01 21:08:52.320 +02:00 [INF] Current user: U:Ing. Milan Šmotlák ; D:25; A:True
+2023-08-01 22:15:15.149 +02:00 [INF] 
+
+2023-08-01 22:15:15.162 +02:00 [INF] --------------------------------------------------------------------------------
+2023-08-01 22:15:15.162 +02:00 [INF]  Current versions:
+2023-08-01 22:15:15.162 +02:00 [INF]        OS: 10.0.22621.0
+2023-08-01 22:15:15.162 +02:00 [INF]       App: 1.2.0.0
+2023-08-01 22:15:15.163 +02:00 [INF] --------------------------------------------------------------------------------
+2023-08-01 22:15:15.339 +02:00 [INF] Current user: U:Ing. Branislav Škrada ; D:0; A:False
+2023-08-01 22:15:55.476 +02:00 [ERR] DispatcherUnhandledException 
+System.DivideByZeroException: Attempted to divide by zero.
+   at dochadzka.MainWindow.ProcessVykaz(Boolean zakonny, Nullable`1 startFromHour) in D:\B\VSProjects\dochadzka\dochadzka\MainWindow.xaml.cs:line 271
+   at dochadzka.MainWindow.chkZakonnyVykaz_Checked(Object sender, RoutedEventArgs e) in D:\B\VSProjects\dochadzka\dochadzka\MainWindow.xaml.cs:line 2345
+   at System.Windows.EventRoute.InvokeHandlersImpl(Object source, RoutedEventArgs args, Boolean reRaised)
+   at System.Windows.UIElement.RaiseEventImpl(DependencyObject sender, RoutedEventArgs args)
+   at System.Windows.Controls.Primitives.ToggleButton.OnIsCheckedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+   at System.Windows.DependencyObject.OnPropertyChanged(DependencyPropertyChangedEventArgs e)
+   at System.Windows.FrameworkElement.OnPropertyChanged(DependencyPropertyChangedEventArgs e)
+   at System.Windows.DependencyObject.NotifyPropertyChange(DependencyPropertyChangedEventArgs args)
+   at System.Windows.DependencyObject.UpdateEffectiveValue(EntryIndex entryIndex, DependencyProperty dp, PropertyMetadata metadata, EffectiveValueEntry oldEntry, EffectiveValueEntry& newEntry, Boolean coerceWithDeferredReference, Boolean coerceWithCurrentValue, OperationType operationType)
+   at System.Windows.DependencyObject.SetValueCommon(DependencyProperty dp, Object value, PropertyMetadata metadata, Boolean coerceWithDeferredReference, Boolean coerceWithCurrentValue, OperationType operationType, Boolean isInternal)
+   at System.Windows.DependencyObject.SetCurrentValueInternal(DependencyProperty dp, Object value)
+   at System.Windows.Controls.Primitives.ToggleButton.OnToggle()
+   at System.Windows.Controls.Primitives.ToggleButton.OnClick()
+   at System.Windows.Controls.Primitives.ButtonBase.OnMouseLeftButtonUp(MouseButtonEventArgs e)
+   at System.Windows.RoutedEventArgs.InvokeHandler(Delegate handler, Object target)
+   at System.Windows.EventRoute.InvokeHandlersImpl(Object source, RoutedEventArgs args, Boolean reRaised)
+   at System.Windows.UIElement.ReRaiseEventAs(DependencyObject sender, RoutedEventArgs args, RoutedEvent newEvent)
+   at System.Windows.RoutedEventArgs.InvokeHandler(Delegate handler, Object target)
+   at System.Windows.EventRoute.InvokeHandlersImpl(Object source, RoutedEventArgs args, Boolean reRaised)
+   at System.Windows.UIElement.RaiseEventImpl(DependencyObject sender, RoutedEventArgs args)
+   at System.Windows.UIElement.RaiseTrustedEvent(RoutedEventArgs args)
+   at System.Windows.Input.InputManager.ProcessStagingArea()
+   at System.Windows.Input.InputProviderSite.ReportInput(InputReport inputReport)
+   at System.Windows.Interop.HwndMouseInputProvider.ReportInput(IntPtr hwnd, InputMode mode, Int32 timestamp, RawMouseActions actions, Int32 x, Int32 y, Int32 wheel)
+   at System.Windows.Interop.HwndMouseInputProvider.FilterMessage(IntPtr hwnd, WindowMessage msg, IntPtr wParam, IntPtr lParam, Boolean& handled)
+   at System.Windows.Interop.HwndSource.InputFilterMessage(IntPtr hwnd, Int32 msg, IntPtr wParam, IntPtr lParam, Boolean& handled)
+   at MS.Win32.HwndWrapper.WndProc(IntPtr hwnd, Int32 msg, IntPtr wParam, IntPtr lParam, Boolean& handled)
+   at MS.Win32.HwndSubclass.DispatcherCallbackOperation(Object o)
+   at System.Windows.Threading.ExceptionWrapper.InternalRealCall(Delegate callback, Object args, Int32 numArgs)
+   at System.Windows.Threading.ExceptionWrapper.TryCatchWhen(Object source, Delegate callback, Object args, Int32 numArgs, Delegate catchHandler)
+2023-08-01 22:15:57.853 +02:00 [ERR] DispatcherUnhandledException 
+System.DivideByZeroException: Attempted to divide by zero.
+   at dochadzka.MainWindow.ProcessVykaz(Boolean zakonny, Nullable`1 startFromHour) in D:\B\VSProjects\dochadzka\dochadzka\MainWindow.xaml.cs:line 271
+   at dochadzka.MainWindow.chkZakonnyVykaz_Checked(Object sender, RoutedEventArgs e) in D:\B\VSProjects\dochadzka\dochadzka\MainWindow.xaml.cs:line 2345
+   at System.Windows.EventRoute.InvokeHandlersImpl(Object source, RoutedEventArgs args, Boolean reRaised)
+   at System.Windows.UIElement.RaiseEventImpl(DependencyObject sender, RoutedEventArgs args)
+   at System.Windows.Controls.Primitives.ToggleButton.OnIsCheckedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+   at System.Windows.DependencyObject.OnPropertyChanged(DependencyPropertyChangedEventArgs e)
+   at System.Windows.FrameworkElement.OnPropertyChanged(DependencyPropertyChangedEventArgs e)
+   at System.Windows.DependencyObject.NotifyPropertyChange(DependencyPropertyChangedEventArgs args)
+   at System.Windows.DependencyObject.UpdateEffectiveValue(EntryIndex entryIndex, DependencyProperty dp, PropertyMetadata metadata, EffectiveValueEntry oldEntry, EffectiveValueEntry& newEntry, Boolean coerceWithDeferredReference, Boolean coerceWithCurrentValue, OperationType operationType)
+   at System.Windows.DependencyObject.SetValueCommon(DependencyProperty dp, Object value, PropertyMetadata metadata, Boolean coerceWithDeferredReference, Boolean coerceWithCurrentValue, OperationType operationType, Boolean isInternal)
+   at System.Windows.DependencyObject.SetCurrentValueInternal(DependencyProperty dp, Object value)
+   at System.Windows.Controls.Primitives.ToggleButton.OnToggle()
+   at System.Windows.Controls.Primitives.ToggleButton.OnClick()
+   at System.Windows.Controls.Primitives.ButtonBase.OnMouseLeftButtonUp(MouseButtonEventArgs e)
+   at System.Windows.RoutedEventArgs.InvokeHandler(Delegate handler, Object target)
+   at System.Windows.EventRoute.InvokeHandlersImpl(Object source, RoutedEventArgs args, Boolean reRaised)
+   at System.Windows.UIElement.ReRaiseEventAs(DependencyObject sender, RoutedEventArgs args, RoutedEvent newEvent)
+   at System.Windows.RoutedEventArgs.InvokeHandler(Delegate handler, Object target)
+   at System.Windows.EventRoute.InvokeHandlersImpl(Object source, RoutedEventArgs args, Boolean reRaised)
+   at System.Windows.UIElement.RaiseEventImpl(DependencyObject sender, RoutedEventArgs args)
+   at System.Windows.UIElement.RaiseTrustedEvent(RoutedEventArgs args)
+   at System.Windows.Input.InputManager.ProcessStagingArea()
+   at System.Windows.Input.InputProviderSite.ReportInput(InputReport inputReport)
+   at System.Windows.Interop.HwndMouseInputProvider.ReportInput(IntPtr hwnd, InputMode mode, Int32 timestamp, RawMouseActions actions, Int32 x, Int32 y, Int32 wheel)
+   at System.Windows.Interop.HwndMouseInputProvider.FilterMessage(IntPtr hwnd, WindowMessage msg, IntPtr wParam, IntPtr lParam, Boolean& handled)
+   at System.Windows.Interop.HwndSource.InputFilterMessage(IntPtr hwnd, Int32 msg, IntPtr wParam, IntPtr lParam, Boolean& handled)
+   at MS.Win32.HwndWrapper.WndProc(IntPtr hwnd, Int32 msg, IntPtr wParam, IntPtr lParam, Boolean& handled)
+   at MS.Win32.HwndSubclass.DispatcherCallbackOperation(Object o)
+   at System.Windows.Threading.ExceptionWrapper.InternalRealCall(Delegate callback, Object args, Int32 numArgs)
+   at System.Windows.Threading.ExceptionWrapper.TryCatchWhen(Object source, Delegate callback, Object args, Int32 numArgs, Delegate catchHandler)
