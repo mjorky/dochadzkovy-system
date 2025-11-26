@@ -37,17 +37,11 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { generateCSV, generateFilename } from '@/lib/utils/csv-utils';
 import { EMPLOYEES_QUERY, EmployeesData } from '@/graphql/queries/employees';
 import { toast } from 'sonner';
-
-// Mock user context - in real app, this would come from auth context
-// TODO: Replace with actual auth context when available
-// Using Milan Šmotlák (ID=2) as default - has work records table t_Milan_Smotlak
-const mockUser = {
-  id: '2',
-  isAdmin: true, // Change to false to test regular employee view
-  isManager: false,
-};
+import { useAuth } from '@/providers/auth-provider';
 
 export default function WorkRecordsPage() {
+  const { user, loading: authLoading } = useAuth();
+
   // Initialize default date range: last 31 days (computed once!)
   const initialDates = useMemo(() => {
     const today = new Date();
@@ -57,7 +51,14 @@ export default function WorkRecordsPage() {
   }, []);
 
   // Employee selection state (for managers/admins)
-  const [selectedEmployeeId, setSelectedEmployeeId] = useState<string>(mockUser.id);
+  const [selectedEmployeeId, setSelectedEmployeeId] = useState<string>('');
+
+  // Set initial employee ID when user is loaded
+  useEffect(() => {
+    if (user?.id && !selectedEmployeeId) {
+      setSelectedEmployeeId(user.id);
+    }
+  }, [user, selectedEmployeeId]);
 
   // Work records state
   const [allRecords, setAllRecords] = useState<WorkRecord[]>([]);
@@ -108,6 +109,7 @@ export default function WorkRecordsPage() {
       offset: 0,
       sortOrder: 'DESC', // Newest first
     },
+    skip: !selectedEmployeeId,
   });
 
   // Update records when query data changes (replaces deprecated onCompleted)
@@ -474,7 +476,7 @@ export default function WorkRecordsPage() {
   }, [filters]);
 
   // Loading state
-  if (recordsLoading && allRecords.length === 0) {
+  if (authLoading || (recordsLoading && allRecords.length === 0)) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="flex flex-col items-center gap-3">
@@ -535,18 +537,15 @@ export default function WorkRecordsPage() {
         <h1 className="text-3xl font-bold text-foreground">Work Records</h1>
       </div>
 
-      {/* Employee selector (for managers/admins only) */}
-      {(mockUser.isAdmin || mockUser.isManager) && (
-        <div className="mb-6">
-          <label className="text-sm font-medium mb-2 block">Employee</label>
-          <EmployeeSelector
+      {/* Employee selector (Internal logic handles visibility) */}
+      <div className="mb-6">
+        <EmployeeSelector
             currentEmployeeId={selectedEmployeeId}
             onEmployeeChange={handleEmployeeChange}
-            isAdmin={mockUser.isAdmin}
-            isManager={mockUser.isManager}
-          />
-        </div>
-      )}
+            isAdmin={!!user?.isAdmin}
+            isManager={!!user?.isManager}
+        />
+      </div>
 
       {/* Filter controls */}
       <WorkRecordsFilterControls

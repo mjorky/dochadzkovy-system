@@ -35,16 +35,10 @@ import { Dropzone, DropzoneContent, DropzoneEmptyState } from '@/components/ui/s
 // CUSTOM COMPONENTS
 import { ReportGenerateButton, ReportSuccessCard } from '@/components/report-actions';
 import { ReportConfiguration } from '@/components/report-configuration';
+import { useAuth } from '@/providers/auth-provider';
 
 // Dynamic import for PDF Viewer
 const PdfViewerDialog = dynamic(() => import('@/components/pdf-viewer-dialog').then(mod => ({ default: mod.PdfViewerDialog })), { ssr: false });
-
-// Mock user context
-const mockUser = {
-  id: '', 
-  isAdmin: true,
-  isManager: false,
-};
 
 // --- 1. QUERIES ---
 export const GET_EMPLOYEES_CATALOG = gql`
@@ -116,8 +110,17 @@ const fileToBase64 = (file: File): Promise<string> => {
 
 // --- MAIN COMPONENT ---
 export default function WorkReportPage() {
+    const { user } = useAuth();
+
     // State: Filters
     const [selectedEmployee, setSelectedEmployee] = useState<string>('');
+
+    useEffect(() => {
+        if (user?.id && !selectedEmployee) {
+            setSelectedEmployee(user.id);
+        }
+    }, [user, selectedEmployee]);
+
     const [date, setDate] = useState<Date>(new Date());
 
     // State: Signature
@@ -280,8 +283,8 @@ export default function WorkReportPage() {
                         onEmployeeChange={(val) => setSelectedEmployee(val || '')}
                         selectedMonth={date}
                         onMonthChange={setDate}
-                        isAdmin={mockUser.isAdmin}
-                        isManager={mockUser.isManager}
+                        isAdmin={!!user?.isAdmin}
+                        isManager={!!user?.isManager}
                     />
 
                     {/* Options Card */}

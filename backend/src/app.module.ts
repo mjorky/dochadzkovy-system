@@ -13,6 +13,7 @@ import { ProjectsModule } from './projects/projects.module';
 import { CountriesModule } from './countries/countries.module';
 import { ReportsModule } from './reports/reports.module';
 import { AuthModule } from './auth/auth.module';
+import { OvertimeModule } from './overtime/overtime.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -36,6 +37,7 @@ import { AuthModule } from './auth/auth.module';
     CountriesModule,
     ReportsModule,
     AuthModule,
+    OvertimeModule,
   ],
   controllers: [AppController],
   providers: [AppService],

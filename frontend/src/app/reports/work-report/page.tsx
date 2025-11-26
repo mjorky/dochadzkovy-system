@@ -19,16 +19,10 @@ import { cn } from '@/lib/utils';
 // CUSTOM COMPONENTS
 import { ReportGenerateButton, ReportSuccessCard } from '@/components/report-actions';
 import { ReportConfiguration } from '@/components/report-configuration';
+import { useAuth } from '@/providers/auth-provider';
 
 // Dynamic import for PdfViewerDialog component
 const PdfViewerDialog = dynamic(() => import('@/components/pdf-viewer-dialog').then(mod => ({ default: mod.PdfViewerDialog })), { ssr: false });
-
-// Mock user context
-const mockUser = {
-  id: '', 
-  isAdmin: true,
-  isManager: false,
-};
 
 const fileToBase64 = (file: File): Promise<string> => {
   return new Promise((resolve, reject) => {
@@ -148,7 +142,15 @@ function TimePickerPopover({ value, onChange }: TimePickerProps) {
 // --- Main Page Component ---
 
 export default function WorkReportPage() {
+  const { user } = useAuth();
   const [selectedEmployeeId, setSelectedEmployeeId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (user?.id && !selectedEmployeeId) {
+      setSelectedEmployeeId(user.id);
+    }
+  }, [user, selectedEmployeeId]);
+
   const [selectedMonth, setSelectedMonth] = useState<Date>(new Date());
   const [pdfFileBlob, setPdfFileBlob] = useState<Blob | null>(null);
   const [isPdfViewerOpen, setIsPdfViewerOpen] = useState(false);
@@ -313,8 +315,8 @@ export default function WorkReportPage() {
             onEmployeeChange={setSelectedEmployeeId}
             selectedMonth={selectedMonth}
             onMonthChange={setSelectedMonth}
-            isAdmin={mockUser.isAdmin}
-            isManager={mockUser.isManager}
+            isAdmin={!!user?.isAdmin}
+            isManager={!!user?.isManager}
           />
 
           <Card>

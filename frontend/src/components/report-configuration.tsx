@@ -42,16 +42,14 @@ export function ReportConfiguration({
                 <CardTitle>Configuration</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-                <div className="space-y-2">
-                    <Label>Employee</Label>
-                    <EmployeeSelector
-                        currentEmployeeId={selectedEmployeeId}
-                        onEmployeeChange={onEmployeeChange}
-                        isAdmin={isAdmin}
-                        isManager={isManager}
-                        placeholder="Select employee..."
-                    />
-                </div>
+                <EmployeeSelector
+                    currentEmployeeId={selectedEmployeeId}
+                    onEmployeeChange={onEmployeeChange}
+                    isAdmin={isAdmin}
+                    isManager={isManager}
+                    placeholder="Select employee..."
+                    label="Employee"
+                />
 
                 <div className="space-y-2">
                     <Label>Month & Year</Label>

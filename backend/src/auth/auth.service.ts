@@ -33,10 +33,17 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
+    // Check if user is a manager of any project
+    const managedProject = await this.prisma.projects.findFirst({
+      where: { Manager: credentials.Zamestnanci.ID },
+    });
+    const isManager = !!managedProject;
+
     const payload = {
       sub: credentials.Zamestnanci.ID.toString(), // Convert BigInt to string
       username: credentials.Username,
       isAdmin: credentials.Zamestnanci.IsAdmin,
+      isManager,
     };
 
     // Update last login
@@ -51,6 +58,7 @@ export class AuthService {
         id: credentials.Zamestnanci.ID.toString(),
         username: credentials.Username,
         isAdmin: credentials.Zamestnanci.IsAdmin,
+        isManager,
       },
     };
   }

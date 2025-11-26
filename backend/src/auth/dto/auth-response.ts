@@ -10,6 +10,9 @@ export class AuthUser {
 
   @Field()
   isAdmin: boolean;
+
+  @Field()
+  isManager: boolean;
 }
 
 @ObjectType()
