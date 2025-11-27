@@ -7,6 +7,7 @@ import { workRecordSchema, WorkRecordFormData } from '@/lib/validations/work-rec
 import { roundToNearest30Minutes, isOvernightShift } from '@/lib/utils/time-utils';
 import { format } from 'date-fns';
 import { CalendarIcon, MoonIcon } from 'lucide-react';
+import { useTranslations } from '@/contexts/dictionary-context';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -65,6 +66,8 @@ export function WorkRecordForm({
     },
   });
 
+  const t = useTranslations();
+
   const startTime = form.watch('startTime');
   const endTime = form.watch('endTime');
   const showOvernightHelper = React.useMemo(
@@ -98,12 +101,12 @@ export function WorkRecordForm({
           name="date"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Date</FormLabel>
+              <FormLabel>{t.workRecordDialog.date}</FormLabel>
               <FormControl>
                 <DatePicker
                   value={dateValue}
                   onChange={handleDateChange}
-                  placeholder="Select date"
+                  placeholder={t.workRecords.pickDate}
                 />
               </FormControl>
               {onKeepSameDateChange && (
@@ -117,7 +120,7 @@ export function WorkRecordForm({
                     htmlFor="keepSameDate"
                     className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                   >
-                    Keep same date as previous entry
+                    {t.workRecordDialog.keepSameDateAsPrevious}
                   </label>
                 </div>
               )}
@@ -132,14 +135,14 @@ export function WorkRecordForm({
           name="absenceTypeId"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Absence Type *</FormLabel>
+              <FormLabel>{t.workRecordDialog.absenceType} *</FormLabel>
               <Select
                 onValueChange={(value) => field.onChange(parseInt(value, 10))}
                 value={field.value?.toString()}
               >
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select absence type" />
+                    <SelectValue placeholder={t.workRecordDialog.selectAbsence} />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -161,14 +164,14 @@ export function WorkRecordForm({
           name="projectId"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Project *</FormLabel>
+              <FormLabel>{t.workRecordDialog.project} *</FormLabel>
               <Select
                 onValueChange={(value) => field.onChange(parseInt(value, 10))}
                 value={field.value?.toString()}
               >
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select project" />
+                    <SelectValue placeholder={t.workRecordDialog.selectProject} />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -190,14 +193,14 @@ export function WorkRecordForm({
           name="productivityTypeId"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Productivity Type *</FormLabel>
+              <FormLabel>{t.workRecordDialog.productivityType} *</FormLabel>
               <Select
                 onValueChange={(value) => field.onChange(parseInt(value, 10))}
                 value={field.value?.toString()}
               >
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select productivity type" />
+                    <SelectValue placeholder={t.workRecordDialog.selectProductivity} />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -219,14 +222,14 @@ export function WorkRecordForm({
           name="workTypeId"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Work Type *</FormLabel>
+              <FormLabel>{t.workRecordDialog.workType} *</FormLabel>
               <Select
                 onValueChange={(value) => field.onChange(parseInt(value, 10))}
                 value={field.value?.toString()}
               >
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select work type" />
+                    <SelectValue placeholder={t.workRecordDialog.selectWorkType} />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -248,7 +251,7 @@ export function WorkRecordForm({
           name="startTime"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Start Time *</FormLabel>
+              <FormLabel>{t.workRecordDialog.startTime} *</FormLabel>
               <FormControl>
                 <Input
                   type="time"
@@ -257,7 +260,7 @@ export function WorkRecordForm({
                   onBlur={handleTimeBlur('startTime')}
                 />
               </FormControl>
-              <FormDescription>Time will be rounded to nearest 30 minutes</FormDescription>
+              <FormDescription>{t.workRecordDialog.timeRoundedTo30}</FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -269,7 +272,7 @@ export function WorkRecordForm({
           name="endTime"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>End Time *</FormLabel>
+              <FormLabel>{t.workRecordDialog.endTime} *</FormLabel>
               <FormControl>
                 <Input
                   type="time"
@@ -281,10 +284,10 @@ export function WorkRecordForm({
               {showOvernightHelper && (
                 <FormDescription className="flex items-center gap-1 text-blue-600">
                   <MoonIcon className="h-4 w-4" />
-                  This is an overnight shift (adds 24 hours)
+                  {t.workRecordDialog.overnightShift}
                 </FormDescription>
               )}
-              <FormDescription>Time will be rounded to nearest 30 minutes</FormDescription>
+              <FormDescription>{t.workRecordDialog.timeRoundedTo30}</FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -296,16 +299,16 @@ export function WorkRecordForm({
           name="description"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Description</FormLabel>
+              <FormLabel>{t.workRecordDialog.description}</FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder="Enter description (optional)"
+                  placeholder={t.workRecordDialog.enterDescription}
                   className="resize-none"
                   {...field}
                 />
               </FormControl>
               <FormDescription>
-                {remainingChars} characters remaining (max 500)
+                {remainingChars} {t.workRecordDialog.charactersRemaining}
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -318,7 +321,7 @@ export function WorkRecordForm({
           name="km"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Kilometers</FormLabel>
+              <FormLabel>{t.workRecordDialog.kilometers}</FormLabel>
               <FormControl>
                 <Input
                   type="number"
@@ -345,8 +348,8 @@ export function WorkRecordForm({
                 />
               </FormControl>
               <div className="space-y-1 leading-none">
-                <FormLabel>Trip Flag</FormLabel>
-                <FormDescription>Mark if this is a business trip</FormDescription>
+                <FormLabel>{t.workRecordDialog.tripFlag}</FormLabel>
+                <FormDescription>{t.workRecordDialog.markBusinessTrip}</FormDescription>
               </div>
             </FormItem>
           )}
@@ -355,10 +358,10 @@ export function WorkRecordForm({
         {/* Form Actions */}
         <div className="flex justify-end gap-2 pt-4">
           <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting}>
-            Cancel
+            {t.common.cancel}
           </Button>
           <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? 'Saving...' : 'Save'}
+            {isSubmitting ? t.common.saving : t.common.save}
           </Button>
         </div>
       </form>

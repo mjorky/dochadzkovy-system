@@ -1,0 +1,38 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <TargetFramework>net7.0-windows</TargetFramework>
+        <Nullable>enable</Nullable>
+        <UseWPF>true</UseWPF>
+        <Platforms>AnyCPU;x64</Platforms>
+        <StartupObject>dochadzka.App</StartupObject>
+        <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
+        <!--pre rucne nastavenie verzie-->
+        <Version>1.4.1</Version>
+    </PropertyGroup>
+    
+    <!--pre automaticke generovanie verzie
+    <PropertyGroup>
+        <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+        <Deterministic>false</Deterministic>
+    </PropertyGroup>-->
+    
+    <ItemGroup>
+        <PackageReference Include="Npgsql" Version="8.0.3" />
+        <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Update="Change.log">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="img\bez.zachovania.dna.png">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="img\so.zachovanim.dna.png">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
+
+</Project>

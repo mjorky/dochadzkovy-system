@@ -433,6 +433,7 @@ export class WorkRecordsService {
     const updateValues: any[] = [];
     let paramIndex = 1;
 
+    // Helper pre bežné polia
     const pushUpdate = (field: string, value: any) => {
       updateFields.push(`"${field}" = $${paramIndex++}`);
       updateValues.push(value);
@@ -447,16 +448,26 @@ export class WorkRecordsService {
       pushUpdate('HourTypeID', BigInt(input.productivityTypeId));
     if (input.workTypeId !== undefined)
       pushUpdate('HourTypesID', BigInt(input.workTypeId));
-    if (input.startTime !== undefined)
-      pushUpdate(
-        'StartTime',
+
+    // --- OPRAVA ZAČÍNA TU ---
+    // Pre časové polia musíme explicitne pridať ::time casting,
+    // inak Postgres hlási chybu typu text vs time without time zone.
+    
+    if (input.startTime !== undefined) {
+      updateFields.push(`"StartTime" = $${paramIndex++}::time`);
+      updateValues.push(
         `${input.startTime.length === 5 ? input.startTime + ':00' : input.startTime}`,
       );
-    if (input.endTime !== undefined)
-      pushUpdate(
-        'EndTime',
+    }
+
+    if (input.endTime !== undefined) {
+      updateFields.push(`"EndTime" = $${paramIndex++}::time`);
+      updateValues.push(
         `${input.endTime.length === 5 ? input.endTime + ':00' : input.endTime}`,
       );
+    }
+    // --- OPRAVA KONČÍ TU ---
+
     if (input.description !== undefined)
       pushUpdate('Description', input.description || null);
     if (input.km !== undefined) pushUpdate('km', input.km);
@@ -468,11 +479,14 @@ export class WorkRecordsService {
     }
 
     updateValues.push(BigInt(input.recordId));
+    
+    // Vykonanie UPDATE
     await this.prisma.$queryRawUnsafe(
       `UPDATE "${tableName}" SET ${updateFields.join(', ')} WHERE "ID" = $${paramIndex}`,
       ...updateValues,
     );
 
+    // Načítanie aktualizovaného záznamu
     const updatedRecords: any[] = await this.prisma.$queryRawUnsafe(
       `SELECT wr."ID", wr."StartDate", wr."StartTime"::TEXT, wr."EndTime"::TEXT, wr."Description", wr."km", wr."Lock", wr."DlhodobaSC",
               ct."Alias" as "CinnostTyp_Alias", p."Number" as "Projects_Number", ht."HourType" as "HourType_HourType", hts."HourType" as "HourTypes_HourType"

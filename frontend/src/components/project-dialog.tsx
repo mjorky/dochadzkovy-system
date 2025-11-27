@@ -1,5 +1,6 @@
 "use client"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
+import { useTranslations } from "@/contexts/dictionary-context"
 import { ProjectForm } from "@/components/projects-form"
 import { useCreateProject } from "@/hooks/use-create-project"
 import { useUpdateProject } from "@/hooks/use-update-project"
@@ -23,15 +24,16 @@ export interface ProjectDialogProps {
 const LoaderIcon = Icons.loader
 
 export function ProjectDialog({ open, onOpenChange, mode, initialData, onSuccess, countries, employees, isLoadingData, currentFilters }: ProjectDialogProps) {
+  const t = useTranslations()
   const { createProject, loading: isCreating } = useCreateProject()
   const { updateProject, loading: isUpdating } = useUpdateProject()
 
   const handleSubmit = async (data: ProjectFormData) => {
     let result
     if (mode === "create") {
-      result = await createProject(data, currentFilters) 
+      result = await createProject(data, currentFilters)
     } else if (mode === "edit" && initialData) {
-      result = await updateProject(initialData.id, data, currentFilters) 
+      result = await updateProject(initialData.id, data, currentFilters)
     }
 
     if (result?.success) {
@@ -43,9 +45,9 @@ export function ProjectDialog({ open, onOpenChange, mode, initialData, onSuccess
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>{mode === "create" ? "Create New Project" : "Edit Project"}</DialogTitle>
+          <DialogTitle>{mode === "create" ? t.projects.createTitle : t.projects.editTitle}</DialogTitle>
           <DialogDescription>
-            {mode === 'create' ? "Fill in the details for the new project." : `Editing project: ${initialData?.name}`}
+            {mode === 'create' ? t.projects.createDescription : `${t.projects.editDescription}: ${initialData?.name}`}
           </DialogDescription>
         </DialogHeader>
         {isLoadingData ? (
@@ -54,9 +56,9 @@ export function ProjectDialog({ open, onOpenChange, mode, initialData, onSuccess
             <LoaderIcon className="h-8 w-8" />
           </div>
         ) : (
-          <ProjectForm 
-            onSubmit={handleSubmit} 
-            initialData={initialData} 
+          <ProjectForm
+            onSubmit={handleSubmit}
+            initialData={initialData}
             isSubmitting={isCreating || isUpdating}
             countries={countries}
             employees={employees}

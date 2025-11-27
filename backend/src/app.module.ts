@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+import { GraphQLBigInt } from 'graphql-scalars';
 import { Request, Response } from 'express';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -13,6 +14,8 @@ import { ProjectsModule } from './projects/projects.module';
 import { CountriesModule } from './countries/countries.module';
 import { ReportsModule } from './reports/reports.module';
 import { AuthModule } from './auth/auth.module';
+import { OvertimeModule } from './overtime/overtime.module';
+import { BalancesModule } from './balances/balances.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -27,6 +30,9 @@ import { AuthModule } from './auth/auth.module';
         req,
         res,
       }),
+      buildSchemaOptions: {
+        scalarsMap: [{ type: BigInt, scalar: GraphQLBigInt }],
+      },
     }),
     PrismaModule,
     HealthModule,
@@ -36,6 +42,8 @@ import { AuthModule } from './auth/auth.module';
     CountriesModule,
     ReportsModule,
     AuthModule,
+    OvertimeModule,
+    BalancesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

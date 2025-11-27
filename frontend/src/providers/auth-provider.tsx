@@ -8,6 +8,7 @@ interface User {
   id: string
   username: string
   isAdmin: boolean
+  isManager: boolean
 }
 
 interface AuthContextType {
@@ -47,6 +48,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             id: decoded.sub,
             username: decoded.username,
             isAdmin: decoded.isAdmin,
+            isManager: decoded.isManager || false,
           })
         }
       } catch (e) {
@@ -63,6 +65,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       id: decoded.sub,
       username: decoded.username,
       isAdmin: decoded.isAdmin,
+      isManager: decoded.isManager || false,
     })
     router.push('/')
   }

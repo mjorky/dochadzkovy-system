@@ -1,0 +1,23 @@
+﻿<Application x:Class="dochadzka.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:dochadzka"
+			 xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             StartupUri="MainWindow.xaml">
+    <Application.Resources>
+		<sys:String x:Key="TABLE_USER">Zamestnanci</sys:String>
+		<sys:String x:Key="TABLE_NADCAS">Nadcasy</sys:String>
+		<sys:String x:Key="TABLE_PROJEKT">Projects</sys:String>
+
+		<sys:String x:Key="DOCH_PRIT">Prítomný v práci</sys:String>
+		<sys:String x:Key="DOCH_PN">Práce neschopnosť</sys:String>
+		<sys:String x:Key="DOCH_PAR">Paragraf</sys:String>
+		<sys:String x:Key="DOCH_DOV">Dovolenka</sys:String>
+		<sys:String x:Key="DOCH_OCR">Ošetrenie člena rodiny</sys:String>
+		<sys:String x:Key="DOCH_SC">Mimo pracoviska</sys:String>
+        <sys:String x:Key="DOCH_NV">Náhradné voľno</sys:String>
+		<sys:String x:Key="DOCH_LEK">Lekár</sys:String>
+		<sys:String x:Key="DOCH_LEKD">Lekár doprovod</sys:String>
+		<sys:String x:Key="DOCH_LEKDZP">Lekár dopr. zdrav. postih.</sys:String>
+ </Application.Resources>
+</Application>

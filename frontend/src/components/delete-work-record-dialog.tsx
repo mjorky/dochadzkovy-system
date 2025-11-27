@@ -1,6 +1,7 @@
-'use client';
+"use client";
 
-import * as React from 'react';
+import * as React from "react";
+import { useTranslations } from "@/contexts/dictionary-context";
 import {
   Dialog,
   DialogContent,
@@ -8,12 +9,12 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { useDeleteWorkRecord } from '@/hooks/use-delete-work-record';
-import { WorkRecord } from '@/graphql/queries/work-records';
-import { AlertTriangle } from 'lucide-react';
-import { toast } from 'sonner';
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { useDeleteWorkRecord } from "@/hooks/use-delete-work-record";
+import { WorkRecord } from "@/graphql/queries/work-records";
+import { AlertTriangle } from "lucide-react";
+import { toast } from "sonner";
 
 export interface DeleteWorkRecordDialogProps {
   open: boolean;
@@ -29,6 +30,7 @@ export function DeleteWorkRecordDialog({
   employeeId,
 }: DeleteWorkRecordDialogProps) {
   const { deleteWorkRecord, loading } = useDeleteWorkRecord();
+  const t = useTranslations();
 
   const handleDelete = async () => {
     if (!record) return;
@@ -44,11 +46,11 @@ export function DeleteWorkRecordDialog({
       });
       // Success - close dialog
       onOpenChange(false);
-      toast.success('Work record deleted successfully');
+      toast.success(t.toast.success);
     } catch (error) {
       // Error handling - keep dialog open
-      console.error('Failed to delete work record:', error);
-      toast.error('Failed to delete work record. Please try again.');
+      console.error("Failed to delete work record:", error);
+      toast.error(t.workRecords.failedToLoad);
     }
   };
 
@@ -61,10 +63,10 @@ export function DeleteWorkRecordDialog({
   // Format date
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
     });
   };
 
@@ -76,30 +78,39 @@ export function DeleteWorkRecordDialog({
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-destructive/10">
               <AlertTriangle className="h-5 w-5 text-destructive" />
             </div>
-            <DialogTitle>Delete Work Entry</DialogTitle>
+            <DialogTitle>{t.deleteDialog.title}</DialogTitle>
           </div>
           <DialogDescription className="pt-4">
-            Are you sure you want to delete this work entry? This action cannot be undone.
+            {t.deleteDialog.description} {t.deleteDialog.cannotUndo}
           </DialogDescription>
         </DialogHeader>
 
         <div className="rounded-md bg-muted/50 p-4 space-y-2">
           <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">Date:</span>
+            <span className="text-muted-foreground">{t.workRecords.date}:</span>
             <span className="font-medium">{formatDate(record.date)}</span>
           </div>
           <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">Project:</span>
-            <span className="font-medium">{record.project || 'N/A'}</span>
+            <span className="text-muted-foreground">
+              {t.workRecords.project}:
+            </span>
+            <span className="font-medium">{record.project || t.common.none}</span>
           </div>
           <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">Hours:</span>
+            <span className="text-muted-foreground">
+              {t.workRecords.hours}:
+            </span>
             <span className="font-medium">{record.hours.toFixed(2)}</span>
           </div>
           {record.description && (
             <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">Description:</span>
-              <span className="font-medium max-w-[200px] truncate" title={record.description}>
+              <span className="text-muted-foreground">
+                {t.workRecords.description}:
+              </span>
+              <span
+                className="font-medium max-w-[200px] truncate"
+                title={record.description}
+              >
                 {record.description}
               </span>
             </div>
@@ -107,19 +118,15 @@ export function DeleteWorkRecordDialog({
         </div>
 
         <DialogFooter className="gap-2 sm:gap-0">
-          <Button
-            variant="outline"
-            onClick={handleCancel}
-            disabled={loading}
-          >
-            Cancel
+          <Button variant="outline" onClick={handleCancel} disabled={loading}>
+            {t.common.cancel}
           </Button>
           <Button
             variant="destructive"
             onClick={handleDelete}
             disabled={loading}
           >
-            {loading ? 'Deleting...' : 'Delete'}
+            {loading ? t.common.deleting : t.common.delete}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -192,10 +192,10 @@ model Zamestnanci {
   RocnyNadcasVPlate                          Int?
   PoslednyZaznam                             DateTime?        @db.Date
   ZamknuteK                                  DateTime?        @db.Date
-  UserCredentials                            UserCredentials?
   Nadcasy_Nadcasy_SchvalilToZamestnanci      Nadcasy[]        @relation("Nadcasy_SchvalilToZamestnanci")
   Nadcasy_Nadcasy_ZamestnanecIDToZamestnanci Nadcasy[]        @relation("Nadcasy_ZamestnanecIDToZamestnanci")
   Projects                                   Projects[]
+  UserCredentials                            UserCredentials?
   ZamestnanecTyp                             ZamestnanecTyp   @relation(fields: [TypZamestnanca], references: [Typ], onDelete: NoAction, onUpdate: NoAction)
 
   @@unique([Meno, Priezvisko])
