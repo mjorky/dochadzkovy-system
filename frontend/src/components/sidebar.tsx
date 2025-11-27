@@ -16,7 +16,8 @@ import {
   LogOut,
   FileBarChart, 
   ListTodo,     
-  Languages     
+  Languages,
+  Banknote     // NEW: Icon for Balances
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { ModeToggle } from "@/components/mode-toggle"
@@ -40,6 +41,7 @@ interface MenuItem {
 
 const menuItems: MenuItem[] = [
   { name: "Work Records", href: "/work-records", icon: CalendarCheck },
+  { name: "My Balances", href: "/balances", icon: Banknote }, // NEW: Balances menu item
   { name: "Data", href: "/data", icon: Database },
   { name: "Overtime", href: "/overtime", icon: Clock },
   {

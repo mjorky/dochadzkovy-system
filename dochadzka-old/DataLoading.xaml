@@ -1,0 +1,12 @@
+﻿<Window x:Class="dochadzka.DataLoading"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:dochadzka"
+        mc:Ignorable="d"
+        Title="DataLoading" Height="150" Width="300" Background="{x:Null}" WindowStyle="None" WindowStartupLocation="CenterOwner" Topmost="True" ShowInTaskbar="False" ScrollViewer.VerticalScrollBarVisibility="Disabled" ResizeMode="NoResize" IsTabStop="False" BorderBrush="Black" BorderThickness="1" UseLayoutRounding="True">
+	<Grid x:Name="frmDataLoading" Background="{x:Null}">
+		<Label x:Name="lblDataLoading" FontSize="30" FontWeight="Bold" Content="Náčítanie dát..." Foreground="BlanchedAlmond" Background="{x:Null}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+	</Grid>
+</Window>
