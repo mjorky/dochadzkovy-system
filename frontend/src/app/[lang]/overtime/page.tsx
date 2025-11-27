@@ -63,13 +63,9 @@ import {
   Search,
 } from "lucide-react";
 import { toast } from "sonner";
+import { useTranslations } from "@/contexts/dictionary-context";
 
-const OVERTIME_TYPES = [
-  { id: "Flexi", label: "Flexi" },
-  { id: "SCSKCesta", label: "SC SR Cesta" },
-  { id: "SCZahranicie", label: "SC Zahraničie" },
-  { id: "Neplateny", label: "Neplatené" },
-];
+// --- TYPY ---
 
 type FormPrefillData = {
   amount: string;
@@ -79,14 +75,24 @@ type FormPrefillData = {
   timestamp: number;
 } | null;
 
-// Definícia filtrov
 export interface HistoryFilters {
   searchText: string;
   selectedTypes: string[];
   changeFilter: "all" | "positive" | "negative";
 }
 
-// --- Helper: Column Header with Filter ---
+// --- HELPER FUNCTIONS ---
+
+// Funkcia na získanie preložených typov nadčasov
+const getOvertimeTypes = (t: any) => [
+  { id: "Flexi", label: t.overtime.types.flexi },
+  { id: "SCSKCesta", label: t.overtime.types.scSkCesta },
+  { id: "SCZahranicie", label: t.overtime.types.scZahranicie },
+  { id: "Neplateny", label: t.overtime.types.neplateny },
+];
+
+// --- HELPER COMPONENTS ---
+
 interface ColumnFilterHeaderProps {
   title: string;
   isActive: boolean;
@@ -104,6 +110,8 @@ function ColumnFilterHeader({
   onSort,
   filterContent,
 }: ColumnFilterHeaderProps) {
+  const t = useTranslations();
+
   return (
     <div className="flex items-center space-x-1">
       {isSortable ? (
@@ -141,7 +149,9 @@ function ColumnFilterHeader({
               <Filter
                 className={cn("h-3.5 w-3.5", isActive && "fill-primary/20")}
               />
-              <span className="sr-only">Filter {title}</span>
+              <span className="sr-only">
+                {t.common.filter} {title}
+              </span>
             </Button>
           </PopoverTrigger>
           <PopoverContent
@@ -151,14 +161,14 @@ function ColumnFilterHeader({
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <h4 className="font-semibold text-sm text-foreground">
-                  Filter {title}
+                  {t.common.filter}: {title}
                 </h4>
                 {isActive && (
                   <Badge
                     variant="secondary"
                     className="text-[10px] px-1 py-0 h-5"
                   >
-                    Active
+                    {t.common.active}
                   </Badge>
                 )}
               </div>
@@ -172,13 +182,12 @@ function ColumnFilterHeader({
   );
 }
 
-// --- History Table Component ---
 interface HistoryTableProps {
   records: OvertimeRecord[];
   filters: HistoryFilters;
   onFilterChange: (f: HistoryFilters) => void;
-  availableTypes: string[]; // Dynamicky dostupné typy
-  availableChangeOptions: { hasPositive: boolean; hasNegative: boolean }; // Dynamicky dostupné zmeny
+  availableTypes: string[];
+  availableChangeOptions: { hasPositive: boolean; hasNegative: boolean };
   onRowClick: (record: OvertimeRecord) => void;
 }
 
@@ -190,7 +199,9 @@ function HistoryTable({
   availableChangeOptions,
   onRowClick,
 }: HistoryTableProps) {
-  // Sorting state ostáva v tabuľke (neovplyvňuje dataset)
+  const t = useTranslations();
+  const OVERTIME_TYPES = useMemo(() => getOvertimeTypes(t), [t]);
+
   const [sortColumn, setSortColumn] = useState<keyof OvertimeRecord>("date");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
 
@@ -211,20 +222,17 @@ function HistoryTable({
     onFilterChange({ ...filters, selectedTypes: next });
   };
 
-  // Iba sortujeme (filtrovanie už prebehlo v parent componente)
   const sortedRecords = useMemo(() => {
     const sorted = [...records];
     sorted.sort((a, b) => {
       const aVal = a[sortColumn];
       const bVal = b[sortColumn];
 
-      // Strings
       if (typeof aVal === "string" && typeof bVal === "string") {
         return sortDirection === "asc"
           ? aVal.localeCompare(bVal)
           : bVal.localeCompare(aVal);
       }
-      // Numbers
       if (typeof aVal === "number" && typeof bVal === "number") {
         return sortDirection === "asc" ? aVal - bVal : bVal - aVal;
       }
@@ -241,7 +249,7 @@ function HistoryTable({
             {/* DATE Column */}
             <TableHead className="w-[140px]">
               <ColumnFilterHeader
-                title="Date"
+                title={t.overtime.date}
                 isActive={false}
                 isSortable={true}
                 sortDirection={sortColumn === "date" ? sortDirection : null}
@@ -249,10 +257,10 @@ function HistoryTable({
               />
             </TableHead>
 
-            {/* TYPE Column - Dynamické filtre */}
+            {/* TYPE Column */}
             <TableHead>
               <ColumnFilterHeader
-                title="Type"
+                title={t.overtime.type}
                 isActive={filters.selectedTypes.length > 0}
                 isSortable={true}
                 sortDirection={sortColumn === "type" ? sortDirection : null}
@@ -285,7 +293,7 @@ function HistoryTable({
                         ))
                       ) : (
                         <div className="text-xs text-muted-foreground py-2">
-                          No types available
+                          {t.employees.noTypesAvailable}
                         </div>
                       )}
                     </div>
@@ -298,18 +306,18 @@ function HistoryTable({
                       }
                       disabled={filters.selectedTypes.length === 0}
                     >
-                      Reset Filter
+                      {t.filters.removeFilter}
                     </Button>
                   </div>
                 }
               />
             </TableHead>
 
-            {/* CHANGE Column - Dynamické filtre */}
+            {/* CHANGE Column */}
             <TableHead className="text-right">
               <div className="flex justify-end">
                 <ColumnFilterHeader
-                  title="Change"
+                  title={t.overtime.change}
                   isActive={filters.changeFilter !== "all"}
                   isSortable={true}
                   sortDirection={sortColumn === "hours" ? sortDirection : null}
@@ -328,7 +336,7 @@ function HistoryTable({
                               })
                             }
                           />
-                          <Label htmlFor="chg-all">All</Label>
+                          <Label htmlFor="chg-all">{t.common.all}</Label>
                         </div>
 
                         {availableChangeOptions.hasPositive && (
@@ -344,7 +352,7 @@ function HistoryTable({
                               }
                             />
                             <Label htmlFor="chg-pos" className="text-green-600">
-                              Added (+)
+                              (+)
                             </Label>
                           </div>
                         )}
@@ -365,7 +373,7 @@ function HistoryTable({
                               htmlFor="chg-neg"
                               className="text-destructive"
                             >
-                              Deducted (-)
+                              (-)
                             </Label>
                           </div>
                         )}
@@ -373,7 +381,7 @@ function HistoryTable({
                         {!availableChangeOptions.hasPositive &&
                           !availableChangeOptions.hasNegative && (
                             <div className="text-xs text-muted-foreground py-1">
-                              No options available
+                              {t.common.none}
                             </div>
                           )}
                       </div>
@@ -386,7 +394,7 @@ function HistoryTable({
             {/* NOTE Column */}
             <TableHead className="hidden md:table-cell">
               <ColumnFilterHeader
-                title="Note"
+                title={t.overtime.note}
                 isActive={!!filters.searchText}
                 isSortable={true}
                 sortDirection={sortColumn === "note" ? sortDirection : null}
@@ -396,7 +404,7 @@ function HistoryTable({
                     <div className="relative">
                       <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                       <Input
-                        placeholder="Search notes..."
+                        placeholder={t.overtime.searchNotes}
                         value={filters.searchText}
                         onChange={(e) =>
                           onFilterChange({
@@ -416,7 +424,7 @@ function HistoryTable({
                       }
                       disabled={!filters.searchText}
                     >
-                      Clear
+                      {t.common.clear}
                     </Button>
                   </div>
                 }
@@ -431,7 +439,7 @@ function HistoryTable({
                 colSpan={4}
                 className="h-24 text-center text-muted-foreground"
               >
-                No records match your filters.
+                {t.overtime.noRecordsFound}
               </TableCell>
             </TableRow>
           ) : (
@@ -473,13 +481,12 @@ function HistoryTable({
         </TableBody>
       </Table>
       <div className="p-2 border-t border-border bg-muted/20 text-xs text-muted-foreground text-center">
-        Showing {sortedRecords.length} of {records.length} records
+        {t.workRecords.showing} {sortedRecords.length} {t.workRecords.of}{" "}
+        {records.length} {t.workRecords.records}
       </div>
     </div>
   );
 }
-
-// --- Correction Form (Nezmenené) ---
 
 function CorrectionForm({
   type,
@@ -500,6 +507,9 @@ function CorrectionForm({
   historyRecords: OvertimeRecord[];
   onSubmit: (input: any) => Promise<void>;
 }) {
+  const t = useTranslations();
+  const OVERTIME_TYPES = useMemo(() => getOvertimeTypes(t), [t]);
+
   const [mode, setMode] = useState<"add" | "subtract">("add");
   const [hoursValue, setHoursValue] = useState<string>("");
   const [note, setNote] = useState<string>("");
@@ -535,11 +545,11 @@ function CorrectionForm({
     const val = parseFloat(hoursValue);
 
     if (!val || isNaN(val) || val <= 0) {
-      toast.error("Please enter a valid positive number");
+      toast.error(t.overtime.enterValidNumber);
       return;
     }
     if (!date) {
-      toast.error("Please select a date");
+      toast.error(t.overtime.pleaseSelectDate);
       return;
     }
 
@@ -582,7 +592,7 @@ function CorrectionForm({
             variant="outline"
             className="font-mono text-sm px-3 py-1 bg-background"
           >
-            Total Balance:{" "}
+            {t.overtime.currentBalance}:{" "}
             <span
               className={cn(
                 "ml-2 font-bold",
@@ -605,20 +615,24 @@ function CorrectionForm({
             value="add"
             className="data-[state=active]:bg-green-500/10 data-[state=active]:text-green-700 dark:data-[state=active]:text-green-400 transition-all"
           >
-            <TrendingUp className="w-4 h-4 mr-2" /> Add Hours
+            <TrendingUp className="w-4 h-4 mr-2" />{" "}
+            {t.overtime.confirmAddition.replace("Confirm ", "")}
           </TabsTrigger>
           <TabsTrigger
             value="subtract"
             className="data-[state=active]:bg-red-500/10 data-[state=active]:text-red-700 dark:data-[state=active]:text-red-400 transition-all"
           >
-            <TrendingDown className="w-4 h-4 mr-2" /> Subtract Hours
+            <TrendingDown className="w-4 h-4 mr-2" />{" "}
+            {t.overtime.confirmDeduction.replace("Confirm ", "")}
           </TabsTrigger>
         </TabsList>
       </Tabs>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label className="text-foreground/80">Amount (Hours)</Label>
+          <Label className="text-foreground/80">
+            {t.workRecords.hours} ({t.balances.hours})
+          </Label>
           <div className="relative">
             <Input
               ref={inputRef}
@@ -642,7 +656,7 @@ function CorrectionForm({
         </div>
 
         <div className="space-y-2">
-          <Label className="text-foreground/80">Effective Date</Label>
+          <Label className="text-foreground/80">{t.overtime.date}</Label>
           <Popover>
             <PopoverTrigger asChild>
               <Button
@@ -654,7 +668,11 @@ function CorrectionForm({
                 )}
               >
                 <CalendarIcon className="mr-2 h-4 w-4" />
-                {date ? format(date, "PPP") : <span>Select a date...</span>}
+                {date ? (
+                  format(date, "PPP")
+                ) : (
+                  <span>{t.overtime.selectDate}</span>
+                )}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="end">
@@ -728,9 +746,11 @@ function CorrectionForm({
       </div>
 
       <div className="space-y-2">
-        <Label className="text-foreground/80">Note / Reason</Label>
+        <Label className="text-foreground/80">
+          {t.overtime.note} / Reason
+        </Label>
         <Textarea
-          placeholder="Describe why this adjustment is being made..."
+          placeholder={t.overtime.describeAdjustment}
           value={note}
           onChange={(e) => setNote(e.target.value)}
           className="resize-none bg-background border-input"
@@ -753,19 +773,23 @@ function CorrectionForm({
           <Save className="h-4 w-4" />
         )}
         {isSaveDisabled && !submitting && !date
-          ? "Select Date to Save"
+          ? t.overtime.selectDateToSave
           : mode === "subtract"
-            ? "Confirm Deduction"
-            : "Confirm Addition"}
+            ? t.overtime.confirmDeduction
+            : t.overtime.confirmAddition}
       </Button>
     </div>
   );
 }
 
-// --- Main Page ---
+// --- MAIN PAGE ---
 
 export default function OvertimePage() {
+  const t = useTranslations();
+  const OVERTIME_TYPES = useMemo(() => getOvertimeTypes(t), [t]);
+
   const { user, loading: authLoading } = useAuth();
+  // canManage = True if admin or manager
   const canManage = !!user?.isAdmin || !!user?.isManager;
 
   const [selectedEmployeeId, setSelectedEmployeeId] = useState<string>("");
@@ -775,7 +799,6 @@ export default function OvertimePage() {
   const [date, setDate] = useState<Date | undefined>(undefined);
   const [formPrefill, setFormPrefill] = useState<FormPrefillData>(null);
 
-  // Filter State v parent komponente
   const [filters, setFilters] = useState<HistoryFilters>({
     searchText: "",
     selectedTypes: [],
@@ -801,7 +824,7 @@ export default function OvertimePage() {
 
   const [createCorrection] = useMutation(CREATE_OVERTIME_CORRECTION, {
     onCompleted: () => {
-      toast.success("Correction saved successfully");
+      toast.success(t.overtime.correctionSaved);
       setFormPrefill(null);
     },
     onError: (err) => toast.error(err.message),
@@ -813,9 +836,7 @@ export default function OvertimePage() {
       ?.hours || 0;
   const historyRecords = data?.getOvertimeSummary.records || [];
 
-  // --- FACETED SEARCH LOGIC ---
-
-  // 1. BASE: Filtrovanie podľa Search textu (Note)
+  // --- FILTERING LOGIC ---
   const baseRecords = useMemo(() => {
     if (!filters.searchText) return historyRecords;
     const lowerSearch = filters.searchText.toLowerCase();
@@ -824,7 +845,6 @@ export default function OvertimePage() {
     );
   }, [historyRecords, filters.searchText]);
 
-  // 2. Vypočítame dostupné TYPES (zohľadňujeme Search + Change Filter)
   const availableTypes = useMemo(() => {
     const relevantRecords = baseRecords.filter((r) => {
       if (filters.changeFilter === "positive") return r.hours > 0;
@@ -835,7 +855,6 @@ export default function OvertimePage() {
     return Array.from(types);
   }, [baseRecords, filters.changeFilter]);
 
-  // 3. Vypočítame dostupné CHANGE options (zohľadňujeme Search + Type Filter)
   const availableChangeOptions = useMemo(() => {
     const relevantRecords = baseRecords.filter((r) => {
       if (filters.selectedTypes.length > 0) {
@@ -850,20 +869,16 @@ export default function OvertimePage() {
     };
   }, [baseRecords, filters.selectedTypes]);
 
-  // 4. FINÁLNY FILTER (Aplikujeme všetko naraz)
   const filteredRecords = useMemo(() => {
     return baseRecords.filter((r) => {
-      // Type Filter
       if (
         filters.selectedTypes.length > 0 &&
         !filters.selectedTypes.includes(r.type)
       ) {
         return false;
       }
-      // Change Filter
       if (filters.changeFilter === "positive" && r.hours <= 0) return false;
       if (filters.changeFilter === "negative" && r.hours >= 0) return false;
-
       return true;
     });
   }, [baseRecords, filters.selectedTypes, filters.changeFilter]);
@@ -886,8 +901,32 @@ export default function OvertimePage() {
       timestamp: Date.now(),
     });
     window.scrollTo({ top: 0, behavior: "smooth" });
-    toast.info(`Loaded record details.`);
+    toast.info(t.common.info);
   };
+
+  // Helper component for Year Selection
+  const YearSelect = ({ compact = false }: { compact?: boolean }) => (
+    <Select value={year} onValueChange={setYear}>
+      <SelectTrigger
+        className={cn(
+          "bg-background",
+          compact ? "h-8 w-[90px] text-xs" : "w-full",
+        )}
+      >
+        <SelectValue placeholder={t.reports.selectYear || "Year"} />
+      </SelectTrigger>
+      <SelectContent>
+        {[0, 1, 2].map((i) => {
+          const y = new Date().getFullYear() - i;
+          return (
+            <SelectItem key={y} value={y.toString()}>
+              {y}
+            </SelectItem>
+          );
+        })}
+      </SelectContent>
+    </Select>
+  );
 
   if (authLoading)
     return (
@@ -898,52 +937,61 @@ export default function OvertimePage() {
 
   return (
     <div className="space-y-8">
-      {/* 2. Filter Bar (Biela karta pod headerom) */}
-      <Card className="bg-card border-border shadow-sm">
-        <CardContent className="p-6">
-          <div className="flex flex-col md:flex-row gap-6 items-end">
-            {/* Employee Selector */}
-            <div className="w-full md:w-[350px]">
-              <EmployeeSelector
-                currentEmployeeId={selectedEmployeeId}
-                onEmployeeChange={setSelectedEmployeeId}
-                isAdmin={!!user?.isAdmin}
-                isManager={!!user?.isManager}
-                label="Employee"
-              />
-            </div>
+      {/* 
+        SECTION 1: Filter Bar (Visible ONLY to Admins/Managers) 
+        This is where the Employee Selector and Main Year Selector live.
+        If user is regular employee, this block is skipped and content shifts up.
+      */}
+      {canManage && (
+        <Card className="bg-card border-border shadow-sm">
+          <CardContent className="p-6">
+            <div className="flex flex-col md:flex-row gap-6 items-end">
+              {/* Employee Selector */}
+              <div className="w-full md:w-[350px]">
+                <EmployeeSelector
+                  currentEmployeeId={selectedEmployeeId}
+                  onEmployeeChange={setSelectedEmployeeId}
+                  isAdmin={!!user?.isAdmin}
+                  isManager={!!user?.isManager}
+                  label={t.employees.employee}
+                />
+              </div>
 
-            {/* Year Selector (zarovnaný vedľa) */}
-            <div className="w-full md:w-[150px] space-y-2">
-              <Label>Year</Label>
-              <Select value={year} onValueChange={setYear}>
-                <SelectTrigger className="w-full bg-background">
-                  <SelectValue placeholder="Year" />
-                </SelectTrigger>
-                <SelectContent>
-                  {[0, 1, 2].map((i) => {
-                    const y = new Date().getFullYear() - i;
-                    return (
-                      <SelectItem key={y} value={y.toString()}>
-                        {y}
-                      </SelectItem>
-                    );
-                  })}
-                </SelectContent>
-              </Select>
+              {/* Year Selector */}
+              <div className="w-full md:w-[150px] space-y-2">
+                <Label>{t.reports.selectYear || "Year"}</Label>
+                <YearSelect />
+              </div>
             </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      )}
 
-      {/* 3. Main Grid */}
+      {/* SECTION 2: Main Grid (Sidebar + Content) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Sidebar */}
         <div className="lg:col-span-4 space-y-6">
           <Card className="overflow-hidden border-border bg-card shadow-sm">
             <CardHeader className="pb-4 border-b border-border/50 bg-muted/20">
-              <CardTitle className="text-lg">Balances ({year})</CardTitle>
-              <CardDescription>Select a category to manage.</CardDescription>
+              <div className="flex items-center justify-between">
+                <div className="space-y-1">
+                  <CardTitle className="text-lg">
+                    {/* If Admin, year is selected above, so we just show it. If Employee, they select it here. */}
+                    {canManage
+                      ? `${t.sidebar.myBalances} (${year})`
+                      : t.sidebar.myBalances}
+                  </CardTitle>
+                  <CardDescription>
+                    {t.workRecords.records || "Select a category"}
+                  </CardDescription>
+                </div>
+                {/* Compact Year Selector for regular employees */}
+                {!canManage && (
+                  <div className="ml-2">
+                    <YearSelect compact />
+                  </div>
+                )}
+              </div>
             </CardHeader>
             <CardContent className="p-0">
               <div className="flex flex-col">
@@ -1027,10 +1075,10 @@ export default function OvertimePage() {
             <CardHeader>
               <div className="flex items-center gap-2">
                 <History className="w-5 h-5 text-muted-foreground" />
-                <CardTitle>History Log</CardTitle>
+                <CardTitle>{t.overtime.history}</CardTitle>
               </div>
               <CardDescription>
-                Sort and filter log entries. Click to load details.
+                {t.overtime.title} - {t.common.description}
               </CardDescription>
             </CardHeader>
             <CardContent>

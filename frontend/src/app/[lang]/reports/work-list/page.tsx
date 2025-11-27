@@ -40,6 +40,7 @@ import {
 } from "@/components/report-actions";
 import { ReportConfiguration } from "@/components/report-configuration";
 import { useAuth } from "@/providers/auth-provider";
+import { useTranslations } from "@/contexts/dictionary-context";
 
 // Dynamic import for PDF Viewer
 const PdfViewerDialog = dynamic(
@@ -151,6 +152,7 @@ interface WorkReportDataResponse {
 
 // --- MAIN COMPONENT ---
 export default function WorkReportPage() {
+  const t = useTranslations();
   const { user } = useAuth();
 
   // State: Filters
@@ -227,10 +229,10 @@ export default function WorkReportPage() {
         const byteArray = new Uint8Array(byteNumbers);
         const blob = new Blob([byteArray], { type: "application/pdf" });
         setPdfFileBlob(blob);
-        toast.success("Project summary PDF generated successfully");
+        toast.success(t.reports.projectSummaryGenerated);
       } catch (error) {
         console.error("Error processing PDF:", error);
-        toast.error("Failed to process PDF data.");
+        toast.error(t.reports.failedToProcess);
       }
     }
   }, [workListPdfData]);
@@ -261,7 +263,7 @@ export default function WorkReportPage() {
 
   const handleGenerateProjectSummaryPdf = async () => {
     if (!selectedEmployee) {
-      toast.warning("Please select an employee first.");
+      toast.warning(t.reports.pleaseSelectEmployee);
       return;
     }
 
@@ -270,7 +272,7 @@ export default function WorkReportPage() {
       try {
         signatureBase64 = await fileToBase64(signatureFile[0]);
       } catch (error) {
-        toast.error("Failed to process signature file.");
+        toast.error(t.reports.failedToProcessSignature);
         return;
       }
     }
@@ -300,7 +302,7 @@ export default function WorkReportPage() {
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
-    toast.success("Downloaded successfully");
+    toast.success(t.reports.downloadedSuccessfully);
   };
 
   const projectItems = projectReportData?.getWorkListReport?.items || [];
@@ -334,12 +336,12 @@ export default function WorkReportPage() {
           {/* Options Card */}
           <Card>
             <CardHeader>
-              <CardTitle>Report Options</CardTitle>
+              <CardTitle>{t.reports.reportOptions}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
               {/* Signature */}
               <div className="space-y-2">
-                <Label>Digital Signature (Optional)</Label>
+                <Label>{t.reports.digitalSignature}</Label>
                 <Dropzone
                   accept={{ "image/*": [] }}
                   onDrop={handleSignatureDrop}
@@ -366,7 +368,7 @@ export default function WorkReportPage() {
                       </Button>
                       <img
                         src={signaturePreview}
-                        alt="Signature Preview"
+                        alt={t.reports.signaturePreview}
                         className="max-h-[100px] object-contain"
                       />
                     </div>
@@ -399,7 +401,7 @@ export default function WorkReportPage() {
                     {summaryData.getWorkReportData.totalWorkDays}
                   </div>
                   <div className="text-xs text-muted-foreground uppercase tracking-wider mt-1">
-                    Days
+                    {t.reports.days}
                   </div>
                 </CardContent>
               </Card>
@@ -409,7 +411,7 @@ export default function WorkReportPage() {
                     {summaryData.getWorkReportData.totalHours.toFixed(1)}
                   </div>
                   <div className="text-xs text-muted-foreground uppercase tracking-wider mt-1">
-                    Hours
+                    {t.reports.hours}
                   </div>
                 </CardContent>
               </Card>
@@ -419,7 +421,7 @@ export default function WorkReportPage() {
                     {summaryData.getWorkReportData.weekendWorkHours.toFixed(1)}
                   </div>
                   <div className="text-xs text-muted-foreground uppercase tracking-wider mt-1">
-                    Weekend (h)
+                    {t.reports.weekendHoursShort}
                   </div>
                 </CardContent>
               </Card>
@@ -429,7 +431,7 @@ export default function WorkReportPage() {
                     {summaryData.getWorkReportData.holidayWorkHours.toFixed(1)}
                   </div>
                   <div className="text-xs text-muted-foreground uppercase tracking-wider mt-1">
-                    Holiday (h)
+                    {t.reports.holidayHoursShort}
                   </div>
                 </CardContent>
               </Card>
@@ -439,9 +441,9 @@ export default function WorkReportPage() {
           {/* Detailed Project Table */}
           <Card className="h-full">
             <CardHeader>
-              <CardTitle>Project Breakdown</CardTitle>
+              <CardTitle>{t.reports.projectBreakdown}</CardTitle>
               <CardDescription>
-                Detailed list of hours allocated to projects.
+                {t.reports.projectBreakdownDescription}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -450,25 +452,25 @@ export default function WorkReportPage() {
                   <TableHeader>
                     <TableRow className="bg-muted/50">
                       <TableHead className="whitespace-nowrap">
-                        Project No.
+                        {t.reports.projectNo}
                       </TableHead>
                       <TableHead className="whitespace-nowrap min-w-[200px]">
-                        Project Name
+                        {t.reports.projectName}
                       </TableHead>
                       <TableHead className="text-center whitespace-nowrap">
-                        Prod SK
+                        {t.reports.prodSK}
                       </TableHead>
                       <TableHead className="text-center whitespace-nowrap">
-                        NonProd SK
+                        {t.reports.nonProdSK}
                       </TableHead>
                       <TableHead className="text-center whitespace-nowrap">
-                        Prod Z
+                        {t.reports.prodZ}
                       </TableHead>
                       <TableHead className="text-center whitespace-nowrap">
-                        NonProd Z
+                        {t.reports.nonProdZ}
                       </TableHead>
                       <TableHead className="text-center whitespace-nowrap">
-                        Prod 70
+                        {t.reports.prod70}
                       </TableHead>
                       <TableHead className="text-center whitespace-nowrap">
                         KM
@@ -490,8 +492,8 @@ export default function WorkReportPage() {
                           className="h-24 text-center text-muted-foreground"
                         >
                           {selectedEmployee
-                            ? "No data found for this period."
-                            : "Select an employee to view details."}
+                            ? t.reports.noDataFound
+                            : t.reports.selectEmployeeToView}
                         </TableCell>
                       </TableRow>
                     ) : (
@@ -541,7 +543,7 @@ export default function WorkReportPage() {
                           </TableRow>
                         ))}
                         <TableRow className="bg-primary/5 font-bold">
-                          <TableCell colSpan={2}>Total</TableCell>
+                          <TableCell colSpan={2}>{t.reports.total}</TableCell>
                           <TableCell className="text-center">
                             {projectTotals.prodSK.toFixed(2)}
                           </TableCell>

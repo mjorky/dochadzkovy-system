@@ -1,5 +1,6 @@
 "use client"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
+import { useTranslations } from "@/contexts/dictionary-context"
 import { EmployeeForm } from "@/components/employee-form"
 import { useCreateEmployee } from "@/hooks/use-create-employee"
 import { useUpdateEmployee } from "@/hooks/use-update-employee"
@@ -18,15 +19,16 @@ export interface EmployeeDialogProps {
 const LoaderIcon = Icons.loader
 
 export function EmployeeDialog({ open, onOpenChange, mode, initialData, onSuccess }: EmployeeDialogProps) {
+  const t = useTranslations()
   const { createEmployee, loading: isCreating } = useCreateEmployee()
   const { updateEmployee, loading: isUpdating } = useUpdateEmployee()
 
   const handleSubmit = async (data: EmployeeFormData) => {
     let result
     if (mode === "create") {
-      result = await createEmployee(data) 
+      result = await createEmployee(data)
     } else if (mode === "edit" && initialData) {
-      result = await updateEmployee(initialData.id, data) 
+      result = await updateEmployee(initialData.id, data)
     }
 
     if (result?.success) {
@@ -38,15 +40,15 @@ export function EmployeeDialog({ open, onOpenChange, mode, initialData, onSucces
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>{mode === "create" ? "Create New Employee" : "Edit Employee"}</DialogTitle>
+          <DialogTitle>{mode === "create" ? t.employees.createEmployee : t.employees.editEmployee}</DialogTitle>
           <DialogDescription>
-            {mode === 'create' ? "Fill in the details for the new employee." : `Editing employee: ${initialData?.fullName}`}
+            {mode === 'create' ? t.employees.fillDetails : `${t.employees.editingEmployee}: ${initialData?.fullName}`}
           </DialogDescription>
         </DialogHeader>
-        
-        <EmployeeForm 
-          onSubmit={handleSubmit} 
-          initialData={initialData} 
+
+        <EmployeeForm
+          onSubmit={handleSubmit}
+          initialData={initialData}
           isSubmitting={isCreating || isUpdating}
         />
       </DialogContent>

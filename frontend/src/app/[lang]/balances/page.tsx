@@ -13,8 +13,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { useTranslations } from "@/contexts/dictionary-context";
 
 export default function BalancesPage() {
+  const t = useTranslations();
   const { user, loading: authLoading, isAuthenticated } = useAuth();
   const currentYear = new Date().getFullYear();
 
@@ -24,7 +26,7 @@ export default function BalancesPage() {
         <div className="flex flex-col items-center gap-3">
           <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
           <p className="text-sm text-muted-foreground animate-pulse">
-            Loading user data...
+            {t.common.loading}
           </p>
         </div>
       </div>
@@ -38,9 +40,9 @@ export default function BalancesPage() {
           <CardContent className="flex flex-col items-center gap-4 text-center p-8">
             <XCircle className="h-12 w-12 text-destructive" />
             <CardHeader className="p-0">
-              <CardTitle className="text-lg">Authentication Required</CardTitle>
+              <CardTitle className="text-lg">{t.login.authRequired}</CardTitle>
               <CardDescription>
-                Please log in to view your balances.
+                {t.login.pleaseLogin}
               </CardDescription>
             </CardHeader>
             <Button
@@ -48,7 +50,7 @@ export default function BalancesPage() {
               variant="outline"
               className="border-destructive/20 hover:bg-destructive/10"
             >
-              Go to Login
+              {t.login.goToLogin}
             </Button>
           </CardContent>
         </Card>

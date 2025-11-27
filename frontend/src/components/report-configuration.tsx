@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { MonthPicker } from '@/components/ui/month-picker';
 import { EmployeeSelector } from '@/components/employee-selector';
+import { useTranslations } from '@/contexts/dictionary-context';
 
 interface ReportConfigurationProps {
     selectedEmployeeId: string | null;
@@ -28,6 +29,7 @@ export function ReportConfiguration({
     isManager = false,
 }: ReportConfigurationProps) {
     const [isMonthPickerOpen, setIsMonthPickerOpen] = useState(false);
+    const t = useTranslations();
 
     const handleMonthSelect = (newDate: Date) => {
         // Vždy nastavíme na prvý deň v mesiaci pre konzistenciu
@@ -39,7 +41,7 @@ export function ReportConfiguration({
     return (
         <Card>
             <CardHeader>
-                <CardTitle>Configuration</CardTitle>
+                <CardTitle>{t.reports.configuration}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
                 <EmployeeSelector
@@ -47,12 +49,12 @@ export function ReportConfiguration({
                     onEmployeeChange={onEmployeeChange}
                     isAdmin={isAdmin}
                     isManager={isManager}
-                    placeholder="Select employee..."
-                    label="Employee"
+                    placeholder={t.employees.selectEmployee}
+                    label={t.employees.employee}
                 />
 
                 <div className="space-y-2">
-                    <Label>Month & Year</Label>
+                    <Label>{t.reports.monthYear}</Label>
                     <Popover open={isMonthPickerOpen} onOpenChange={setIsMonthPickerOpen}>
                         <PopoverTrigger asChild>
                             <Button
@@ -63,7 +65,7 @@ export function ReportConfiguration({
                                 {selectedMonth ? (
                                     selectedMonth.toLocaleString('en-US', { month: 'long', year: 'numeric' })
                                 ) : (
-                                    <span>Select month</span>
+                                    <span>{t.reports.selectMonth}</span>
                                 )}
                             </Button>
                         </PopoverTrigger>

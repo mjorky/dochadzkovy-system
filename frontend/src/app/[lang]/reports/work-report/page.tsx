@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useQuery, useLazyQuery } from "@apollo/client/react";
-import { Clock, X } from "lucide-react"; // CalendarIcon a ostatné sú teraz v Configuration komponente
+import { Clock, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -38,6 +38,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
+import { useTranslations } from "@/contexts/dictionary-context";
 
 // CUSTOM COMPONENTS
 import {
@@ -76,6 +77,7 @@ interface TimePickerProps {
 }
 
 function TimePickerPopover({ value, onChange }: TimePickerProps) {
+  const t = useTranslations();
   const [hours, minutes] = value.split(":").map(Number);
   const [isOpen, setIsOpen] = useState(false);
   const hourScrollRef = useRef<HTMLDivElement>(null);
@@ -131,7 +133,7 @@ function TimePickerPopover({ value, onChange }: TimePickerProps) {
           )}
         >
           <Clock className="mr-2 h-4 w-4" />
-          {value || "Select time"}
+          {value || t.reports.selectTime}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0 bg-popover" align="start">
@@ -162,7 +164,7 @@ function TimePickerPopover({ value, onChange }: TimePickerProps) {
                   className={cn(
                     "w-full justify-center rounded-full font-normal",
                     hours !== h &&
-                      "text-muted-foreground opacity-50 hover:opacity-100",
+                    "text-muted-foreground opacity-50 hover:opacity-100",
                   )}
                   onClick={() => handleTimeChange("hour", h)}
                 >
@@ -198,7 +200,7 @@ function TimePickerPopover({ value, onChange }: TimePickerProps) {
                   className={cn(
                     "w-full justify-center rounded-full font-normal",
                     minutes !== m &&
-                      "text-muted-foreground opacity-50 hover:opacity-100",
+                    "text-muted-foreground opacity-50 hover:opacity-100",
                   )}
                   onClick={() => handleTimeChange("minute", m)}
                 >
@@ -217,6 +219,7 @@ function TimePickerPopover({ value, onChange }: TimePickerProps) {
 // --- Main Page Component ---
 
 export default function WorkReportPage() {
+  const t = useTranslations();
   const { user } = useAuth();
   const [selectedEmployeeId, setSelectedEmployeeId] = useState<string | null>(
     null,
@@ -258,7 +261,7 @@ export default function WorkReportPage() {
 
   useEffect(() => {
     if (summaryError) {
-      toast.error(`Failed to load summary: ${summaryError.message}`);
+      toast.error(`${t.reports.failedToLoadSummary}: ${summaryError.message}`);
     }
   }, [summaryError]);
 
@@ -275,7 +278,7 @@ export default function WorkReportPage() {
 
   useEffect(() => {
     if (detailedPdfError) {
-      toast.error(`Failed to generate PDF: ${detailedPdfError.message}`);
+      toast.error(`${t.reports.failedToGeneratePdf}: ${detailedPdfError.message}`);
     }
   }, [detailedPdfError]);
 
@@ -312,14 +315,14 @@ export default function WorkReportPage() {
         const byteArray = new Uint8Array(byteNumbers);
         const blob = new Blob([byteArray], { type: "application/pdf" });
         setPdfFileBlob(blob);
-        toast.success("PDF report generated successfully!");
+        toast.success(t.reports.pdfGenerated);
       } catch (blobError) {
         console.error("Error converting base64 to Blob:", blobError);
-        toast.error("Failed to process PDF data.");
+        toast.error(t.reports.failedToProcess);
         setPdfFileBlob(null);
       }
     } else if (detailedPdfData) {
-      toast.error("Received empty data for PDF report.");
+      toast.error(t.reports.receivedEmptyData);
       setPdfFileBlob(null);
     }
   }, [detailedPdfData]);
@@ -334,7 +337,7 @@ export default function WorkReportPage() {
 
   const handleDownloadPdf = () => {
     if (!pdfFileBlob) {
-      toast.error("No PDF to download. Please generate it first.");
+      toast.error(t.reports.noPdfToDownload);
       return;
     }
     try {
@@ -350,16 +353,16 @@ export default function WorkReportPage() {
       link.click();
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
-      toast.success("PDF downloaded successfully!");
+      toast.success(t.reports.pdfDownloaded);
     } catch (error) {
       console.error("Failed to download PDF:", error);
-      toast.error("Failed to download PDF.");
+      toast.error(t.reports.failedToDownload);
     }
   };
 
   const handleGenerateClick = async () => {
     if (!selectedEmployeeId || !selectedMonth) {
-      toast.warning("Please select an employee and a month.");
+      toast.warning(t.reports.pleaseSelectEmployeeAndMonth);
       return;
     }
 
@@ -368,7 +371,7 @@ export default function WorkReportPage() {
       try {
         signatureImageBase64 = await fileToBase64(signatureFile[0]);
       } catch (error) {
-        toast.error("Failed to read signature file.");
+        toast.error(t.reports.failedToReadSignature);
         return;
       }
     }
@@ -402,7 +405,7 @@ export default function WorkReportPage() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Report Options</CardTitle>
+              <CardTitle>{t.reports.reportOptions}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="space-y-4 p-4 border rounded-lg bg-muted/30">
@@ -418,14 +421,14 @@ export default function WorkReportPage() {
                     htmlFor="legal-report-checkbox"
                     className="font-medium cursor-pointer"
                   >
-                    Legal Report
+                    {t.reports.legalReport}
                   </Label>
                 </div>
 
                 {isLegalReport && (
                   <div className="pt-2 animate-in slide-in-from-top-2 fade-in duration-200">
                     <Label className="text-xs text-muted-foreground mb-1.5 block">
-                      Work Start Time
+                      {t.reports.workStartTime}
                     </Label>
 
                     <TimePickerPopover
@@ -437,7 +440,7 @@ export default function WorkReportPage() {
               </div>
 
               <div className="space-y-2">
-                <Label>Digital Signature (Optional)</Label>
+                <Label>{t.reports.digitalSignature}</Label>
                 <Dropzone
                   accept={{ "image/*": [] }}
                   onDrop={handleSignatureDrop}
@@ -464,7 +467,7 @@ export default function WorkReportPage() {
                       </Button>
                       <img
                         src={signaturePreview}
-                        alt="Signature Preview"
+                        alt={t.reports.signaturePreview}
                         className="max-h-[100px] object-contain"
                       />
                     </div>
@@ -511,7 +514,7 @@ export default function WorkReportPage() {
                         {summaryData.getWorkReportData?.totalWorkDays}
                       </div>
                       <div className="text-xs text-muted-foreground uppercase tracking-wider mt-1">
-                        Work Days
+                        {t.reports.workDays}
                       </div>
                     </CardContent>
                   </Card>
@@ -521,7 +524,7 @@ export default function WorkReportPage() {
                         {summaryData.getWorkReportData?.totalHours?.toFixed(2)}
                       </div>
                       <div className="text-xs text-muted-foreground uppercase tracking-wider mt-1">
-                        Total Hours
+                        {t.reports.totalHours}
                       </div>
                     </CardContent>
                   </Card>
@@ -533,7 +536,7 @@ export default function WorkReportPage() {
                         )}
                       </div>
                       <div className="text-xs text-muted-foreground uppercase tracking-wider mt-1">
-                        Weekend Hours
+                        {t.reports.weekendHours}
                       </div>
                     </CardContent>
                   </Card>
@@ -545,14 +548,14 @@ export default function WorkReportPage() {
                         )}
                       </div>
                       <div className="text-xs text-muted-foreground uppercase tracking-wider mt-1">
-                        Holiday Hours
+                        {t.reports.holidayHours}
                       </div>
                     </CardContent>
                   </Card>
                 </>
               ) : (
                 <div className="col-span-4 text-center p-8 text-muted-foreground border border-dashed rounded-lg">
-                  No data found for selected period.
+                  {t.reports.noDataFound}
                 </div>
               )}
             </div>
@@ -560,7 +563,7 @@ export default function WorkReportPage() {
             <Card className="bg-muted/5 border-dashed">
               <CardContent className="flex flex-col items-center justify-center h-48 text-center">
                 <p className="text-muted-foreground">
-                  Select an employee and month to view summary.
+                  {t.reports.selectEmployeeToView}
                 </p>
               </CardContent>
             </Card>

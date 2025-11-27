@@ -7,6 +7,7 @@ import { Form, FormField, FormItem, FormLabel, FormMessage, FormDescription } fr
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
+import { useTranslations } from "@/contexts/dictionary-context"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
 
@@ -24,52 +25,54 @@ export function ProjectForm({ onSubmit, initialData, isSubmitting = false, count
     mode: "onChange",
     defaultValues: initialData
       ? {
-          number: initialData.number,
-          name: initialData.name,
-          description: initialData.description ?? "",
-          countryCode: initialData.country?.countryCode ?? "",
-          managerId: initialData.manager?.id ?? "",
-          active: initialData.active,
-        }
+        number: initialData.number,
+        name: initialData.name,
+        description: initialData.description ?? "",
+        countryCode: initialData.country?.countryCode ?? "",
+        managerId: initialData.manager?.id ?? "",
+        active: initialData.active,
+      }
       : {
-          number: "",
-          name: "",
-          description: "",
-          countryCode: "",
-          managerId: "",
-          active: true,
-        },
+        number: "",
+        name: "",
+        description: "",
+        countryCode: "",
+        managerId: "",
+        active: true,
+      },
   })
+
+  const t = useTranslations()
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <FormField control={form.control} name="number" render={({ field }) => (
           <FormItem>
-            <FormLabel>Project Number *</FormLabel>
-            <Input placeholder="e.g., PRJ-001" {...field} />
+            <FormLabel>{t.projects.number} *</FormLabel>
+            <Input placeholder={t.projects.numberPlaceholder} {...field} />
             <FormMessage />
           </FormItem>
         )} />
         <FormField control={form.control} name="name" render={({ field }) => (
           <FormItem>
-            <FormLabel>Project Name *</FormLabel>
-            <Input placeholder="e.g., Enterprise Portal" {...field} />
+            <FormLabel>{t.projects.name} *</FormLabel>
+            <Input placeholder={t.projects.namePlaceholder} {...field} />
             <FormMessage />
           </FormItem>
         )} />
         <FormField control={form.control} name="description" render={({ field }) => (
           <FormItem>
-            <FormLabel>Description</FormLabel>
-            <Textarea placeholder="Project description..." {...field} />
+            <FormLabel>{t.common.description}</FormLabel>
+            <Textarea placeholder={t.projects.descriptionPlaceholder} {...field} />
             <FormMessage />
           </FormItem>
         )} />
         <FormField control={form.control} name="countryCode" render={({ field }) => (
           <FormItem>
-            <FormLabel>Country *</FormLabel>
+            <FormLabel>{t.projects.country} *</FormLabel>
             <Select onValueChange={field.onChange} value={field.value}>
-              <SelectTrigger><SelectValue placeholder="Select a country" /></SelectTrigger>
+              <SelectTrigger><SelectValue placeholder={t.projects.selectCountry} /></SelectTrigger>
               <SelectContent>
                 {countries.map((country) => (
                   <SelectItem key={country.countryCode} value={country.countryCode}>
@@ -83,9 +86,9 @@ export function ProjectForm({ onSubmit, initialData, isSubmitting = false, count
         )} />
         <FormField control={form.control} name="managerId" render={({ field }) => (
           <FormItem>
-            <FormLabel>Manager *</FormLabel>
+            <FormLabel>{t.projects.manager} *</FormLabel>
             <Select onValueChange={field.onChange} value={field.value}>
-              <SelectTrigger><SelectValue placeholder="Select a manager" /></SelectTrigger>
+              <SelectTrigger><SelectValue placeholder={t.projects.selectManager} /></SelectTrigger>
               <SelectContent>
                 {employees.map((employee) => (
                   <SelectItem key={employee.id} value={employee.id}>
@@ -101,13 +104,13 @@ export function ProjectForm({ onSubmit, initialData, isSubmitting = false, count
           <FormItem className="flex flex-row items-center space-x-3 space-y-0 pt-4">
             <Checkbox checked={field.value} onCheckedChange={field.onChange} />
             <div className="space-y-1 leading-none">
-              <FormLabel>Active Project</FormLabel>
-              <FormDescription>Allow assigning working hours.</FormDescription>
+              <FormLabel>{t.projects.activeProject}</FormLabel>
+              <FormDescription>{t.projects.activeDescription}</FormDescription>
             </div>
           </FormItem>
         )} />
         <Button type="submit" disabled={isSubmitting} className="w-full">
-          {isSubmitting ? "Saving..." : initialData ? "Update Project" : "Create Project"}
+          {isSubmitting ? t.common.saving : initialData ? t.common.update : t.common.create}
         </Button>
       </form>
     </Form>

@@ -2,6 +2,7 @@
 
 import { useEffect, useDeferredValue, useState, useMemo } from 'react';
 import { Search, X } from 'lucide-react';
+import { useTranslations } from '@/contexts/dictionary-context';
 import { WorkRecordsFilterState } from '@/types/work-records-filters';
 import { DatePicker } from '@/components/ui/date-picker';
 import { MultiSelect } from '@/components/ui/multi-select';
@@ -42,6 +43,8 @@ export function WorkRecordsFilterControls({
   availableLockStatuses,
   availableTripFlags,
 }: WorkRecordsFilterControlsProps) {
+  const t = useTranslations();
+
   // Debounce search text
   const deferredSearchText = useDeferredValue(filters.searchText);
 
@@ -77,24 +80,24 @@ export function WorkRecordsFilterControls({
         {/* From Date */}
         <div className="md:col-span-3">
           <label className="block text-xs font-medium text-muted-foreground mb-1">
-            From Date
+            {t.workRecords.fromDate}
           </label>
           <DatePicker
             value={filters.fromDate}
             onChange={(date) => onFilterChange({ ...filters, fromDate: date })}
-            placeholder="Start date"
+            placeholder={t.workRecords.fromDate}
           />
         </div>
 
         {/* To Date */}
         <div className="md:col-span-3">
           <label className="block text-xs font-medium text-muted-foreground mb-1">
-            To Date
+            {t.workRecords.toDate}
           </label>
           <DatePicker
             value={filters.toDate}
             onChange={(date) => onFilterChange({ ...filters, toDate: date })}
-            placeholder="End date"
+            placeholder={t.workRecords.toDate}
           />
         </div>
 
@@ -105,20 +108,20 @@ export function WorkRecordsFilterControls({
               checked={filters.showWholeMonth}
               onCheckedChange={(checked) => onFilterChange({ ...filters, showWholeMonth: checked === true })}
             />
-            Whole month
+            {t.workRecords.wholeMonth}
           </label>
         </div>
 
         {/* Search */}
         <div className="md:col-span-4">
           <label className="block text-xs font-medium text-muted-foreground mb-1">
-            Search
+            {t.common.search}
           </label>
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
             <Input
               type="text"
-              placeholder="Search description..."
+              placeholder={t.workRecords.searchDescription}
               value={filters.searchText}
               onChange={(e) => onFilterChange({ ...filters, searchText: e.target.value })}
               className="pl-10 pr-10 h-9"
@@ -127,7 +130,7 @@ export function WorkRecordsFilterControls({
               <button
                 onClick={() => onFilterChange({ ...filters, searchText: '' })}
                 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                aria-label="Clear search"
+                aria-label={t.filters.clearSearch}
               >
                 <X className="h-4 w-4" />
               </button>
@@ -139,38 +142,38 @@ export function WorkRecordsFilterControls({
       {/* Second Row: All Dropdowns */}
       <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3">
         <MultiSelect
-          label="Projects"
+          label={t.filters.projects}
           options={projects.map((p) => ({ value: p.id, label: p.number }))}
           selectedValues={filters.selectedProjects}
           onChange={(selectedProjects) => onFilterChange({ ...filters, selectedProjects })}
-          placeholder="All projects"
+          placeholder={t.workRecords.allProjects}
         />
         <MultiSelect
-          label="Absence"
+          label={t.filters.absence}
           options={absenceTypes.map((a) => ({ value: a.id, label: a.alias }))}
           selectedValues={filters.selectedAbsenceTypes}
           onChange={(selectedAbsenceTypes) => onFilterChange({ ...filters, selectedAbsenceTypes })}
-          placeholder="All types"
+          placeholder={t.common.all}
         />
         <MultiSelect
-          label="Productivity"
+          label={t.filters.productivity}
           options={productivityTypes.map((p) => ({ value: p.id, label: p.hourType }))}
           selectedValues={filters.selectedProductivityTypes}
           onChange={(selectedProductivityTypes) => onFilterChange({ ...filters, selectedProductivityTypes })}
-          placeholder="All types"
+          placeholder={t.common.all}
         />
         <MultiSelect
-          label="Work Type"
+          label={t.filters.workType}
           options={workTypes.map((w) => ({ value: w.id, label: w.hourType }))}
           selectedValues={filters.selectedWorkTypes}
           onChange={(selectedWorkTypes) => onFilterChange({ ...filters, selectedWorkTypes })}
-          placeholder="All types"
+          placeholder={t.common.all}
         />
         {/* Only show Lock Status filter if both locked and unlocked records exist */}
         {availableLockStatuses.hasLocked && availableLockStatuses.hasUnlocked && (
           <div>
             <label className="block text-xs font-medium text-muted-foreground mb-1">
-              Lock Status
+              {t.filters.lockStatus}
             </label>
             <Select
               value={filters.lockStatus}
@@ -180,9 +183,9 @@ export function WorkRecordsFilterControls({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All</SelectItem>
-                <SelectItem value="locked">Locked</SelectItem>
-                <SelectItem value="unlocked">Unlocked</SelectItem>
+                <SelectItem value="all">{t.common.all}</SelectItem>
+                <SelectItem value="locked">{t.filters.locked}</SelectItem>
+                <SelectItem value="unlocked">{t.filters.unlocked}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -191,7 +194,7 @@ export function WorkRecordsFilterControls({
         {availableTripFlags.hasYes && availableTripFlags.hasNo && (
           <div>
             <label className="block text-xs font-medium text-muted-foreground mb-1">
-              Trip Flag
+              {t.filters.tripFlag}
             </label>
             <Select
               value={filters.tripFlag}
@@ -201,9 +204,9 @@ export function WorkRecordsFilterControls({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All</SelectItem>
-                <SelectItem value="yes">Yes</SelectItem>
-                <SelectItem value="no">No</SelectItem>
+                <SelectItem value="all">{t.common.all}</SelectItem>
+                <SelectItem value="yes">{t.common.yes}</SelectItem>
+                <SelectItem value="no">{t.common.no}</SelectItem>
               </SelectContent>
             </Select>
           </div>

@@ -2,7 +2,7 @@
 
 import React from "react";
 import { usePathname } from "next/navigation";
-import { sitePages } from "@/lib/site-pages";
+import { getSitePages } from "@/lib/site-pages";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -12,20 +12,34 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
+import { useTranslations } from "@/contexts/dictionary-context";
 
 export function UnifiedHeader() {
+  const t = useTranslations();
   const pathname = usePathname();
+  const sitePages = getSitePages(t);
+
+  // Remove locale from pathname for config lookup
+  const pathnameWithoutLocale = pathname.replace(/^\/[a-z]{2}(\/|$)/, "/");
+  const normalizedPathname =
+    pathnameWithoutLocale === "/"
+      ? "/"
+      : pathnameWithoutLocale.replace(/\/$/, "");
+
+  // Extract locale from pathname
+  const localeMatch = pathname.match(/^\/([a-z]{2})(\/|$)/);
+  const locale = localeMatch ? localeMatch[1] : "sk";
 
   // 1. Determine Title and Description
-  const currentPageConfig = sitePages[pathname];
+  const currentPageConfig = sitePages[normalizedPathname];
 
   // Fallback logic: derive title from the last path segment if not configured
-  const pathSegments = pathname.split("/").filter(Boolean);
+  const pathSegments = normalizedPathname.split("/").filter(Boolean);
   const lastSegment = pathSegments[pathSegments.length - 1];
 
   const fallbackTitle = lastSegment
     ? lastSegment.charAt(0).toUpperCase() + lastSegment.slice(1)
-    : "Dashboard";
+    : t.common.dashboard;
 
   const title = currentPageConfig?.title || fallbackTitle;
   const description = currentPageConfig?.description;
@@ -34,13 +48,14 @@ export function UnifiedHeader() {
   const breadcrumbs = React.useMemo(() => {
     const items = [
       {
-        href: "/",
-        label: sitePages["/"]?.label || "Home",
-        current: pathname === "/",
+        href: `/${locale}`,
+        label: sitePages["/"]?.label || t.common.home,
+        current: normalizedPathname === "/",
+        isContainer: false,
       },
     ];
 
-    if (pathname === "/") return items;
+    if (normalizedPathname === "/") return items;
 
     let currentPath = "";
     pathSegments.forEach((segment, index) => {
@@ -57,18 +72,19 @@ export function UnifiedHeader() {
       }
 
       items.push({
-        href: currentPath,
+        href: `/${locale}${currentPath}`,
         label,
         current: isLast,
+        isContainer: config?.isContainer || false,
       });
     });
 
     return items;
-  }, [pathname, pathSegments]);
+  }, [pathname, pathSegments, locale, normalizedPathname]);
 
   // Determine if we should show the header at all (e.g. if it's the root and we don't want it, or just always show)
   // For now, we always show it except login.
-  if (pathname === "/login") return null;
+  if (pathname.includes("/login")) return null;
 
   return (
     <div className="flex flex-col gap-4">
@@ -80,6 +96,10 @@ export function UnifiedHeader() {
               <BreadcrumbItem>
                 {item.current ? (
                   <BreadcrumbPage>{item.label}</BreadcrumbPage>
+                ) : item.isContainer ? (
+                  <span className="font-normal text-muted-foreground cursor-default">
+                    {item.label}
+                  </span>
                 ) : (
                   <BreadcrumbLink href={item.href}>{item.label}</BreadcrumbLink>
                 )}

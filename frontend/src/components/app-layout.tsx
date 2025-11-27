@@ -5,14 +5,20 @@ import { usePathname } from "next/navigation";
 import { Sidebar } from "@/components/sidebar";
 import { UnifiedHeader } from "@/components/unified-header";
 
-export function AppLayout({ children }: { children: React.ReactNode }) {
+export function AppLayout({
+  children,
+  lang,
+}: {
+  children: React.ReactNode;
+  lang: string;
+}) {
   const pathname = usePathname();
-  const isLoginPage = pathname === "/login";
+  const isLoginPage = pathname.includes("/login");
 
   return (
     <AuthProvider>
       <div className="flex h-screen overflow-hidden">
-        {!isLoginPage && <Sidebar />}
+        {!isLoginPage && <Sidebar lang={lang} />}
         <main
           className={`flex-1 bg-background overflow-y-auto ${isLoginPage ? "w-full" : ""}`}
         >

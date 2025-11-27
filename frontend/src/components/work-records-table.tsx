@@ -1,17 +1,18 @@
 'use client';
 
 import { useState } from 'react';
-import { 
-  ChevronUp, 
-  ChevronDown, 
-  Lock, 
-  Moon, 
-  Pencil, 
-  Trash2, 
-  CopyPlus, 
-  Filter, 
+import {
+  ChevronUp,
+  ChevronDown,
+  Lock,
+  Moon,
+  Pencil,
+  Trash2,
+  CopyPlus,
+  Filter,
   Search
 } from 'lucide-react';
+import { useTranslations } from '@/contexts/dictionary-context';
 import { WorkRecord, ProjectOption, AbsenceTypeOption, ProductivityTypeOption, WorkTypeOption } from '@/graphql/queries/work-records';
 import {
   Table,
@@ -48,7 +49,7 @@ interface WorkRecordsTableProps {
   // NOVÉ PROPS PRE DYNAMICKÉ FILTRE
   availableLockOptions: { hasLocked: boolean; hasUnlocked: boolean };
   availableTripOptions: { hasTrip: boolean; hasNoTrip: boolean };
-  
+
   onEdit?: (record: WorkRecord) => void;
   onDelete?: (record: WorkRecord) => void;
   onCopy?: (record: WorkRecord) => void;
@@ -65,54 +66,56 @@ interface ColumnFilterHeaderProps {
   filterContent: React.ReactNode;
 }
 
-function ColumnFilterHeader({ 
-  title, 
-  column, 
-  currentSort, 
-  sortDirection, 
-  onSort, 
-  isActive, 
-  filterContent 
+function ColumnFilterHeader({
+  title,
+  column,
+  currentSort,
+  sortDirection,
+  onSort,
+  isActive,
+  filterContent
 }: ColumnFilterHeaderProps) {
+  const t = useTranslations();
+
   return (
     <div className="flex items-center space-x-1">
-      <Button 
-        variant="ghost" 
-        size="sm" 
+      <Button
+        variant="ghost"
+        size="sm"
         className="-ml-3 h-8 data-[state=open]:bg-accent font-medium text-muted-foreground hover:text-foreground"
         onClick={() => onSort(column)}
       >
         <span>{title}</span>
         {currentSort === column && (
-          sortDirection === 'asc' 
-            ? <ChevronUp className="ml-2 h-3.5 w-3.5 text-primary" /> 
+          sortDirection === 'asc'
+            ? <ChevronUp className="ml-2 h-3.5 w-3.5 text-primary" />
             : <ChevronDown className="ml-2 h-3.5 w-3.5 text-primary" />
         )}
       </Button>
-      
+
       <Popover>
         <PopoverTrigger asChild>
-          <Button 
-            variant="ghost" 
-            size="sm" 
+          <Button
+            variant="ghost"
+            size="sm"
             className={cn(
-              "h-7 w-7 p-0 hover:bg-muted transition-colors", 
+              "h-7 w-7 p-0 hover:bg-muted transition-colors",
               isActive && "text-primary bg-primary/10 hover:bg-primary/20"
             )}
           >
             <Filter className={cn("h-3.5 w-3.5", isActive && "fill-primary/20")} />
-            <span className="sr-only">Filter {title}</span>
+            <span className="sr-only">{t.common.filter} {title}</span>
           </Button>
         </PopoverTrigger>
-        <PopoverContent 
-          className="w-[280px] p-3 animate-in fade-in-0 zoom-in-95 duration-200" 
+        <PopoverContent
+          className="w-[280px] p-3 animate-in fade-in-0 zoom-in-95 duration-200"
           align="start"
         >
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <h4 className="font-semibold text-sm text-foreground">Filter {title}</h4>
+              <h4 className="font-semibold text-sm text-foreground">{t.common.filter} {title}</h4>
               {isActive && (
-                 <Badge variant="secondary" className="text-[10px] px-1 py-0 h-5">Active</Badge>
+                <Badge variant="secondary" className="text-[10px] px-1 py-0 h-5">{t.common.active}</Badge>
               )}
             </div>
             <Separator />
@@ -124,17 +127,18 @@ function ColumnFilterHeader({
   );
 }
 
-export function WorkRecordsTable({ 
-  workRecords, 
-  filters, 
-  onFilterChange, 
+export function WorkRecordsTable({
+  workRecords,
+  filters,
+  onFilterChange,
   options,
   availableLockOptions, // Nové
   availableTripOptions, // Nové
-  onEdit, 
-  onDelete, 
-  onCopy 
+  onEdit,
+  onDelete,
+  onCopy
 }: WorkRecordsTableProps) {
+  const t = useTranslations();
   const [sortColumn, setSortColumn] = useState<SortColumn>('date');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
 
@@ -186,21 +190,21 @@ export function WorkRecordsTable({
           <TableRow className="hover:bg-transparent border-b border-border">
             {/* DATE */}
             <TableHead className="w-[130px]">
-              <Button 
-                variant="ghost" 
-                size="sm" 
+              <Button
+                variant="ghost"
+                size="sm"
                 className="-ml-3 h-8 font-medium text-muted-foreground hover:text-foreground"
                 onClick={() => handleSort('date')}
               >
-                Date
+                {t.workRecords.date}
                 {sortColumn === 'date' && (sortDirection === 'asc' ? <ChevronUp className="ml-2 h-3.5 w-3.5 text-primary" /> : <ChevronDown className="ml-2 h-3.5 w-3.5 text-primary" />)}
               </Button>
             </TableHead>
 
             {/* ABSENCE TYPE */}
             <TableHead>
-              <ColumnFilterHeader 
-                title="Absence" 
+              <ColumnFilterHeader
+                title={t.filters.absence}
                 column="absenceType"
                 currentSort={sortColumn}
                 sortDirection={sortDirection}
@@ -212,8 +216,8 @@ export function WorkRecordsTable({
                       <div className="space-y-2">
                         {options.absenceTypes.length > 0 ? options.absenceTypes.map((type) => (
                           <div key={type.id} className="flex items-center space-x-2.5">
-                            <Checkbox 
-                              id={`abs-${type.id}`} 
+                            <Checkbox
+                              id={`abs-${type.id}`}
                               checked={filters.selectedAbsenceTypes.includes(type.id)}
                               onCheckedChange={() => {
                                 const newTypes = toggleSelection(filters.selectedAbsenceTypes, type.id);
@@ -222,17 +226,17 @@ export function WorkRecordsTable({
                             />
                             <Label htmlFor={`abs-${type.id}`} className="text-sm font-normal leading-none cursor-pointer">{type.alias}</Label>
                           </div>
-                        )) : <div className="text-xs text-muted-foreground py-2">No options available</div>}
+                        )) : <div className="text-xs text-muted-foreground py-2">{t.common.none}</div>}
                       </div>
                     </ScrollArea>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
+                    <Button
+                      variant="outline"
+                      size="sm"
                       className="w-full text-xs h-8"
                       onClick={() => onFilterChange({ ...filters, selectedAbsenceTypes: [] })}
                       disabled={filters.selectedAbsenceTypes.length === 0}
                     >
-                      Reset Filter
+                      {t.filters.removeFilter}
                     </Button>
                   </div>
                 }
@@ -241,8 +245,8 @@ export function WorkRecordsTable({
 
             {/* PROJECT, PRODUCTIVITY, WORK TYPE... (Bez zmeny, kód skrátený pre prehľadnosť) */}
             <TableHead>
-              <ColumnFilterHeader 
-                title="Project" 
+              <ColumnFilterHeader
+                title={t.workRecords.project}
                 column="project"
                 currentSort={sortColumn}
                 sortDirection={sortDirection}
@@ -254,8 +258,8 @@ export function WorkRecordsTable({
                       <div className="space-y-2">
                         {options.projects.length > 0 ? options.projects.map((proj) => (
                           <div key={proj.id} className="flex items-center space-x-2.5">
-                            <Checkbox 
-                              id={`proj-${proj.id}`} 
+                            <Checkbox
+                              id={`proj-${proj.id}`}
                               checked={filters.selectedProjects.includes(proj.id)}
                               onCheckedChange={() => {
                                 const newProjs = toggleSelection(filters.selectedProjects, proj.id);
@@ -264,15 +268,15 @@ export function WorkRecordsTable({
                             />
                             <Label htmlFor={`proj-${proj.id}`} className="text-sm font-mono font-normal leading-none cursor-pointer">{proj.number}</Label>
                           </div>
-                        )) : <div className="text-xs text-muted-foreground py-2">No options available</div>}
+                        )) : <div className="text-xs text-muted-foreground py-2">{t.common.none}</div>}
                       </div>
                     </ScrollArea>
-                    <Button 
+                    <Button
                       variant="outline" size="sm" className="w-full text-xs h-8"
                       onClick={() => onFilterChange({ ...filters, selectedProjects: [] })}
                       disabled={filters.selectedProjects.length === 0}
                     >
-                      Reset Filter
+                      {t.filters.removeFilter}
                     </Button>
                   </div>
                 }
@@ -280,20 +284,20 @@ export function WorkRecordsTable({
             </TableHead>
 
             <TableHead>
-              <ColumnFilterHeader 
-                title="Productivity" 
+              <ColumnFilterHeader
+                title={t.filters.productivity}
                 column="productivityType"
                 currentSort={sortColumn}
                 sortDirection={sortDirection}
                 onSort={handleSort}
                 isActive={filters.selectedProductivityTypes.length > 0}
                 filterContent={
-                   <div className="space-y-3">
+                  <div className="space-y-3">
                     <div className="space-y-2">
                       {options.productivityTypes.length > 0 ? options.productivityTypes.map((type) => (
                         <div key={type.id} className="flex items-center space-x-2.5">
-                          <Checkbox 
-                            id={`prod-${type.id}`} 
+                          <Checkbox
+                            id={`prod-${type.id}`}
                             checked={filters.selectedProductivityTypes.includes(type.id)}
                             onCheckedChange={() => {
                               const newTypes = toggleSelection(filters.selectedProductivityTypes, type.id);
@@ -302,23 +306,23 @@ export function WorkRecordsTable({
                           />
                           <Label htmlFor={`prod-${type.id}`} className="text-sm font-normal leading-none cursor-pointer">{type.hourType}</Label>
                         </div>
-                      )) : <div className="text-xs text-muted-foreground py-2">No options available</div>}
+                      )) : <div className="text-xs text-muted-foreground py-2">{t.common.none}</div>}
                     </div>
-                    <Button 
+                    <Button
                       variant="outline" size="sm" className="w-full text-xs h-8"
                       onClick={() => onFilterChange({ ...filters, selectedProductivityTypes: [] })}
                       disabled={filters.selectedProductivityTypes.length === 0}
                     >
-                      Reset Filter
+                      {t.filters.removeFilter}
                     </Button>
                   </div>
                 }
               />
             </TableHead>
 
-             <TableHead>
-              <ColumnFilterHeader 
-                title="Work Type" 
+            <TableHead>
+              <ColumnFilterHeader
+                title={t.filters.workType}
                 column="workType"
                 currentSort={sortColumn}
                 sortDirection={sortDirection}
@@ -329,8 +333,8 @@ export function WorkRecordsTable({
                     <div className="space-y-2">
                       {options.workTypes.length > 0 ? options.workTypes.map((type) => (
                         <div key={type.id} className="flex items-center space-x-2.5">
-                          <Checkbox 
-                            id={`work-${type.id}`} 
+                          <Checkbox
+                            id={`work-${type.id}`}
                             checked={filters.selectedWorkTypes.includes(type.id)}
                             onCheckedChange={() => {
                               const newTypes = toggleSelection(filters.selectedWorkTypes, type.id);
@@ -339,27 +343,27 @@ export function WorkRecordsTable({
                           />
                           <Label htmlFor={`work-${type.id}`} className="text-sm font-normal leading-none cursor-pointer">{type.hourType}</Label>
                         </div>
-                      )) : <div className="text-xs text-muted-foreground py-2">No options available</div>}
+                      )) : <div className="text-xs text-muted-foreground py-2">{t.common.none}</div>}
                     </div>
-                    <Button 
+                    <Button
                       variant="outline" size="sm" className="w-full text-xs h-8"
                       onClick={() => onFilterChange({ ...filters, selectedWorkTypes: [] })}
                       disabled={filters.selectedWorkTypes.length === 0}
                     >
-                      Reset Filter
+                      {t.filters.removeFilter}
                     </Button>
                   </div>
                 }
               />
             </TableHead>
 
-            <TableHead className="font-medium text-muted-foreground cursor-pointer hover:text-foreground transition-colors" onClick={() => handleSort('startTime')}>Start</TableHead>
-            <TableHead className="font-medium text-muted-foreground cursor-pointer hover:text-foreground transition-colors" onClick={() => handleSort('endTime')}>End</TableHead>
-            <TableHead className="font-medium text-muted-foreground cursor-pointer hover:text-foreground transition-colors text-right" onClick={() => handleSort('hours')}>Hours</TableHead>
+            <TableHead className="font-medium text-muted-foreground cursor-pointer hover:text-foreground transition-colors" onClick={() => handleSort('startTime')}>{t.workRecords.startTime}</TableHead>
+            <TableHead className="font-medium text-muted-foreground cursor-pointer hover:text-foreground transition-colors" onClick={() => handleSort('endTime')}>{t.workRecords.endTime}</TableHead>
+            <TableHead className="font-medium text-muted-foreground cursor-pointer hover:text-foreground transition-colors text-right" onClick={() => handleSort('hours')}>{t.workRecords.hours}</TableHead>
 
             <TableHead>
-              <ColumnFilterHeader 
-                title="Description" 
+              <ColumnFilterHeader
+                title={t.workRecords.description}
                 column="description"
                 currentSort={sortColumn}
                 sortDirection={sortDirection}
@@ -369,31 +373,31 @@ export function WorkRecordsTable({
                   <div className="space-y-3">
                     <div className="relative">
                       <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                      <Input 
-                        placeholder="Search..." 
+                      <Input
+                        placeholder={t.workRecords.searchPlaceholder}
                         value={filters.searchText}
                         onChange={(e) => onFilterChange({ ...filters, searchText: e.target.value })}
                         className="pl-8 h-9"
                       />
                     </div>
-                    <Button 
+                    <Button
                       variant="outline" size="sm" className="w-full text-xs h-8"
                       onClick={() => onFilterChange({ ...filters, searchText: '' })}
                       disabled={!filters.searchText}
                     >
-                      Clear Search
+                      {t.filters.clearSearch}
                     </Button>
                   </div>
                 }
               />
             </TableHead>
 
-            <TableHead className="font-medium text-muted-foreground cursor-pointer hover:text-foreground transition-colors text-right" onClick={() => handleSort('km')}>KM</TableHead>
+            <TableHead className="font-medium text-muted-foreground cursor-pointer hover:text-foreground transition-colors text-right" onClick={() => handleSort('km')}>{t.workRecords.kilometers}</TableHead>
 
             {/* TRIP - AKTUALIZOVANÉ PRE DYNAMICKÉ ZOBRAZENIE */}
             <TableHead>
-              <ColumnFilterHeader 
-                title="Trip" 
+              <ColumnFilterHeader
+                title={t.filters.tripFlag}
                 column="isTripFlag"
                 currentSort={sortColumn}
                 sortDirection={sortDirection}
@@ -401,42 +405,42 @@ export function WorkRecordsTable({
                 isActive={filters.tripFlag !== 'all'}
                 filterContent={
                   <div className="space-y-3">
-                     <div className="flex items-center space-x-2.5">
-                        <Checkbox 
-                          id="trip-all" 
-                          checked={filters.tripFlag === 'all'}
-                          onCheckedChange={() => onFilterChange({ ...filters, tripFlag: 'all' })}
+                    <div className="flex items-center space-x-2.5">
+                      <Checkbox
+                        id="trip-all"
+                        checked={filters.tripFlag === 'all'}
+                        onCheckedChange={() => onFilterChange({ ...filters, tripFlag: 'all' })}
+                      />
+                      <Label htmlFor="trip-all" className="font-normal cursor-pointer">{t.common.all}</Label>
+                    </div>
+
+                    {/* Zobraz Yes len ak existujú dáta */}
+                    {availableTripOptions.hasTrip && (
+                      <div className="flex items-center space-x-2.5">
+                        <Checkbox
+                          id="trip-yes"
+                          checked={filters.tripFlag === 'yes'}
+                          onCheckedChange={() => onFilterChange({ ...filters, tripFlag: 'yes' })}
                         />
-                        <Label htmlFor="trip-all" className="font-normal cursor-pointer">All</Label>
+                        <Label htmlFor="trip-yes" className="font-normal cursor-pointer">{t.filters.withTrip}</Label>
                       </div>
-                      
-                      {/* Zobraz Yes len ak existujú dáta */}
-                      {availableTripOptions.hasTrip && (
-                        <div className="flex items-center space-x-2.5">
-                          <Checkbox 
-                            id="trip-yes" 
-                            checked={filters.tripFlag === 'yes'}
-                            onCheckedChange={() => onFilterChange({ ...filters, tripFlag: 'yes' })}
-                          />
-                          <Label htmlFor="trip-yes" className="font-normal cursor-pointer">Yes (Trip)</Label>
-                        </div>
-                      )}
+                    )}
 
-                      {/* Zobraz No len ak existujú dáta */}
-                      {availableTripOptions.hasNoTrip && (
-                        <div className="flex items-center space-x-2.5">
-                          <Checkbox 
-                            id="trip-no" 
-                            checked={filters.tripFlag === 'no'}
-                            onCheckedChange={() => onFilterChange({ ...filters, tripFlag: 'no' })}
-                          />
-                          <Label htmlFor="trip-no" className="font-normal cursor-pointer">No</Label>
-                        </div>
-                      )}
+                    {/* Zobraz No len ak existujú dáta */}
+                    {availableTripOptions.hasNoTrip && (
+                      <div className="flex items-center space-x-2.5">
+                        <Checkbox
+                          id="trip-no"
+                          checked={filters.tripFlag === 'no'}
+                          onCheckedChange={() => onFilterChange({ ...filters, tripFlag: 'no' })}
+                        />
+                        <Label htmlFor="trip-no" className="font-normal cursor-pointer">{t.filters.withoutTrip}</Label>
+                      </div>
+                    )}
 
-                      {!availableTripOptions.hasTrip && !availableTripOptions.hasNoTrip && (
-                         <div className="text-xs text-muted-foreground py-1">No options available</div>
-                      )}
+                    {!availableTripOptions.hasTrip && !availableTripOptions.hasNoTrip && (
+                      <div className="text-xs text-muted-foreground py-1">{t.common.none}</div>
+                    )}
                   </div>
                 }
               />
@@ -444,8 +448,8 @@ export function WorkRecordsTable({
 
             {/* LOCKED - AKTUALIZOVANÉ PRE DYNAMICKÉ ZOBRAZENIE */}
             <TableHead>
-              <ColumnFilterHeader 
-                title="Lock" 
+              <ColumnFilterHeader
+                title={t.filters.lockStatus}
                 column="isLocked"
                 currentSort={sortColumn}
                 sortDirection={sortDirection}
@@ -453,53 +457,53 @@ export function WorkRecordsTable({
                 isActive={filters.lockStatus !== 'all'}
                 filterContent={
                   <div className="space-y-3">
-                     <div className="flex items-center space-x-2.5">
-                        <Checkbox 
-                          id="lock-all" 
-                          checked={filters.lockStatus === 'all'}
-                          onCheckedChange={() => onFilterChange({ ...filters, lockStatus: 'all' })}
+                    <div className="flex items-center space-x-2.5">
+                      <Checkbox
+                        id="lock-all"
+                        checked={filters.lockStatus === 'all'}
+                        onCheckedChange={() => onFilterChange({ ...filters, lockStatus: 'all' })}
+                      />
+                      <Label htmlFor="lock-all" className="font-normal cursor-pointer">{t.common.all}</Label>
+                    </div>
+
+                    {availableLockOptions.hasLocked && (
+                      <div className="flex items-center space-x-2.5">
+                        <Checkbox
+                          id="lock-yes"
+                          checked={filters.lockStatus === 'locked'}
+                          onCheckedChange={() => onFilterChange({ ...filters, lockStatus: 'locked' })}
                         />
-                        <Label htmlFor="lock-all" className="font-normal cursor-pointer">All</Label>
+                        <Label htmlFor="lock-yes" className="font-normal cursor-pointer">{t.filters.locked}</Label>
                       </div>
+                    )}
 
-                      {availableLockOptions.hasLocked && (
-                        <div className="flex items-center space-x-2.5">
-                          <Checkbox 
-                            id="lock-yes" 
-                            checked={filters.lockStatus === 'locked'}
-                            onCheckedChange={() => onFilterChange({ ...filters, lockStatus: 'locked' })}
-                          />
-                          <Label htmlFor="lock-yes" className="font-normal cursor-pointer">Locked</Label>
-                        </div>
-                      )}
+                    {availableLockOptions.hasUnlocked && (
+                      <div className="flex items-center space-x-2.5">
+                        <Checkbox
+                          id="lock-no"
+                          checked={filters.lockStatus === 'unlocked'}
+                          onCheckedChange={() => onFilterChange({ ...filters, lockStatus: 'unlocked' })}
+                        />
+                        <Label htmlFor="lock-no" className="font-normal cursor-pointer">{t.filters.unlocked}</Label>
+                      </div>
+                    )}
 
-                      {availableLockOptions.hasUnlocked && (
-                        <div className="flex items-center space-x-2.5">
-                          <Checkbox 
-                            id="lock-no" 
-                            checked={filters.lockStatus === 'unlocked'}
-                            onCheckedChange={() => onFilterChange({ ...filters, lockStatus: 'unlocked' })}
-                          />
-                          <Label htmlFor="lock-no" className="font-normal cursor-pointer">Unlocked</Label>
-                        </div>
-                      )}
-
-                      {!availableLockOptions.hasLocked && !availableLockOptions.hasUnlocked && (
-                         <div className="text-xs text-muted-foreground py-1">No options available</div>
-                      )}
+                    {!availableLockOptions.hasLocked && !availableLockOptions.hasUnlocked && (
+                      <div className="text-xs text-muted-foreground py-1">{t.common.none}</div>
+                    )}
                   </div>
                 }
               />
             </TableHead>
 
-            {showActions && <TableHead className="text-center font-medium text-muted-foreground">Actions</TableHead>}
+            {showActions && <TableHead className="text-center font-medium text-muted-foreground">{t.common.actions}</TableHead>}
           </TableRow>
         </TableHeader>
-        
+
         <TableBody>
           {sortedRecords.map((record) => (
-             <TableRow 
-              key={record.id} 
+            <TableRow
+              key={record.id}
               className={cn(
                 "group hover:bg-muted/30 transition-colors border-border",
                 record.isLocked && 'bg-muted/10 opacity-70'
@@ -522,7 +526,7 @@ export function WorkRecordsTable({
               <TableCell className="max-w-[200px] truncate text-muted-foreground" title={record.description || ''}>{record.description || '—'}</TableCell>
               <TableCell className="text-right font-mono text-sm">{record.km}</TableCell>
               <TableCell className="text-center">
-                {record.isTripFlag ? <Badge variant="outline" className="bg-blue-50/50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-800">Yes</Badge> : <span className="text-muted-foreground text-xs">-</span>}
+                {record.isTripFlag ? <Badge variant="outline" className="bg-blue-50/50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-800">{t.common.yes}</Badge> : <span className="text-muted-foreground text-xs">-</span>}
               </TableCell>
               <TableCell className="text-center">
                 {record.isLocked && <Lock className="h-3.5 w-3.5 text-destructive mx-auto" />}

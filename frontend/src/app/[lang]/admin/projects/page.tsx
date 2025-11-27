@@ -2,6 +2,7 @@
 
 import { AdminGuard } from "@/components/admin-guard";
 import { useState, useMemo } from "react";
+import { useTranslations } from "@/contexts/dictionary-context";
 import { useQuery } from "@apollo/client/react";
 import { Loader2, Plus, FolderKanban } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -40,6 +41,8 @@ export default function ProjectsPage() {
     selectedManagers: [],
     activeStatus: "all",
   });
+
+  const t = useTranslations();
 
   const {
     data: projectsData,
@@ -240,7 +243,7 @@ export default function ProjectsPage() {
     return (
       <AdminGuard>
         <div className="flex items-center justify-center min-h-screen">
-          <p className="text-destructive">Error loading projects</p>
+          <p className="text-destructive">{t.projects.failedToLoad}</p>
         </div>
       </AdminGuard>
     );
@@ -260,7 +263,7 @@ export default function ProjectsPage() {
             className="gap-2 shadow-sm"
           >
             <Plus className="h-4 w-4" />
-            Add Project
+            {t.projects.addProject}
           </Button>
         </div>
 
@@ -269,21 +272,21 @@ export default function ProjectsPage() {
             <FolderKanban className="h-12 w-12 text-muted-foreground/50" />
             <div>
               <h2 className="text-lg font-semibold text-foreground mb-1">
-                No projects found
+                {t.projects.noProjectsFound}
               </h2>
               <p className="text-sm text-muted-foreground">
-                Get started by creating a new project.
+                {t.projects.noProjectsDescription}
               </p>
             </div>
             <Button onClick={() => setDialogMode("create")} variant="outline">
-              Create Project
+              {t.projects.createProject}
             </Button>
           </div>
         ) : (
           <>
             <div className="flex justify-end items-center mb-2">
               <span className="text-xs font-medium text-muted-foreground bg-secondary/50 px-2 py-1 rounded-md">
-                Showing {filteredProjects.length} of {totalProjects} projects
+                {t.workRecords.showing} {filteredProjects.length} {t.workRecords.of} {totalProjects} {t.projects.countSuffix}
               </span>
             </div>
 

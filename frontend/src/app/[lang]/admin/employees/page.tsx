@@ -2,6 +2,7 @@
 
 import { AdminGuard } from "@/components/admin-guard";
 import { useState, useMemo } from "react";
+import { useTranslations } from "@/contexts/dictionary-context";
 import { useQuery } from "@apollo/client/react";
 import { Loader2, XCircle, Users, Plus } from "lucide-react";
 import {
@@ -39,6 +40,7 @@ export default function EmployeesPage() {
   const { loading, error, data, refetch } =
     useQuery<EmployeesData>(EMPLOYEES_QUERY);
   const { deleteEmployee } = useDeleteEmployee();
+  const t = useTranslations();
 
   const [dialogMode, setDialogMode] = useState<
     "create" | "edit" | "reset-password" | null
@@ -154,7 +156,7 @@ export default function EmployeesPage() {
         <div className="flex items-center justify-center min-h-screen bg-background">
           <div className="flex flex-col items-center gap-3">
             <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-            <p className="text-sm text-muted-foreground">Loading...</p>
+            <p className="text-sm text-muted-foreground">{t.common.loading}</p>
           </div>
         </div>
       </AdminGuard>
@@ -169,12 +171,12 @@ export default function EmployeesPage() {
             <CardContent className="flex flex-col items-center gap-4 text-center p-6">
               <XCircle className="h-12 w-12 text-destructive" />
               <CardHeader className="p-0">
-                <CardTitle>Failed to load employees</CardTitle>
+                <CardTitle>{t.employees.failedToLoad}</CardTitle>
                 <CardDescription>
-                  {error.message || "An unexpected error occurred"}
+                  {error.message || t.workRecords.unexpectedError}
                 </CardDescription>
               </CardHeader>
-              <Button onClick={() => refetch()}>Retry</Button>
+              <Button onClick={() => refetch()}>{t.common.retry}</Button>
             </CardContent>
           </Card>
         </div>
@@ -188,7 +190,7 @@ export default function EmployeesPage() {
         <div className="flex justify-end">
           <Button onClick={handleCreate} className="gap-2 shadow-sm">
             <Plus className="h-4 w-4" />
-            Add Employee
+            {t.employees.addEmployee}
           </Button>
         </div>
 
@@ -197,22 +199,22 @@ export default function EmployeesPage() {
             <Users className="h-12 w-12 text-muted-foreground/50" />
             <div>
               <h2 className="text-lg font-semibold text-foreground mb-1">
-                No employees found
+                {t.employees.noEmployeesFound}
               </h2>
               <p className="text-sm text-muted-foreground">
-                Add your first employee to get started
+                {t.employees.noEmployeesDescription}
               </p>
             </div>
             <Button onClick={handleCreate} variant="outline">
-              Add Employee
+              {t.employees.addEmployee}
             </Button>
           </div>
         ) : (
           <>
             <div className="flex justify-end items-center mb-2">
               <span className="text-xs font-medium text-muted-foreground bg-secondary/50 px-2 py-1 rounded-md">
-                Showing {filteredEmployees.length} of {allEmployees.length}{" "}
-                employees
+                {t.workRecords.showing} {filteredEmployees.length} {t.workRecords.of} {allEmployees.length}{" "}
+                {t.employees.countSuffix}
               </span>
             </div>
 
@@ -253,19 +255,18 @@ export default function EmployeesPage() {
         >
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+              <AlertDialogTitle>{t.employees.deleteConfirmTitle}</AlertDialogTitle>
               <AlertDialogDescription>
-                This action cannot be undone. This will permanently delete the
-                employee and all their work records from the database.
+                {t.employees.deleteConfirmDescription}
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogCancel>{t.common.cancel}</AlertDialogCancel>
               <AlertDialogAction
                 onClick={confirmDelete}
                 className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               >
-                Delete
+                {t.common.delete}
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>

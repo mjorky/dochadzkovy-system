@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { useAuth } from "@/providers/auth-provider"
+import { useTranslations } from "@/contexts/dictionary-context"
 import { useMutation } from "@apollo/client/react"
 import { gql } from "@apollo/client"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -29,13 +30,14 @@ export default function LoginPage() {
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
   const { login } = useAuth()
+  const t = useTranslations()
 
   const [loginMutation, { loading }] = useMutation(LOGIN_MUTATION, {
     onCompleted: (data) => {
       login(data.login.accessToken)
     },
     onError: (err) => {
-      setError(err.message || "Nesprávne prihlasovacie údaje")
+      setError(err.message || t.login.invalidCredentials)
     },
   })
 
@@ -43,7 +45,7 @@ export default function LoginPage() {
     e.preventDefault()
     setError("")
     if (!username || !password) {
-      setError("Prosím vyplňte všetky polia")
+      setError(t.login.fillAllFields)
       return
     }
 
@@ -56,9 +58,9 @@ export default function LoginPage() {
     <div className="flex min-h-screen items-center justify-center bg-gray-100 p-4">
       <Card className="w-full max-w-md shadow-lg">
         <CardHeader className="space-y-1 text-center">
-          <CardTitle className="text-2xl font-bold">Prihlásenie</CardTitle>
+          <CardTitle className="text-2xl font-bold">{t.login.title}</CardTitle>
           <CardDescription>
-            Zadajte svoje prihlasovacie údaje pre vstup do systému
+            {t.login.enterCredentials}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -70,18 +72,18 @@ export default function LoginPage() {
               </Alert>
             )}
             <div className="space-y-2">
-              <Label htmlFor="username">Prihlasovacie meno</Label>
+              <Label htmlFor="username">{t.login.username}</Label>
               <Input
                 id="username"
                 type="text"
-                placeholder="meno.priezvisko"
+                placeholder={t.login.usernamePlaceholder}
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 disabled={loading}
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Heslo</Label>
+              <Label htmlFor="password">{t.login.password}</Label>
               <Input
                 id="password"
                 type="password"
@@ -91,7 +93,7 @@ export default function LoginPage() {
               />
             </div>
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "Prihlasujem..." : "Prihlásiť sa"}
+              {loading ? t.login.signingIn : t.login.signIn}
             </Button>
           </form>
         </CardContent>

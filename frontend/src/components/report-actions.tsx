@@ -3,6 +3,7 @@
 import { Loader2, FileText, FileDown, CheckCircle2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { useTranslations } from '@/contexts/dictionary-context';
 
 // --- 1. Generate Button Component ---
 
@@ -18,9 +19,11 @@ export function ReportGenerateButton({
   onGenerate,
   isLoading,
   isDisabled,
-  label = "Generate PDF Report",
-  loadingLabel = "Generating..."
+  label,
+  loadingLabel
 }: ReportGenerateButtonProps) {
+  const t = useTranslations();
+
   return (
     <Button
       onClick={onGenerate}
@@ -33,7 +36,7 @@ export function ReportGenerateButton({
       ) : (
         <FileText className="mr-2 h-4 w-4" />
       )}
-      {isLoading ? loadingLabel : label}
+      {isLoading ? (loadingLabel || t.reports.generating) : (label || t.reports.generatePdf)}
     </Button>
   );
 }
@@ -47,6 +50,8 @@ interface ReportSuccessCardProps {
 }
 
 export function ReportSuccessCard({ onView, onDownload, className }: ReportSuccessCardProps) {
+  const t = useTranslations();
+
   return (
     <Card className={`bg-green-50 dark:bg-green-950/20 border-green-200 dark:border-green-900 animate-in fade-in slide-in-from-bottom-4 ${className}`}>
       <CardContent className="flex flex-col items-center justify-center py-8 text-center space-y-4">
@@ -55,18 +60,18 @@ export function ReportSuccessCard({ onView, onDownload, className }: ReportSucce
         </div>
         <div>
           <h3 className="text-lg font-semibold text-green-900 dark:text-green-100">
-            PDF Report Generated Successfully
+            {t.reports.successTitle}
           </h3>
           <p className="text-sm text-green-700 dark:text-green-300">
-            Your document is ready for viewing or download.
+            {t.reports.successDescription}
           </p>
         </div>
         <div className="flex gap-3 mt-2">
           <Button onClick={onView}>
-            <FileText className="mr-2 h-4 w-4" /> Open Viewer
+            <FileText className="mr-2 h-4 w-4" /> {t.reports.openViewer}
           </Button>
           <Button variant="outline" onClick={onDownload}>
-            <FileDown className="mr-2 h-4 w-4" /> Save PDF
+            <FileDown className="mr-2 h-4 w-4" /> {t.reports.savePdf}
           </Button>
         </div>
       </CardContent>

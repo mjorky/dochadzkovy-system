@@ -1,7 +1,9 @@
 "use client";
 
-// ... (Importy ostávajú rovnaké) ...
 import { useState, useMemo, useCallback, useEffect } from "react";
+
+// ... (Importy ostávajú rovnaké) ...
+
 import { useQuery } from "@apollo/client/react";
 import {
   Loader2,
@@ -25,6 +27,7 @@ import {
   WorkRecord,
 } from "@/graphql/queries/work-records";
 import { WorkRecordsTable } from "@/components/work-records-table";
+import { useTranslations } from "@/contexts/dictionary-context";
 import { EmployeeSelector } from "@/components/employee-selector";
 import { WorkRecordDialog } from "@/components/work-record-dialog";
 import { DeleteWorkRecordDialog } from "@/components/delete-work-record-dialog";
@@ -63,6 +66,7 @@ import { useAuth } from "@/providers/auth-provider";
 export default function WorkRecordsPage() {
   // ... (Inicializácia stateov, dátumov, zamestnanca ostáva rovnaká) ...
   const { user, loading: authLoading } = useAuth();
+  const t = useTranslations();
 
   const initialDates = useMemo(() => {
     const today = new Date();
@@ -478,7 +482,7 @@ export default function WorkRecordsPage() {
         <div className="flex flex-col items-center gap-3">
           <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
           <p className="text-sm text-muted-foreground animate-pulse">
-            Loading work records...
+            {t.workRecords.loadingRecords}
           </p>
         </div>
       </div>
@@ -493,9 +497,9 @@ export default function WorkRecordsPage() {
           <CardContent className="flex flex-col items-center gap-4 text-center p-8">
             <XCircle className="h-12 w-12 text-destructive" />
             <CardHeader className="p-0">
-              <CardTitle className="text-lg">Failed to load records</CardTitle>
+              <CardTitle className="text-lg">{t.workRecords.failedToLoad}</CardTitle>
               <CardDescription>
-                {recordsError.message || "An unexpected error occurred"}
+                {recordsError.message || t.workRecords.unexpectedError}
               </CardDescription>
             </CardHeader>
             <Button
@@ -503,7 +507,7 @@ export default function WorkRecordsPage() {
               variant="outline"
               className="border-destructive/20 hover:bg-destructive/10"
             >
-              Retry
+              {t.common.retry}
             </Button>
           </CardContent>
         </Card>
@@ -526,7 +530,7 @@ export default function WorkRecordsPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 flex-1">
           <div className="flex flex-col gap-2">
             <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-              From Date
+              {t.workRecords.fromDate}
             </Label>
             <Popover>
               <PopoverTrigger asChild>
@@ -541,7 +545,7 @@ export default function WorkRecordsPage() {
                   {filters.fromDate ? (
                     format(filters.fromDate, "PPP")
                   ) : (
-                    <span>Pick a date</span>
+                    <span>{t.workRecords.pickDate}</span>
                   )}
                 </Button>
               </PopoverTrigger>
@@ -567,7 +571,7 @@ export default function WorkRecordsPage() {
 
           <div className="flex flex-col gap-2">
             <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-              To Date
+              {t.workRecords.toDate}
             </Label>
             <Popover>
               <PopoverTrigger asChild>
@@ -582,7 +586,7 @@ export default function WorkRecordsPage() {
                   {filters.toDate ? (
                     format(filters.toDate, "PPP")
                   ) : (
-                    <span>Pick a date</span>
+                    <span>{t.workRecords.pickDate}</span>
                   )}
                 </Button>
               </PopoverTrigger>
@@ -618,7 +622,7 @@ export default function WorkRecordsPage() {
             htmlFor="wholeMonth"
             className="cursor-pointer text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
           >
-            Whole Month
+            {t.workRecords.wholeMonth}
           </Label>
         </div>
 
@@ -631,14 +635,14 @@ export default function WorkRecordsPage() {
             className="gap-2 shadow-sm"
           >
             <Download className="h-4 w-4" />
-            Export CSV
+            {t.workRecords.exportCsv}
           </Button>
           <Button
             onClick={handleAddEntry}
             className="gap-2 shadow-sm bg-primary text-primary-foreground hover:bg-primary/90"
           >
             <Plus className="h-4 w-4" />
-            Add Entry
+            {t.workRecords.addEntry}
           </Button>
         </div>
       </div>
@@ -651,43 +655,42 @@ export default function WorkRecordsPage() {
           </div>
           <div className="max-w-xs">
             <h2 className="text-lg font-semibold text-foreground mb-1">
-              No records found
+              {t.workRecords.noRecordsFound}
             </h2>
             <p className="text-sm text-muted-foreground">
-              We couldn't find any work records for this date range or filter
-              selection.
+              {t.workRecords.noRecordsDescription}
             </p>
           </div>
           {(filters.selectedProjects.length > 0 ||
             filters.searchText ||
             filters.selectedAbsenceTypes.length > 0) && (
-            <Button
-              variant="link"
-              onClick={() =>
-                handleFilterChange({
-                  ...filters,
-                  searchText: "",
-                  selectedProjects: [],
-                  selectedAbsenceTypes: [],
-                  selectedProductivityTypes: [],
-                  selectedWorkTypes: [],
-                  lockStatus: "all",
-                  tripFlag: "all",
-                })
-              }
-              className="text-primary"
-            >
-              Clear all filters
-            </Button>
-          )}
+              <Button
+                variant="link"
+                onClick={() =>
+                  handleFilterChange({
+                    ...filters,
+                    searchText: "",
+                    selectedProjects: [],
+                    selectedAbsenceTypes: [],
+                    selectedProductivityTypes: [],
+                    selectedWorkTypes: [],
+                    lockStatus: "all",
+                    tripFlag: "all",
+                  })
+                }
+                className="text-primary"
+              >
+                {t.workRecords.clearAllFilters}
+              </Button>
+            )}
         </div>
       ) : (
         <>
           <div className="flex justify-end items-center mb-2">
             <span className="text-xs font-medium text-muted-foreground bg-secondary/50 px-2 py-1 rounded-md">
-              Showing {filteredRecords.length} of{" "}
+              {t.workRecords.showing} {filteredRecords.length} {t.workRecords.of}{" "}
               {recordsData?.getWorkRecords.totalCount || allRecords.length}{" "}
-              records
+              {t.workRecords.records}
             </span>
           </div>
 
@@ -716,7 +719,7 @@ export default function WorkRecordsPage() {
               <div className="flex items-center justify-center gap-2 p-2 rounded-full bg-secondary/30 inline-flex px-4">
                 <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
                 <span className="text-xs font-medium text-muted-foreground">
-                  Loading more records...
+                  {t.workRecords.loadingMore}
                 </span>
               </div>
             )}
