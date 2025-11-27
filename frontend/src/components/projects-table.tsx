@@ -1,186 +1,439 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { ChevronUp, ChevronDown } from 'lucide-react'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { type Project } from "@/graphql/queries/projects"
-import { Icons } from "@/lib/icons"
+import { useState } from 'react';
+import { 
+  ChevronUp, 
+  ChevronDown, 
+  Filter, 
+  Search,
+  Check,
+  Edit2,
+  Trash2,
+  Loader2
+} from 'lucide-react';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Input } from '@/components/ui/input';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
+import { Separator } from '@/components/ui/separator';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { cn } from '@/lib/utils';
+import { type Project, type Country } from "@/graphql/queries/projects";
 
-type SortColumn = 'number' | 'name' | 'country' | 'manager' | 'active'
-type SortDirection = 'asc' | 'desc'
+type SortColumn = 'number' | 'name' | 'country' | 'manager' | 'active';
+type SortDirection = 'asc' | 'desc';
+
+export interface ProjectFilters {
+    searchText: string;
+    selectedCountries: string[];
+    selectedManagers: string[];
+    activeStatus: 'all' | 'active' | 'inactive';
+}
 
 export interface ProjectsTableProps {
-  projects: Project[]
-  isLoading?: boolean
-  onEdit?: (project: Project) => void
-  onDelete?: (project: Project) => void
+  projects: Project[];
+  countries: Country[];
+  managers: { id: string, fullName: string }[];
+  // NOVÉ: Informácia o tom, aké statusy sú dostupné
+  availableStatuses: { hasActive: boolean; hasInactive: boolean };
+  filters: ProjectFilters;
+  onFilterChange: (filters: ProjectFilters) => void;
+  isLoading?: boolean;
+  onEdit?: (project: Project) => void;
+  onDelete?: (project: Project) => void;
+}
+
+// ... ColumnFilterHeader a getSortValue ostávajú nezmenené ...
+interface ColumnFilterHeaderProps {
+  title: string;
+  column: SortColumn;
+  currentSort: SortColumn;
+  sortDirection: SortDirection;
+  onSort: (col: SortColumn) => void;
+  isActive: boolean;
+  filterContent: React.ReactNode;
+}
+
+function ColumnFilterHeader({ 
+  title, 
+  column, 
+  currentSort, 
+  sortDirection, 
+  onSort, 
+  isActive, 
+  filterContent 
+}: ColumnFilterHeaderProps) {
+  return (
+    <div className="flex items-center space-x-1">
+      <Button 
+        variant="ghost" 
+        size="sm" 
+        className="-ml-3 h-8 font-medium text-muted-foreground hover:text-foreground data-[state=open]:bg-accent"
+        onClick={() => onSort(column)}
+      >
+        <span>{title}</span>
+        {currentSort === column && (
+          sortDirection === 'asc' 
+            ? <ChevronUp className="ml-2 h-3.5 w-3.5 text-primary" /> 
+            : <ChevronDown className="ml-2 h-3.5 w-3.5 text-primary" />
+        )}
+      </Button>
+      
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className={cn(
+              "h-7 w-7 p-0 hover:bg-muted transition-colors", 
+              isActive && "text-primary bg-primary/10 hover:bg-primary/20"
+            )}
+          >
+            <Filter className={cn("h-3.5 w-3.5", isActive && "fill-primary/20")} />
+            <span className="sr-only">Filter {title}</span>
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent 
+          className="w-[280px] p-3 animate-in fade-in-0 zoom-in-95 duration-200" 
+          align="start"
+        >
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <h4 className="font-semibold text-sm text-foreground">Filter {title}</h4>
+              {isActive && (
+                 <Badge variant="secondary" className="text-[10px] px-1 py-0 h-5">Active</Badge>
+              )}
+            </div>
+            <Separator />
+            {filterContent}
+          </div>
+        </PopoverContent>
+      </Popover>
+    </div>
+  );
 }
 
 const getSortValue = (project: Project, column: SortColumn): any => {
     switch (column) {
         case 'country':
-            return project.country?.name || project.country?.countryCode || ''
+            return project.country?.name || project.country?.countryCode || '';
         case 'manager':
-            return project.manager.fullName || ''
+            return project.manager.fullName || '';
         case 'active':
-            return project.active
+            return project.active;
         default:
-            return project[column as keyof Project]
+            return project[column];
     }
 }
 
-const EditIcon = Icons.edit;
-const TrashIcon = Icons.trash;
-const LoaderIcon = Icons.loader;
-
-export function ProjectsTable({ projects, isLoading = false, onEdit, onDelete }: ProjectsTableProps) {
-  const [sortColumn, setSortColumn] = useState<SortColumn>('number')
-  const [sortDirection, setSortDirection] = useState<SortDirection>('asc')
+export function ProjectsTable({ 
+    projects, 
+    countries,
+    managers,
+    availableStatuses, // NOVÉ
+    filters,
+    onFilterChange,
+    isLoading = false, 
+    onEdit, 
+    onDelete 
+}: ProjectsTableProps) {
+  
+  const [sortColumn, setSortColumn] = useState<SortColumn>('number');
+  const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
 
   const handleSort = (column: SortColumn) => {
     if (sortColumn === column) {
-      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc')
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
     } else {
-      setSortColumn(column)
-      setSortDirection('asc')
+      setSortColumn(column);
+      setSortDirection('asc');
     }
   }
 
   const sortedProjects = [...projects].sort((a, b) => {
-    const aValue = getSortValue(a, sortColumn)
-    const bValue = getSortValue(b, sortColumn)
+    const aValue = getSortValue(a, sortColumn);
+    const bValue = getSortValue(b, sortColumn);
 
-    if (aValue == null && bValue == null) return 0
-    if (aValue == null) return sortDirection === 'asc' ? 1 : -1
-    if (bValue == null) return sortDirection === 'asc' ? -1 : 1
+    if (aValue == null && bValue == null) return 0;
+    if (aValue == null) return sortDirection === 'asc' ? 1 : -1;
+    if (bValue == null) return sortDirection === 'asc' ? -1 : 1;
 
     if (typeof aValue === 'number' && typeof bValue === 'number') {
-      return sortDirection === 'asc' ? aValue - bValue : bValue - aValue
+      return sortDirection === 'asc' ? aValue - bValue : bValue - aValue;
     }
 
     if (typeof aValue === 'boolean' && typeof bValue === 'boolean') {
       return sortDirection === 'asc'
         ? Number(bValue) - Number(aValue)
-        : Number(aValue) - Number(bValue)
+        : Number(aValue) - Number(bValue);
     }
 
-    const aStr = String(aValue).toLowerCase()
-    const bStr = String(bValue).toLowerCase()
+    const aStr = String(aValue).toLowerCase();
+    const bStr = String(bValue).toLowerCase();
     return sortDirection === 'asc'
       ? aStr.localeCompare(bStr)
-      : bStr.localeCompare(aStr)
-  })
+      : bStr.localeCompare(aStr);
+  });
   
-  const SortIndicator = ({ column }: { column: SortColumn }) => {
-    if (sortColumn !== column) return null
-    return sortDirection === 'asc' ? (
-      <ChevronUp className="h-4 w-4 text-primary" />
-    ) : (
-      <ChevronDown className="h-4 w-4 text-primary" />
-    )
-  }
+  const toggleSelection = (currentIds: string[], id: string) => {
+    return currentIds.includes(id)
+      ? currentIds.filter(item => item !== id)
+      : [...currentIds, id];
+  };
 
   if (isLoading) {
-    return <div className="flex items-center justify-center py-8"><LoaderIcon className="h-8 w-8" /></div>
+    return <div className="flex items-center justify-center py-12"><Loader2 className="h-8 w-8 animate-spin text-muted-foreground" /></div>;
   }
 
   return (
-    <div className="border border-border rounded-lg overflow-hidden">
+    <div className="border border-border rounded-xl overflow-hidden shadow-sm bg-card">
       <Table>
-        <TableHeader className="bg-muted/50">
-          <TableRow className="hover:bg-muted/50">
-            <TableHead 
-                className="w-[100px] cursor-pointer hover:bg-muted/80 transition-colors"
-                onClick={() => handleSort('number')}
-            >
-                <div className="flex items-center gap-2">
+        <TableHeader className="bg-muted/40">
+          <TableRow className="hover:bg-transparent border-b border-border">
+            {/* NUMBER */}
+            <TableHead className="w-[120px]">
+                <Button 
+                    variant="ghost" size="sm" className="-ml-3 h-8 font-medium text-muted-foreground hover:text-foreground"
+                    onClick={() => handleSort('number')}
+                >
                     Number
-                    <SortIndicator column="number" />
-                </div>
+                    {sortColumn === 'number' && (sortDirection === 'asc' ? <ChevronUp className="ml-2 h-3.5 w-3.5 text-primary" /> : <ChevronDown className="ml-2 h-3.5 w-3.5 text-primary" />)}
+                </Button>
             </TableHead>
-            <TableHead 
-                className="min-w-[150px] cursor-pointer hover:bg-muted/80 transition-colors"
-                onClick={() => handleSort('name')}
-            >
-                <div className="flex items-center gap-2">
-                    Name
-                    <SortIndicator column="name" />
-                </div>
+
+            {/* NAME + SEARCH */}
+            <TableHead className="min-w-[200px]">
+              <ColumnFilterHeader 
+                title="Name" 
+                column="name"
+                currentSort={sortColumn}
+                sortDirection={sortDirection}
+                onSort={handleSort}
+                isActive={filters.searchText.length > 0}
+                filterContent={
+                  <div className="space-y-3">
+                    <div className="relative">
+                      <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                      <Input 
+                        placeholder="Search projects..." 
+                        value={filters.searchText}
+                        onChange={(e) => onFilterChange({ ...filters, searchText: e.target.value })}
+                        className="pl-8 h-9"
+                        autoFocus
+                      />
+                    </div>
+                    <Button 
+                      variant="outline" size="sm" className="w-full text-xs h-8"
+                      onClick={() => onFilterChange({ ...filters, searchText: '' })}
+                      disabled={!filters.searchText}
+                    >
+                      Clear Search
+                    </Button>
+                  </div>
+                }
+              />
             </TableHead>
-            <TableHead 
-                className="w-[120px] cursor-pointer hover:bg-muted/80 transition-colors"
-                onClick={() => handleSort('country')}
-            >
-                <div className="flex items-center gap-2">
-                    Country
-                    <SortIndicator column="country" />
-                </div>
+
+            {/* COUNTRY */}
+            <TableHead className="w-[180px]">
+              <ColumnFilterHeader 
+                title="Country" 
+                column="country"
+                currentSort={sortColumn}
+                sortDirection={sortDirection}
+                onSort={handleSort}
+                isActive={filters.selectedCountries.length > 0}
+                filterContent={
+                  <div className="space-y-3">
+                    <ScrollArea className="h-[200px] pr-3">
+                      <div className="space-y-2">
+                        {countries.length > 0 ? countries.map((country) => (
+                          <div key={country.id} className="flex items-center space-x-2.5">
+                            <Checkbox 
+                              id={`country-${country.id}`} 
+                              checked={filters.selectedCountries.includes(country.id)}
+                              onCheckedChange={() => {
+                                const newSelection = toggleSelection(filters.selectedCountries, country.id);
+                                onFilterChange({ ...filters, selectedCountries: newSelection });
+                              }}
+                            />
+                            <Label htmlFor={`country-${country.id}`} className="text-sm font-normal leading-none cursor-pointer">
+                                {country.name} <span className="text-xs text-muted-foreground ml-1">({country.countryCode})</span>
+                            </Label>
+                          </div>
+                        )) : <div className="text-xs text-muted-foreground py-2">No countries available for current selection</div>}
+                      </div>
+                    </ScrollArea>
+                    <Button 
+                      variant="outline" size="sm" className="w-full text-xs h-8"
+                      onClick={() => onFilterChange({ ...filters, selectedCountries: [] })}
+                      disabled={filters.selectedCountries.length === 0}
+                    >
+                      Reset Filter
+                    </Button>
+                  </div>
+                }
+              />
             </TableHead>
-            <TableHead 
-                className="w-[150px] cursor-pointer hover:bg-muted/80 transition-colors"
-                onClick={() => handleSort('manager')}
-            >
-                <div className="flex items-center gap-2">
-                    Manager
-                    <SortIndicator column="manager" />
-                </div>
+
+            {/* MANAGER */}
+            <TableHead className="w-[200px]">
+               <ColumnFilterHeader 
+                title="Manager" 
+                column="manager"
+                currentSort={sortColumn}
+                sortDirection={sortDirection}
+                onSort={handleSort}
+                isActive={filters.selectedManagers.length > 0}
+                filterContent={
+                  <div className="space-y-3">
+                    <ScrollArea className="h-[200px] pr-3">
+                      <div className="space-y-2">
+                        {managers.length > 0 ? managers.map((manager) => (
+                          <div key={manager.id} className="flex items-center space-x-2.5">
+                            <Checkbox 
+                              id={`mgr-${manager.id}`} 
+                              checked={filters.selectedManagers.includes(manager.id)}
+                              onCheckedChange={() => {
+                                const newSelection = toggleSelection(filters.selectedManagers, manager.id);
+                                onFilterChange({ ...filters, selectedManagers: newSelection });
+                              }}
+                            />
+                            <Label htmlFor={`mgr-${manager.id}`} className="text-sm font-normal leading-none cursor-pointer">
+                                {manager.fullName}
+                            </Label>
+                          </div>
+                        )) : <div className="text-xs text-muted-foreground py-2">No managers available for current selection</div>}
+                      </div>
+                    </ScrollArea>
+                    <Button 
+                      variant="outline" size="sm" className="w-full text-xs h-8"
+                      onClick={() => onFilterChange({ ...filters, selectedManagers: [] })}
+                      disabled={filters.selectedManagers.length === 0}
+                    >
+                      Reset Filter
+                    </Button>
+                  </div>
+                }
+              />
             </TableHead>
-            <TableHead 
-                className="w-[100px] text-center cursor-pointer hover:bg-muted/80 transition-colors"
-                onClick={() => handleSort('active')}
-            >
-                <div className="flex items-center justify-center gap-2">
-                    Active
-                    <SortIndicator column="active" />
-                </div>
+
+            {/* ACTIVE (STATUS) - UPRAVENÉ */}
+            <TableHead className="w-[120px]">
+               <ColumnFilterHeader 
+                title="Status" 
+                column="active"
+                currentSort={sortColumn}
+                sortDirection={sortDirection}
+                onSort={handleSort}
+                isActive={filters.activeStatus !== 'all'}
+                filterContent={
+                  <div className="space-y-3">
+                    <div className="space-y-2">
+                        <div className="flex items-center space-x-2.5">
+                            <Checkbox 
+                                id="status-all" 
+                                checked={filters.activeStatus === 'all'}
+                                onCheckedChange={() => onFilterChange({ ...filters, activeStatus: 'all' })}
+                            />
+                            <Label htmlFor="status-all" className="font-normal cursor-pointer">All</Label>
+                        </div>
+                        
+                        {/* Zobrazíme ACTIVE len ak existuje nejaký aktívny projekt v aktuálnom kontexte */}
+                        {availableStatuses.hasActive && (
+                            <div className="flex items-center space-x-2.5">
+                                <Checkbox 
+                                    id="status-active" 
+                                    checked={filters.activeStatus === 'active'}
+                                    onCheckedChange={() => onFilterChange({ ...filters, activeStatus: 'active' })}
+                                />
+                                <Label htmlFor="status-active" className="font-normal cursor-pointer">Active</Label>
+                            </div>
+                        )}
+
+                        {/* Zobrazíme INACTIVE len ak existuje nejaký neaktívny projekt v aktuálnom kontexte */}
+                        {availableStatuses.hasInactive && (
+                            <div className="flex items-center space-x-2.5">
+                                <Checkbox 
+                                    id="status-inactive" 
+                                    checked={filters.activeStatus === 'inactive'}
+                                    onCheckedChange={() => onFilterChange({ ...filters, activeStatus: 'inactive' })}
+                                />
+                                <Label htmlFor="status-inactive" className="font-normal cursor-pointer">Inactive</Label>
+                            </div>
+                        )}
+
+                        {!availableStatuses.hasActive && !availableStatuses.hasInactive && (
+                             <div className="text-xs text-muted-foreground py-1">No data available</div>
+                        )}
+                    </div>
+                  </div>
+                }
+              />
             </TableHead>
-            <TableHead className="w-[80px] text-right">Actions</TableHead>
+
+            <TableHead className="w-[80px] text-right font-medium text-muted-foreground">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {sortedProjects.map((project) => (
-            <TableRow key={project.id}>
-              <TableCell className="w-[100px] font-mono text-sm">{project.number}</TableCell>
-              <TableCell className="min-w-[150px] font-medium">{project.name}</TableCell>
-              <TableCell className="w-[120px]">{project.country?.name || project.country.countryCode}</TableCell>
-              <TableCell className="w-[150px]">{project.manager.fullName}</TableCell>
+            <TableRow key={project.id} className="group hover:bg-muted/30 transition-colors border-border">
+              <TableCell className="font-mono text-sm font-medium">{project.number}</TableCell>
+              <TableCell className="font-medium text-foreground">{project.name}</TableCell>
+              <TableCell className="text-muted-foreground">{project.country?.name || project.country?.countryCode}</TableCell>
+              <TableCell className="text-muted-foreground">{project.manager.fullName}</TableCell>
               
-              <TableCell className="w-[100px] text-center">
+              <TableCell>
                 {project.active ? (
-                  <Badge variant="default" className="bg-green-100 text-green-700 border-green-600/20 dark:bg-green-900/40 dark:text-green-300">
+                  <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-300 dark:border-green-800 font-normal">
                       Active
                   </Badge>
                 ) : (
-                  <Badge variant="secondary">
+                  <Badge variant="secondary" className="font-normal text-muted-foreground">
                       Inactive
                   </Badge>
                 )}
               </TableCell>
 
-              <TableCell className="w-[80px]">
-                <div className="flex justify-end gap-2">
-                  <Button variant="ghost" size="sm" onClick={() => onEdit?.(project)} className="h-8 w-8 p-0">
-                    <EditIcon className="h-4 w-4" />
+              <TableCell>
+                <div className="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <Button 
+                    variant="ghost" size="icon" 
+                    onClick={() => onEdit?.(project)} 
+                    className="h-8 w-8 text-muted-foreground hover:text-primary"
+                  >
+                    <Edit2 className="h-4 w-4" />
                   </Button>
                   <Button
-                    variant="ghost"
-                    size="sm"
+                    variant="ghost" size="icon"
                     onClick={() => onDelete?.(project)}
-                    className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+                    className="h-8 w-8 text-muted-foreground hover:text-destructive"
                   >
-                    <TrashIcon className="h-4 w-4" />
+                    <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>
               </TableCell>
             </TableRow>
           ))}
+          {sortedProjects.length === 0 && !isLoading && (
+               <TableRow>
+                 <TableCell colSpan={6} className="h-24 text-center text-muted-foreground">
+                    No projects found matching your filters.
+                 </TableCell>
+               </TableRow>
+          )}
         </TableBody>
       </Table>
-      {projects.length === 0 && !isLoading && (
-          <div className="text-center py-8 text-muted-foreground">No projects found</div>
-      )}
     </div>
   )
 }

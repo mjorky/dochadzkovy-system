@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateOvertimeCorrectionInput } from './dto/create-correction.input';
-import { OvertimeSummary } from './dto/overtime-response.dto';
+import { OvertimeSummary, OvertimeResponse, OvertimeRecord } from './dto/overtime-response.dto';
 
 @Injectable()
 export class OvertimeService {
@@ -22,21 +22,18 @@ export class OvertimeService {
     {} as Record<string, string>,
   );
 
-  async getOvertimeSummary(employeeId: number, year: number): Promise<OvertimeSummary[]> {
+  async getOvertimeSummary(employeeId: number, year: number): Promise<OvertimeResponse> {
     const startDate = new Date(year, 0, 1); // Jan 1st of the requested year
+    const endDate = new Date(year, 11, 31, 23, 59, 59); // Dec 31st of the requested year, end of day
     
-    // We need to sum the 'Nadcas' interval column.
-    // Since Prisma doesn't map 'interval' to a JS type, we use raw SQL.
-    // PostgreSQL's EXTRACT(EPOCH FROM interval) returns total seconds.
-    // We sum these seconds and divide by 3600 to get hours.
-
-    const result: any[] = await this.prisma.$queryRaw`
+    // Fetch summary items
+    const summaryResult: any[] = await this.prisma.$queryRaw`
       SELECT 
         "Typ" as type,
         SUM(EXTRACT(EPOCH FROM "Nadcas")) / 3600.0 as total_hours
       FROM "Nadcasy"
       WHERE "ZamestnanecID" = ${employeeId}
-        AND "Datum" >= ${startDate}
+        AND "Datum" >= ${startDate} AND "Datum" <= ${endDate}
       GROUP BY "Typ"
     `;
 
@@ -44,15 +41,41 @@ export class OvertimeService {
     const supportedTypes = ['Flexi', 'SCSKCesta', 'SCZahranicie', 'Neplateny'];
     
     // Map results to ensure all types are present (even if 0)
-    return supportedTypes.map(typeKey => {
+    const items: OvertimeSummary[] = supportedTypes.map(typeKey => {
       // Find the DB record that matches the mapped DB Name
       const dbName = this.DB_TYPE_MAP[typeKey];
-      const found = result.find(r => r.type === dbName);
+      const found = summaryResult.find(r => r.type === dbName);
       return {
         type: typeKey,
         hours: found ? parseFloat(found.total_hours) : 0.0
       };
     });
+
+    // Fetch individual overtime records
+    const recordResult: any[] = await this.prisma.$queryRaw`
+      SELECT
+        "ZamestnanecID" || '_' || "Datum" || '_' || "Typ" || '_' || "Odpocet"::text AS id,
+        "Datum" AS date,
+        "Typ" AS type,
+        EXTRACT(EPOCH FROM "Nadcas") / 3600.0 AS hours,
+        "Poznamka" AS description,
+        "Odpocet" AS "isCorrection"
+      FROM "Nadcasy"
+      WHERE "ZamestnanecID" = ${employeeId}
+        AND "Datum" >= ${startDate} AND "Datum" <= ${endDate}
+      ORDER BY "Datum" DESC
+    `;
+
+    const records: OvertimeRecord[] = recordResult.map(r => ({
+      id: r.id, // ID is now a string
+      date: r.date.toISOString().split('T')[0], // Format date to YYYY-MM-DD
+      type: this.REVERSE_DB_TYPE_MAP[r.type] || r.type, // Map DB type back to frontend type
+      hours: parseFloat(r.hours),
+      description: r.description || '',
+      isCorrection: r.isCorrection,
+    }));
+
+    return { items, records };
   }
 
   async createOrUpdateCorrection(input: CreateOvertimeCorrectionInput, adminId: string) {

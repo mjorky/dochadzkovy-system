@@ -17,8 +17,7 @@ export class OvertimeResolver {
     @Args('employeeId', { type: () => Int }) employeeId: number,
     @Args('year', { type: () => Int }) year: number,
   ): Promise<OvertimeResponse> {
-    const items = await this.overtimeService.getOvertimeSummary(employeeId, year);
-    return { items };
+    return this.overtimeService.getOvertimeSummary(employeeId, year);
   }
 
   @Mutation(() => Boolean)

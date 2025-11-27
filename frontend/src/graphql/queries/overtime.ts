@@ -7,6 +7,14 @@ export const GET_OVERTIME_SUMMARY = gql`
         type
         hours
       }
+      records {
+        id
+        date
+        type
+        hours
+        description
+        isCorrection
+      }
     }
   }
 `;
@@ -22,8 +30,18 @@ export interface OvertimeSummaryItem {
   hours: number;
 }
 
+export interface OvertimeRecord {
+  id: string;
+  date: string;
+  type: string;
+  hours: number;
+  description: string;
+  isCorrection: boolean;
+}
+
 export interface OvertimeSummaryData {
   getOvertimeSummary: {
     items: OvertimeSummaryItem[];
+    records: OvertimeRecord[];
   };
 }
