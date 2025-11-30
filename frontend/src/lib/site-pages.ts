@@ -29,6 +29,11 @@ export const getSitePages = (t: Dictionary): Record<string, PageData> => ({
     description: t.sidebar.projectsDescription,
     label: t.projects.title,
   },
+  "/admin/general": {
+    title: t.holidays.title,
+    description: t.holidays.description,
+    label: t.sidebar.general,
+  },
   "/work-records": {
     title: t.workRecords.title,
     description: t.sidebar.workRecordsDescription,

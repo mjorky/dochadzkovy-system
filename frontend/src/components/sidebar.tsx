@@ -57,6 +57,7 @@ interface Dictionary {
     admin: string;
     employees: string;
     projects: string;
+    general: string;
     settings: string;
     language: string;
     appearance: string;
@@ -86,6 +87,7 @@ const menuItems: MenuItem[] = [
     submenu: [
       { key: "employees", href: "/admin/employees", icon: Users },
       { key: "projects", href: "/admin/projects", icon: FolderKanban },
+      { key: "general", href: "/admin/general", icon: Settings },
     ],
   },
 ];
@@ -187,9 +189,9 @@ export function Sidebar({ lang }: SidebarProps) {
                       className={cn(
                         "w-full justify-between gap-3",
                         isActive &&
-                          "bg-sidebar-primary text-sidebar-primary-foreground font-medium hover:bg-sidebar-primary/90",
+                        "bg-sidebar-primary text-sidebar-primary-foreground font-medium hover:bg-sidebar-primary/90",
                         !isActive &&
-                          "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+                        "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
                       )}
                     >
                       <span className="flex items-center gap-3">
@@ -219,9 +221,9 @@ export function Sidebar({ lang }: SidebarProps) {
                                 className={cn(
                                   "w-full justify-start gap-3 text-sm",
                                   isSubActive &&
-                                    "bg-sidebar-primary text-sidebar-primary-foreground font-medium hover:bg-sidebar-primary/90",
+                                  "bg-sidebar-primary text-sidebar-primary-foreground font-medium hover:bg-sidebar-primary/90",
                                   !isSubActive &&
-                                    "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+                                  "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
                                 )}
                                 asChild
                               >
@@ -231,7 +233,7 @@ export function Sidebar({ lang }: SidebarProps) {
                                     <span>
                                       {
                                         dict.sidebar[
-                                          subitem.key as keyof typeof dict.sidebar
+                                        subitem.key as keyof typeof dict.sidebar
                                         ]
                                       }
                                     </span>
@@ -250,9 +252,9 @@ export function Sidebar({ lang }: SidebarProps) {
                     className={cn(
                       "w-full justify-start gap-3",
                       isActive &&
-                        "bg-sidebar-primary text-sidebar-primary-foreground font-medium hover:bg-sidebar-primary/90",
+                      "bg-sidebar-primary text-sidebar-primary-foreground font-medium hover:bg-sidebar-primary/90",
                       !isActive &&
-                        "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+                      "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
                     )}
                     asChild
                   >

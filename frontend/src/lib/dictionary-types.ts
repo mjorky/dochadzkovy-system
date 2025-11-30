@@ -13,6 +13,7 @@ export interface Dictionary {
     admin: string;
     employees: string;
     projects: string;
+    general: string;
     settings: string;
     language: string;
     appearance: string;
@@ -349,6 +350,28 @@ export interface Dictionary {
     workTypes: string;
     holidays: string;
     settings: string;
+  };
+  holidays: {
+    title: string;
+    description: string;
+    addHoliday: string;
+    editHoliday: string;
+    date: string;
+    actions: string;
+    deleteConfirmTitle: string;
+    deleteConfirmDescription: string;
+    cancel: string;
+    delete: string;
+    save: string;
+    create: string;
+    successCreate: string;
+    successUpdate: string;
+    successDelete: string;
+    errorCreate: string;
+    errorUpdate: string;
+    errorDelete: string;
+    noHolidays: string;
+    noHolidaysDescription: string;
   };
   login: {
     title: string;
