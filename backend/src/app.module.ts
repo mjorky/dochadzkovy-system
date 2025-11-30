@@ -17,6 +17,7 @@ import { AuthModule } from './auth/auth.module';
 import { OvertimeModule } from './overtime/overtime.module';
 import { BalancesModule } from './balances/balances.module';
 import { HolidaysModule } from './holidays/holidays.module';
+import { ApprovalRequestsModule } from './approval-requests/approval-requests.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -46,6 +47,7 @@ import { HolidaysModule } from './holidays/holidays.module';
     OvertimeModule,
     BalancesModule,
     HolidaysModule,
+    ApprovalRequestsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

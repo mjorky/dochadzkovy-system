@@ -51,7 +51,11 @@
     "workListDescription": "Project-specific hour statistics.",
     "workReportDescription": "Monthly attendance report.",
     "balancesDescription": "View leave balances and time off.",
-    "dataDescription": "Import and export system data."
+    "dataDescription": "Import and export system data.",
+    "requests": "My Requests",
+    "requestsDescription": "View and manage your leave requests.",
+    "approvals": "Approvals",
+    "approvalsDescription": "Manage pending requests from subordinates."
   },
   "common": {
     "loading": "Loading...",
@@ -439,5 +443,43 @@
     "breadcrumb": {
       "home": "Home"
     }
+  },
+  "approvalRequests": {
+    "title": "My Requests",
+    "newRequest": "New Request",
+    "type": "Type",
+    "dateFrom": "From",
+    "dateTo": "To",
+    "status": "Status",
+    "createdAt": "Created",
+    "note": "Note",
+    "approver": "Approver",
+    "noRequests": "No requests",
+    "noRequestsDescription": "You haven't created any requests yet.",
+    "pending": "Pending",
+    "approved": "Approved",
+    "rejected": "Rejected",
+    "createRequest": "Create Request",
+    "createRequestDescription": "Fill in the details for a new request.",
+    "selectType": "Select type",
+    "vacation": "Vacation",
+    "sickLeave": "Sick Leave",
+    "overtime": "Overtime",
+    "enterNote": "Enter note (optional)",
+    "hours": "Hours",
+    "successCreate": "Request successfully created",
+    "errorCreate": "Failed to create request",
+    "approvalsTitle": "Approval Requests",
+    "employee": "Employee",
+    "approve": "Approve",
+    "reject": "Reject",
+    "approveConfirm": "Are you sure you want to approve this request?",
+    "rejectConfirm": "Are you sure you want to reject this request?",
+    "successApprove": "Request approved",
+    "successReject": "Request rejected",
+    "errorApprove": "Failed to approve request",
+    "errorReject": "Failed to reject request",
+    "noPendingRequests": "No pending requests",
+    "noPendingRequestsDescription": "You currently have no pending requests to approve."
   }
 }

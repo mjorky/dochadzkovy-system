@@ -1,5 +1,4 @@
 "use client";
-
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
@@ -11,13 +10,15 @@ import {
   Settings,
   CalendarCheck,
   ChevronDown,
-  ChevronUp, // Pridaná šípka hore pre settings
+  ChevronUp,
   LucideIcon,
   LogOut,
   FileBarChart,
   ListTodo,
   Languages,
-  Banknote, // NEW: Icon for Balances
+  Banknote,
+  CheckSquare, // NOVÁ IKONA: Pre Approvals
+  FileQuestion, // NOVÁ IKONA: Pre Requests
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ModeToggle } from "@/components/mode-toggle";
@@ -25,13 +26,15 @@ import { cn } from "@/lib/utils";
 import { useState, useEffect, useTransition } from "react";
 import { useAuth } from "@/providers/auth-provider";
 import { Locale } from "@/i18n-config";
+import { useQuery } from "@apollo/client/react";
+import { GET_PENDING_APPROVAL_COUNT } from "@/graphql/queries/approval-requests";
+import { Badge } from "@/components/ui/badge";
 
 interface SubMenuItem {
   key: string;
   href: string;
   icon?: LucideIcon;
 }
-
 interface MenuItem {
   key: string;
   href: string;
@@ -39,11 +42,11 @@ interface MenuItem {
   submenu?: SubMenuItem[];
   adminOnly?: boolean;
 }
-
 interface SidebarProps {
   lang: string;
 }
 
+// 1. Doplnenie kľúčov do Interface Dictionary
 interface Dictionary {
   sidebar: {
     title: string;
@@ -57,18 +60,21 @@ interface Dictionary {
     admin: string;
     employees: string;
     projects: string;
-    general: string;
     settings: string;
     language: string;
     appearance: string;
     logout: string;
     loggedInAs: string;
+    requests: string; // NOVÉ
+    approvals: string; // NOVÉ
   };
 }
 
+// 2. Úprava menuItems
 const menuItems: MenuItem[] = [
   { key: "workRecords", href: "/work-records", icon: CalendarCheck },
   { key: "myBalances", href: "/balances", icon: Banknote },
+  { key: "requests", href: "/requests", icon: FileQuestion }, // NOVÁ POLOŽKA: Requests
   { key: "overtime", href: "/overtime", icon: Clock },
   {
     key: "reports",
@@ -87,7 +93,7 @@ const menuItems: MenuItem[] = [
     submenu: [
       { key: "employees", href: "/admin/employees", icon: Users },
       { key: "projects", href: "/admin/projects", icon: FolderKanban },
-      { key: "general", href: "/admin/general", icon: Settings },
+      { key: "approvals", href: "/admin/approvals", icon: CheckSquare }, // NOVÁ PODPOLOŽKA: Approvals
     ],
   },
 ];
@@ -104,6 +110,15 @@ export function Sidebar({ lang }: SidebarProps) {
   );
   const [currentLang, setCurrentLang] = useState<Locale>(lang as Locale);
   const { user, logout } = useAuth();
+
+  // Fetch pending approval count for managers
+  const { data: pendingData } = useQuery(GET_PENDING_APPROVAL_COUNT, {
+    variables: { managerId: user?.id },
+    skip: !user?.id || !user?.isManager,
+    pollInterval: 30000, // Poll every 30 seconds
+  });
+
+  const pendingCount = pendingData?.pendingApprovalCount || 0;
 
   // Preload all dictionaries on mount
   useEffect(() => {
@@ -137,14 +152,8 @@ export function Sidebar({ lang }: SidebarProps) {
 
   const toggleLanguage = () => {
     const newLang = currentLang === "en" ? "sk" : "en";
-
-    // Get current path without locale
     const pathWithoutLocale = pathname.replace(/^\/[a-z]{2}/, "") || "/";
-
-    // Set cookie first
     document.cookie = `NEXT_LOCALE=${newLang}; path=/; max-age=31536000`;
-
-    // Use startTransition for smooth client-side navigation
     startTransition(() => {
       setCurrentLang(newLang);
       router.replace(`/${newLang}${pathWithoutLocale}`);
@@ -152,7 +161,7 @@ export function Sidebar({ lang }: SidebarProps) {
   };
 
   if (!dict) {
-    return null; // or loading skeleton
+    return null;
   }
 
   return (
@@ -163,7 +172,6 @@ export function Sidebar({ lang }: SidebarProps) {
           {dict.sidebar.title}
         </h1>
       </div>
-
       {/* NAVIGÁCIA */}
       <nav className="flex-1 px-3 py-4 overflow-y-auto">
         <ul className="space-y-1">
@@ -171,14 +179,12 @@ export function Sidebar({ lang }: SidebarProps) {
             if (item.adminOnly && !user?.isAdmin) {
               return null;
             }
-
             const isActive =
               pathname === item.href ||
               (item.submenu &&
                 item.submenu.some((sub) => pathname === sub.href));
             const Icon = item.icon;
             const isExpanded = expandedMenu === item.key;
-
             return (
               <li key={item.href}>
                 {item.submenu ? (
@@ -207,13 +213,11 @@ export function Sidebar({ lang }: SidebarProps) {
                         )}
                       />
                     </Button>
-
                     {isExpanded && (
                       <ul className="space-y-1 mt-2 ml-4">
                         {item.submenu.map((subitem) => {
                           const isSubActive = pathname === subitem.href;
                           const SubIcon = subitem.icon;
-
                           return (
                             <li key={subitem.href}>
                               <Button
@@ -228,7 +232,7 @@ export function Sidebar({ lang }: SidebarProps) {
                                 asChild
                               >
                                 <Link href={`/${lang}${subitem.href}`}>
-                                  <span className="flex items-center gap-3">
+                                  <span className="flex items-center gap-3 flex-1">
                                     {SubIcon && <SubIcon className="h-4 w-4" />}
                                     <span>
                                       {
@@ -238,6 +242,14 @@ export function Sidebar({ lang }: SidebarProps) {
                                       }
                                     </span>
                                   </span>
+                                  {subitem.key === 'approvals' && pendingCount > 0 && (
+                                    <Badge
+                                      variant="destructive"
+                                      className="ml-auto h-5 px-1.5 text-xs font-bold"
+                                    >
+                                      {pendingCount}
+                                    </Badge>
+                                  )}
                                 </Link>
                               </Button>
                             </li>
@@ -271,7 +283,6 @@ export function Sidebar({ lang }: SidebarProps) {
           })}
         </ul>
       </nav>
-
       {/* FOOTER */}
       <div className="p-4 border-t border-sidebar-border bg-sidebar/50 space-y-2">
         {/* Settings Toggle Button */}
@@ -284,14 +295,12 @@ export function Sidebar({ lang }: SidebarProps) {
             <Settings className="h-5 w-5" />
             <span>{dict.sidebar.settings}</span>
           </span>
-          {/* Šípka sa otáča podľa stavu */}
           {isSettingsOpen ? (
             <ChevronDown className="h-4 w-4" />
           ) : (
             <ChevronUp className="h-4 w-4" />
           )}
         </Button>
-
         {/* Collapsible Settings Area */}
         {isSettingsOpen && (
           <div className="p-2 bg-sidebar-accent/50 rounded-md space-y-3 animate-in slide-in-from-bottom-2 fade-in duration-200">
@@ -310,7 +319,6 @@ export function Sidebar({ lang }: SidebarProps) {
                 {isPending ? "..." : currentLang.toUpperCase()}
               </Button>
             </div>
-
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium">
                 {dict.sidebar.appearance}
@@ -319,7 +327,6 @@ export function Sidebar({ lang }: SidebarProps) {
             </div>
           </div>
         )}
-
         {/* User Info & Logout */}
         <div className="pt-2 mt-2 border-t border-sidebar-border/50">
           {user && (

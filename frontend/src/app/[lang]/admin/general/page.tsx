@@ -1,11 +1,12 @@
 import { AdminGuard } from "@/components/admin-guard";
 import { HolidayManager } from "@/components/admin/holiday-manager";
 
-export default function AdminGeneralPage({
-    params: { lang },
+export default async function AdminGeneralPage({
+    params,
 }: {
-    params: { lang: string };
+    params: Promise<{ lang: string }>;
 }) {
+    const { lang } = await params;
     return (
         <AdminGuard>
             <div className="container mx-auto py-6">

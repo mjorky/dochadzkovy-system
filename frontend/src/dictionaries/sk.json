@@ -51,7 +51,11 @@
     "workListDescription": "Štatistiky hodín podľa projektov.",
     "workReportDescription": "Mesiačný dochádzkový report.",
     "balancesDescription": "Zobrazenie zostatkov dovolenky a voľna.",
-    "dataDescription": "Import a export systémových dát."
+    "dataDescription": "Import a export systémových dát.",
+    "requests": "Moje žiadosti",
+    "requestsDescription": "Zobrazenie a správa vašich žiadostí o voľno.",
+    "approvals": "Schvaľovanie",
+    "approvalsDescription": "Správa pending žiadostí od podriadených."
   },
   "common": {
     "loading": "Načítavam...",
@@ -437,5 +441,43 @@
     "breadcrumb": {
       "home": "Domov"
     }
+  },
+  "approvalRequests": {
+    "title": "Moje žiadosti",
+    "newRequest": "Nová žiadosť",
+    "type": "Typ",
+    "dateFrom": "Od",
+    "dateTo": "Do",
+    "status": "Stav",
+    "createdAt": "Vytvorené",
+    "note": "Poznámka",
+    "approver": "Schvaľovateľ",
+    "noRequests": "Žiadne žiadosti",
+    "noRequestsDescription": "Zatiaľ ste nevytvorili žiadne žiadosti.",
+    "pending": "Čaká na schválenie",
+    "approved": "Schválené",
+    "rejected": "Zamietnuté",
+    "createRequest": "Vytvoriť žiadosť",
+    "createRequestDescription": "Vyplňte detaily pre novú žiadosť.",
+    "selectType": "Vybrať typ",
+    "vacation": "Dovolenka",
+    "sickLeave": "PN",
+    "overtime": "Nadčas",
+    "enterNote": "Zadajte poznámku (voliteľné)",
+    "hours": "Hodiny",
+    "successCreate": "Žiadosť bola úspešne vytvorená",
+    "errorCreate": "Nepodarilo sa vytvoriť žiadosť",
+    "approvalsTitle": "Schvaľovanie žiadostí",
+    "employee": "Zamestnanec",
+    "approve": "Schváliť",
+    "reject": "Zamietnuť",
+    "approveConfirm": "Naozaj chcete schváliť túto žiadosť?",
+    "rejectConfirm": "Naozaj chcete zamietnuť túto žiadosť?",
+    "successApprove": "Žiadosť bola schválená",
+    "successReject": "Žiadosť bola zamietnutá",
+    "errorApprove": "Nepodarilo sa schváliť žiadosť",
+    "errorReject": "Nepodarilo sa zamietnuť žiadosť",
+    "noPendingRequests": "Žiadne pending žiadosti",
+    "noPendingRequestsDescription": "Momentálne nemáte žiadne pending žiadosti na schválenie."
   }
 }

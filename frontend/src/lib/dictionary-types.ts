@@ -32,6 +32,10 @@ export interface Dictionary {
     workReportDescription: string;
     balancesDescription: string;
     dataDescription: string;
+    requests: string;
+    requestsDescription: string;
+    approvals: string;
+    approvalsDescription: string;
   };
   common: {
     loading: string;
@@ -441,6 +445,44 @@ export interface Dictionary {
     breadcrumb: {
       home: string;
     };
+  };
+  approvalRequests: {
+    title: string;
+    newRequest: string;
+    type: string;
+    dateFrom: string;
+    dateTo: string;
+    status: string;
+    createdAt: string;
+    note: string;
+    approver: string;
+    noRequests: string;
+    noRequestsDescription: string;
+    pending: string;
+    approved: string;
+    rejected: string;
+    createRequest: string;
+    createRequestDescription: string;
+    selectType: string;
+    vacation: string;
+    sickLeave: string;
+    overtime: string;
+    enterNote: string;
+    hours: string;
+    successCreate: string;
+    errorCreate: string;
+    approvalsTitle: string;
+    employee: string;
+    approve: string;
+    reject: string;
+    approveConfirm: string;
+    rejectConfirm: string;
+    successApprove: string;
+    successReject: string;
+    errorApprove: string;
+    errorReject: string;
+    noPendingRequests: string;
+    noPendingRequestsDescription: string;
   };
 }
 

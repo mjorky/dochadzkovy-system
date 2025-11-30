@@ -65,6 +65,16 @@ export const getSitePages = (t: Dictionary): Record<string, PageData> => ({
     description: t.sidebar.balancesDescription,
     label: t.balances.title,
   },
+  "/requests": {
+    title: t.approvalRequests.title,
+    description: t.sidebar.requestsDescription,
+    label: t.sidebar.requests,
+  },
+  "/admin/approvals": {
+    title: t.approvalRequests.approvalsTitle,
+    description: t.sidebar.approvalsDescription,
+    label: t.sidebar.approvals,
+  },
   "/data": {
     title: t.data.title,
     description: t.sidebar.dataDescription,
