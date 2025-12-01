@@ -19,6 +19,7 @@ import {
   Banknote,
   CheckSquare, // NOVÁ IKONA: Pre Approvals
   FileQuestion, // NOVÁ IKONA: Pre Requests
+  CalendarDays, // NOVÁ IKONA: Pre Holidays
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ModeToggle } from "@/components/mode-toggle";
@@ -67,6 +68,7 @@ interface Dictionary {
     loggedInAs: string;
     requests: string; // NOVÉ
     approvals: string; // NOVÉ
+    holidays: string; // NOVÉ
   };
 }
 
@@ -93,6 +95,7 @@ const menuItems: MenuItem[] = [
     submenu: [
       { key: "employees", href: "/admin/employees", icon: Users },
       { key: "projects", href: "/admin/projects", icon: FolderKanban },
+      { key: "holidays", href: "/admin/holidays", icon: CalendarDays }, // NOVÁ PODPOLOŽKA: Holidays
       { key: "approvals", href: "/admin/approvals", icon: CheckSquare }, // NOVÁ PODPOLOŽKA: Approvals
     ],
   },

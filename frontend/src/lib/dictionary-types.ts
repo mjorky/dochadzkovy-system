@@ -13,7 +13,7 @@ export interface Dictionary {
     admin: string;
     employees: string;
     projects: string;
-    general: string;
+    holidays: string;
     settings: string;
     language: string;
     appearance: string;

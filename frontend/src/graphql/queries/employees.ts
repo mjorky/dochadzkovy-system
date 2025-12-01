@@ -14,6 +14,12 @@ export const EMPLOYEES_QUERY = gql`
       lockedUntil
       titlePrefix
       titleSuffix
+      manager {
+        id
+        firstName
+        lastName
+        fullName
+      }
     }
   }
 `;
@@ -50,6 +56,10 @@ export const CREATE_EMPLOYEE = gql`
       lockedUntil
       titlePrefix
       titleSuffix
+      manager {
+        id
+        fullName
+      }
     }
   }
 `;
@@ -68,6 +78,10 @@ export const UPDATE_EMPLOYEE = gql`
       lockedUntil
       titlePrefix
       titleSuffix
+      manager {
+        id
+        fullName
+      }
     }
   }
 `;
@@ -90,6 +104,12 @@ export interface Employee {
   lockedUntil?: string;
   titlePrefix?: string;
   titleSuffix?: string;
+  manager?: {
+    id: string;
+    firstName?: string;
+    lastName?: string;
+    fullName: string;
+  };
 }
 
 export interface EmployeesData {
@@ -103,4 +123,8 @@ export interface EmployeeCatalogItem {
 
 export interface EmployeesCatalogData {
   employees: EmployeeCatalogItem[];
+}
+
+export interface ManagersData {
+  managers: EmployeeCatalogItem[];
 }

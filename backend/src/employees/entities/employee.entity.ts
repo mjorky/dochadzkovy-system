@@ -34,4 +34,7 @@ export class Employee {
 
   @Field(() => String, { nullable: true })
   titleSuffix: string | null;
+
+  @Field(() => Employee, { nullable: true })
+  manager?: Employee;
 }

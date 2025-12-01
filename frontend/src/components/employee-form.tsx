@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useTranslations } from "@/contexts/dictionary-context"
 import { type EmployeeFormData, employeeFormSchema } from "@/lib/validations/employee-schema"
-import { type Employee } from "@/graphql/queries/employees"
+import { type Employee, type EmployeeCatalogItem } from "@/graphql/queries/employees"
 import { Form, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -17,11 +17,12 @@ export interface EmployeeFormProps {
   onSubmit: (data: EmployeeFormData) => void;
   initialData?: Employee | null
   isSubmitting?: boolean
+  managers?: EmployeeCatalogItem[]
 }
 
 const EMPLOYEE_TYPES = ["Zamestnanec", "SZČO", "Študent", "Brigádnik"]
 
-export function EmployeeForm({ onSubmit, initialData, isSubmitting = false }: EmployeeFormProps) {
+export function EmployeeForm({ onSubmit, initialData, isSubmitting = false, managers = [] }: EmployeeFormProps) {
   const t = useTranslations()
   const form = useForm<EmployeeFormData>({
     resolver: zodResolver(employeeFormSchema),
@@ -35,6 +36,7 @@ export function EmployeeForm({ onSubmit, initialData, isSubmitting = false }: Em
         employmentType: initialData.employeeType,
         vacationDays: initialData.vacationDays,
         isAdmin: initialData.isAdmin ?? false,
+        managerId: initialData.manager?.id || null,
       }
       : {
         firstName: "",
@@ -44,6 +46,7 @@ export function EmployeeForm({ onSubmit, initialData, isSubmitting = false }: Em
         employmentType: "Zamestnanec",
         vacationDays: 20,
         isAdmin: false,
+        managerId: null,
       },
   })
 
@@ -132,6 +135,29 @@ export function EmployeeForm({ onSubmit, initialData, isSubmitting = false }: Em
             </FormItem>
           )} />
         </div>
+
+        <FormField control={form.control} name="managerId" render={({ field }) => (
+          <FormItem>
+            <FormLabel>Manažér</FormLabel>
+            <Select 
+              onValueChange={(value) => field.onChange(value === "none" ? null : value)} 
+              value={field.value || "none"}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Vyberte manažéra" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">Žiadny manažér</SelectItem>
+                {managers.map((manager) => (
+                  <SelectItem key={manager.id} value={manager.id}>
+                    {manager.fullName}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <FormMessage />
+          </FormItem>
+        )} />
 
         <FormField control={form.control} name="isAdmin" render={({ field }) => (
           <FormItem className="flex flex-row items-center space-x-3 space-y-0 pt-2">

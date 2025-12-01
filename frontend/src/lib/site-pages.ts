@@ -29,10 +29,10 @@ export const getSitePages = (t: Dictionary): Record<string, PageData> => ({
     description: t.sidebar.projectsDescription,
     label: t.projects.title,
   },
-  "/admin/general": {
+  "/admin/holidays": {
     title: t.holidays.title,
     description: t.holidays.description,
-    label: t.sidebar.general,
+    label: t.sidebar.holidays,
   },
   "/work-records": {
     title: t.workRecords.title,

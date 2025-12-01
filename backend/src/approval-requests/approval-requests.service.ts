@@ -22,13 +22,29 @@ export class ApprovalRequestsService {
             updatedAt: request.UpdatedAt,
             employee: request.Employee ? {
                 id: request.Employee.ID.toString(),
+                fullName: `${request.Employee.Meno} ${request.Employee.Priezvisko}`,
                 firstName: request.Employee.Meno,
                 lastName: request.Employee.Priezvisko,
+                vacationDays: request.Employee.Dovolenka,
+                isAdmin: request.Employee.IsAdmin,
+                employeeType: request.Employee.TypZamestnanca,
+                lastRecordDate: request.Employee.PoslednyZaznam ? request.Employee.PoslednyZaznam.toISOString() : null,
+                lockedUntil: request.Employee.ZamknuteK ? request.Employee.ZamknuteK.toISOString() : null,
+                titlePrefix: request.Employee.TitulPred || null,
+                titleSuffix: request.Employee.TitulZa || null,
             } : undefined,
             approver: request.Approver ? {
                 id: request.Approver.ID.toString(),
+                fullName: `${request.Approver.Meno} ${request.Approver.Priezvisko}`,
                 firstName: request.Approver.Meno,
                 lastName: request.Approver.Priezvisko,
+                vacationDays: request.Approver.Dovolenka,
+                isAdmin: request.Approver.IsAdmin,
+                employeeType: request.Approver.TypZamestnanca,
+                lastRecordDate: request.Approver.PoslednyZaznam ? request.Approver.PoslednyZaznam.toISOString() : null,
+                lockedUntil: request.Approver.ZamknuteK ? request.Approver.ZamknuteK.toISOString() : null,
+                titlePrefix: request.Approver.TitulPred || null,
+                titleSuffix: request.Approver.TitulZa || null,
             } : undefined,
         };
     }
@@ -67,7 +83,7 @@ export class ApprovalRequestsService {
         return results.map(r => this.mapToEntity(r));
     }
 
-    async findByManager(managerId: string) {
+    async findByManager(managerId: string, status?: string[]) {
         // Find all employees who report to this manager
         const subordinates = await this.prisma.zamestnanci.findMany({
             where: { ManagerID: BigInt(managerId) },
@@ -76,11 +92,18 @@ export class ApprovalRequestsService {
 
         const subordinateIds = subordinates.map((s) => s.ID);
 
+        const whereClause: any = {
+            EmployeeID: { in: subordinateIds },
+        };
+
+        if (status && status.length > 0) {
+            whereClause.Status = { in: status };
+        } else {
+            whereClause.Status = 'PENDING';
+        }
+
         const results = await this.prisma.approvalRequest.findMany({
-            where: {
-                EmployeeID: { in: subordinateIds },
-                Status: 'PENDING',
-            },
+            where: whereClause,
             include: {
                 Employee: true,
                 Approver: true,
@@ -194,7 +217,12 @@ export class ApprovalRequestsService {
 
                 // Get the absence type ID for the request type
                 const absenceType = await tx.cinnostTyp.findFirst({
-                    where: { Alias: request.Type },
+                    where: {
+                        OR: [
+                            { Alias: request.Type },
+                            { Typ: request.Type },
+                        ],
+                    },
                 });
 
                 if (!absenceType) {
@@ -214,8 +242,8 @@ export class ApprovalRequestsService {
                         null, // ProjectID
                         null, // HourTypeID
                         null, // HourTypesID
-                        null, // StartTime
-                        null, // EndTime
+                        '00:00:00', // StartTime
+                        '00:00:00', // EndTime
                         request.Note, // Description
                         0, // km
                     );

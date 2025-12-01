@@ -18,8 +18,11 @@ export class ApprovalRequestsResolver {
     }
 
     @Query(() => [ApprovalRequest], { name: 'approvalRequestsByManager' })
-    findByManager(@Args('managerId') managerId: string) {
-        return this.approvalRequestsService.findByManager(managerId);
+    findByManager(
+        @Args('managerId') managerId: string,
+        @Args('status', { type: () => [String], nullable: true }) status?: string[],
+    ) {
+        return this.approvalRequestsService.findByManager(managerId, status);
     }
 
     @Query(() => [ApprovalRequest], { name: 'approvalRequestsByEmployee' })

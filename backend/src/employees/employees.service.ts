@@ -21,6 +21,11 @@ export class EmployeesService {
       const employees = await this.prisma.zamestnanci.findMany({
         include: {
           ZamestnanecTyp: true,
+          Manager: {
+            include: {
+              ZamestnanecTyp: true,
+            },
+          },
         },
       });
 
@@ -98,8 +103,9 @@ export class EmployeesService {
           TypZamestnanca: type.Typ,
           Dovolenka: input.vacationDays,
           IsAdmin: input.isAdmin,
+          ManagerID: input.managerId ? BigInt(input.managerId) : null,
         },
-        include: { ZamestnanecTyp: true },
+        include: { ZamestnanecTyp: true, Manager: { include: { ZamestnanecTyp: true } } },
       });
 
       // 2. Create UserCredentials
@@ -192,8 +198,9 @@ export class EmployeesService {
                 TypZamestnanca: typeId,
                 Dovolenka: input.vacationDays ?? undefined,
                 IsAdmin: input.isAdmin ?? undefined,
+                ManagerID: input.managerId ? BigInt(input.managerId) : (input.managerId === null ? null : undefined),
             },
-            include: { ZamestnanecTyp: true },
+            include: { ZamestnanecTyp: true, Manager: { include: { ZamestnanecTyp: true } } },
         });
 
         // Name Change Logic
@@ -300,6 +307,7 @@ export class EmployeesService {
         lockedUntil: employee.ZamknuteK ? employee.ZamknuteK.toISOString() : null,
         titlePrefix: employee.TitulPred || null,
         titleSuffix: employee.TitulZa || null,
+        manager: employee.Manager ? this.mapToEntity(employee.Manager) : undefined,
     };
   }
 }

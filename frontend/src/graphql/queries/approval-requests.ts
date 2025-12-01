@@ -22,8 +22,8 @@ export const GET_APPROVAL_REQUESTS_BY_EMPLOYEE = gql`
 `;
 
 export const GET_APPROVAL_REQUESTS_BY_MANAGER = gql`
-  query GetApprovalRequestsByManager($managerId: String!) {
-    approvalRequestsByManager(managerId: $managerId) {
+  query GetApprovalRequestsByManager($managerId: String!, $status: [String!]) {
+    approvalRequestsByManager(managerId: $managerId, status: $status) {
       id
       type
       dateFrom
@@ -32,6 +32,7 @@ export const GET_APPROVAL_REQUESTS_BY_MANAGER = gql`
       note
       status
       createdAt
+      updatedAt
       employee {
         id
         firstName

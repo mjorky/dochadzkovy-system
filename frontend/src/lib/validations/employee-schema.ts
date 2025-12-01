@@ -8,6 +8,7 @@ export const employeeFormSchema = z.object({
   employmentType: z.string().min(1, "Employee type is required"),
   vacationDays: z.number().min(0, "Vacation days must be 0 or greater"),
   isAdmin: z.boolean().default(false),
+  managerId: z.string().optional().nullable(),
 })
 
 export type EmployeeFormData = z.infer<typeof employeeFormSchema>
