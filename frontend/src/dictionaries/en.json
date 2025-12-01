@@ -307,6 +307,22 @@
     "accompanying": "Accompanying",
     "disabledChildAcc": "Disabled Child Acc."
   },
+  "projectStatistics": {
+    "title": "Project Statistics",
+    "description": "Overview of hours worked per project",
+    "fromDate": "From",
+    "toDate": "To",
+    "projectNumber": "Project No.",
+    "projectName": "Project Name",
+    "productiveSK": "Prod SK",
+    "nonProductiveSK": "NonProd SK",
+    "productiveZ": "Prod Z",
+    "nonProductiveZ": "NonProd Z",
+    "totalHours": "Total Hours",
+    "manDays": "MD",
+    "total": "Total",
+    "noData": "No data for selected period"
+  },
   "reports": {
     "title": "Reports",
     "workReport": "Work Report",

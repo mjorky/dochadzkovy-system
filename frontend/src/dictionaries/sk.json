@@ -305,6 +305,22 @@
     "accompanying": "Sprevádzanie",
     "disabledChildAcc": "Sprevádzanie ZŤP dieťaťa"
   },
+  "projectStatistics": {
+    "title": "Štatistika projektov",
+    "description": "Prehľad odpracovaných hodín podľa projektov",
+    "fromDate": "Od",
+    "toDate": "Do",
+    "projectNumber": "Č. projektu",
+    "projectName": "Názov projektu",
+    "productiveSK": "Prod SK",
+    "nonProductiveSK": "NonProd SK",
+    "productiveZ": "Prod Z",
+    "nonProductiveZ": "NonProd Z",
+    "totalHours": "Spolu hodín",
+    "manDays": "MD",
+    "total": "Spolu",
+    "noData": "Žiadne dáta pre vybrané obdobie"
+  },
   "reports": {
     "title": "Reporty",
     "workReport": "Výkaz práce",

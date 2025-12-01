@@ -4,8 +4,11 @@ import { WorkReportInput } from '../work-records/dto/work-report.input';
 import { generateWorkReportPDF } from './utils/pdf-generation.util';
 import { PrismaService } from '../prisma/prisma.service';
 import { WorkListReportResponse } from './entities/work-list-report.entity';
+import { ProjectStatisticsResponse } from './entities/project-statistics.entity';
+import { ProjectStatisticsInput } from './dto/project-statistics.input';
 import { getWorkListReportHTML } from './templates/work-list-report.template';
 import { generatePDFFromHTML } from './utils/pdf-generation.util';
+import { constructTableName } from '../work-records/utils/normalize-table-name';
 
 @Injectable()
 export class ReportsService {
@@ -118,6 +121,64 @@ export class ReportsService {
 
     const pdfBuffer = await generatePDFFromHTML(htmlContent);
     return pdfBuffer.toString('base64');
+  }
+
+  async getProjectStatistics(
+    input: ProjectStatisticsInput,
+  ): Promise<ProjectStatisticsResponse> {
+    const { employeeId, fromDate, toDate } = input;
+
+    const employee = await this.prisma.zamestnanci.findUnique({
+      where: { ID: BigInt(employeeId) },
+      select: {
+        Meno: true,
+        Priezvisko: true,
+      },
+    });
+
+    if (!employee) {
+      throw new NotFoundException(`Employee with ID ${employeeId} not found`);
+    }
+
+    const tableName = constructTableName(employee.Meno, employee.Priezvisko);
+    const startDate = new Date(fromDate);
+    const endDate = new Date(toDate);
+
+    // Aggregate hours by project and hour type
+    const result: any[] = await this.prisma.$queryRawUnsafe(
+      `
+      SELECT
+        p."Number" as "ProjectNumber",
+        p."Name" as "ProjectName",
+        SUM(CASE WHEN ht."HourType" = 'Produktívne' THEN EXTRACT(EPOCH FROM (wr."EndTime" - wr."StartTime")) / 3600 ELSE 0 END) as "ProductiveHours",
+        SUM(CASE WHEN ht."HourType" = 'Neproduktívne' THEN EXTRACT(EPOCH FROM (wr."EndTime" - wr."StartTime")) / 3600 ELSE 0 END) as "NonProductiveHours",
+        SUM(CASE WHEN ht."HourType" = 'ProduktívneOutSKCZ' THEN EXTRACT(EPOCH FROM (wr."EndTime" - wr."StartTime")) / 3600 ELSE 0 END) as "ProductiveZHours",
+        SUM(CASE WHEN ht."HourType" = 'NeproduktívneZ' THEN EXTRACT(EPOCH FROM (wr."EndTime" - wr."StartTime")) / 3600 ELSE 0 END) as "NonProductiveZHours"
+      FROM "${tableName}" wr
+      LEFT JOIN "Projects" p ON wr."ProjectID" = p."ID"
+      LEFT JOIN "HourType" ht ON wr."HourTypeID" = ht."ID"
+      WHERE wr."StartDate" BETWEEN $1 AND $2
+        AND wr."ProjectID" IS NOT NULL
+        AND wr."StartTime" IS NOT NULL
+        AND wr."EndTime" IS NOT NULL
+        AND wr."EndTime" > wr."StartTime"
+      GROUP BY p."Number", p."Name"
+      ORDER BY p."Number" ASC
+      `,
+      startDate,
+      endDate,
+    );
+
+    const items = result.map((row) => ({
+      projectNumber: row.ProjectNumber || '',
+      projectName: row.ProjectName || '',
+      productiveHours: parseFloat(row.ProductiveHours) || 0,
+      nonProductiveHours: parseFloat(row.NonProductiveHours) || 0,
+      productiveZHours: parseFloat(row.ProductiveZHours) || 0,
+      nonProductiveZHours: parseFloat(row.NonProductiveZHours) || 0,
+    }));
+
+    return { items };
   }
 
 
