@@ -457,14 +457,15 @@ export default function WorkReportPage() {
                   )}
                   {signaturePreview && (
                     <div className="relative w-full h-full flex justify-center items-center p-2">
-                      <Button
-                        variant="secondary"
-                        size="icon"
-                        className="absolute top-1 right-1 h-6 w-6 z-10"
+                      <div
+                        role="button"
+                        tabIndex={0}
+                        className="absolute top-1 right-1 h-6 w-6 z-10 inline-flex items-center justify-center rounded-md bg-secondary text-secondary-foreground hover:bg-secondary/80 cursor-pointer"
                         onClick={clearSignature}
+                        onKeyDown={(e) => e.key === 'Enter' && clearSignature(e as any)}
                       >
                         <X className="h-4 w-4" />
-                      </Button>
+                      </div>
                       <img
                         src={signaturePreview}
                         alt={t.reports.signaturePreview}

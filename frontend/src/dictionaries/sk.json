@@ -50,7 +50,7 @@
     "reportsDescription": "Generovanie a zobrazenie dochádzkových reportov.",
     "workListDescription": "Štatistiky hodín podľa projektov.",
     "workReportDescription": "Mesiačný dochádzkový report.",
-    "balancesDescription": "Zobrazenie zostatkov dovolenky a voľna.",
+    "balancesDescription": "Zostatky dovolenky, voľno a štatistiky projektov.",
     "dataDescription": "Import a export systémových dát.",
     "requests": "Moje žiadosti",
     "requestsDescription": "Zobrazenie a správa vašich žiadostí o voľno.",
@@ -291,7 +291,7 @@
     }
   },
   "balances": {
-    "title": "Moje zostatky",
+    "title": "Prehľad",
     "currentBalances": "Aktuálne zostatky",
     "vacation": "Dovolenkový fond",
     "sickLeave": "PN fond",

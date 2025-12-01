@@ -50,7 +50,7 @@
     "reportsDescription": "Generate and view attendance reports.",
     "workListDescription": "Project-specific hour statistics.",
     "workReportDescription": "Monthly attendance report.",
-    "balancesDescription": "View leave balances and time off.",
+    "balancesDescription": "Leave balances, time off, and project statistics.",
     "dataDescription": "Import and export system data.",
     "requests": "My Requests",
     "requestsDescription": "View and manage your leave requests.",
@@ -293,7 +293,7 @@
     }
   },
   "balances": {
-    "title": "My Balances",
+    "title": "Overview",
     "currentBalances": "Current Balances",
     "vacation": "Vacation Balance",
     "sickLeave": "Sick Leave Balance",
