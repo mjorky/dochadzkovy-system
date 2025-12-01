@@ -19,15 +19,43 @@ function Calendar({
   buttonVariant = "ghost",
   formatters,
   components,
+  showTodayButton = true,
+  todayButtonLabel = "Today",
+  month: controlledMonth,
+  onMonthChange: controlledOnMonthChange,
+  defaultMonth,
   ...props
 }: React.ComponentProps<typeof DayPicker> & {
   buttonVariant?: React.ComponentProps<typeof Button>["variant"]
+  showTodayButton?: boolean
+  todayButtonLabel?: string
 }) {
   const defaultClassNames = getDefaultClassNames()
+  
+  // Internal month state for navigation
+  const [internalMonth, setInternalMonth] = React.useState<Date>(
+    controlledMonth || defaultMonth || new Date()
+  )
+  
+  // Use controlled month if provided, otherwise use internal state
+  const displayMonth = controlledMonth || internalMonth
+  
+  const handleMonthChange = (newMonth: Date) => {
+    setInternalMonth(newMonth)
+    controlledOnMonthChange?.(newMonth)
+  }
+  
+  const handleTodayClick = () => {
+    const today = new Date()
+    setInternalMonth(today)
+    controlledOnMonthChange?.(today)
+  }
 
   return (
     <DayPicker
       showOutsideDays={showOutsideDays}
+      month={displayMonth}
+      onMonthChange={handleMonthChange}
       className={cn(
         "bg-background group/calendar p-3 [--cell-size:--spacing(8)] [[data-slot=card-content]_&]:bg-transparent [[data-slot=popover-content]_&]:bg-transparent",
         String.raw`rtl:**:[.rdp-button\_next>svg]:rotate-180`,
@@ -110,7 +138,7 @@ function Calendar({
         range_middle: cn("rounded-none", defaultClassNames.range_middle),
         range_end: cn("rounded-r-md bg-accent", defaultClassNames.range_end),
         today: cn(
-          "rounded-md font-semibold",
+          "rounded-md bg-accent text-accent-foreground font-semibold ring-1 ring-primary/30",
           defaultClassNames.today
         ),
         outside: cn(
@@ -124,6 +152,20 @@ function Calendar({
         hidden: cn("invisible", defaultClassNames.hidden),
         ...classNames,
       }}
+      footer={
+        showTodayButton ? (
+          <div className="pt-2 border-t mt-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="w-full text-xs font-medium text-primary hover:text-primary hover:bg-primary/10"
+              onClick={handleTodayClick}
+            >
+              {todayButtonLabel}
+            </Button>
+          </div>
+        ) : undefined
+      }
       components={{
         Root: ({ className, rootRef, ...props }) => {
           return (

@@ -24,7 +24,7 @@
   "sidebar": {
     "title": "Attendance System",
     "workRecords": "Work Records",
-    "myBalances": "My Balances",
+    "myBalances": "Overview",
     "data": "Data",
     "overtime": "Overtime",
     "reports": "Reports",
@@ -50,7 +50,7 @@
     "reportsDescription": "Generate and view attendance reports.",
     "workListDescription": "Project-specific hour statistics.",
     "workReportDescription": "Monthly attendance report.",
-    "balancesDescription": "View leave balances and time off.",
+    "balancesDescription": "Leave balances, time off, and project statistics.",
     "dataDescription": "Import and export system data.",
     "requests": "My Requests",
     "requestsDescription": "View and manage your leave requests.",
@@ -90,6 +90,7 @@
     "none": "None",
     "yes": "Yes",
     "no": "No",
+    "today": "Today",
     "error": "Error",
     "success": "Success",
     "warning": "Warning",
@@ -160,6 +161,7 @@
     "workType": "Work Type",
     "startTime": "Start Time",
     "endTime": "End Time",
+    "selectTime": "Select time",
     "description": "Description",
     "kilometers": "Kilometers",
     "tripFlag": "Trip Flag",
@@ -291,7 +293,7 @@
     }
   },
   "balances": {
-    "title": "My Balances",
+    "title": "Overview",
     "currentBalances": "Current Balances",
     "vacation": "Vacation Balance",
     "sickLeave": "Sick Leave Balance",
@@ -304,6 +306,22 @@
     "doctor": "Doctor",
     "accompanying": "Accompanying",
     "disabledChildAcc": "Disabled Child Acc."
+  },
+  "projectStatistics": {
+    "title": "Project Statistics",
+    "description": "Overview of hours worked per project",
+    "fromDate": "From",
+    "toDate": "To",
+    "projectNumber": "Project No.",
+    "projectName": "Project Name",
+    "productiveSK": "Prod SK",
+    "nonProductiveSK": "NonProd SK",
+    "productiveZ": "Prod Z",
+    "nonProductiveZ": "NonProd Z",
+    "totalHours": "Total Hours",
+    "manDays": "MD",
+    "total": "Total",
+    "noData": "No data for selected period"
   },
   "reports": {
     "title": "Reports",

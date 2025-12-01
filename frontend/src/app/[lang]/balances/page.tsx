@@ -4,6 +4,7 @@
 import React from "react";
 import { useAuth } from "@/providers/auth-provider";
 import { BalancesOverview } from "@/components/balances-overview";
+import { ProjectStatisticsSection } from "@/components/project-statistics-section";
 import { Loader2, XCircle } from "lucide-react";
 import {
   Card,
@@ -61,6 +62,11 @@ export default function BalancesPage() {
   return (
     <div className="space-y-6">
       <BalancesOverview employeeId={user.id} year={currentYear} />
+      <ProjectStatisticsSection
+        employeeId={user.id}
+        isAdmin={!!user.isAdmin}
+        isManager={!!user.isManager}
+      />
     </div>
   );
 }

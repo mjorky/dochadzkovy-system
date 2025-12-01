@@ -14,6 +14,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { DatePicker } from '@/components/ui/date-picker';
+import { TimePicker } from '@/components/ui/time-picker';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import {
   Form,
@@ -245,6 +246,8 @@ export function WorkRecordForm({
           )}
         />
 
+        {/* Time Selection Row */}
+        <div className="grid grid-cols-2 gap-4">
         {/* Start Time */}
         <FormField
           control={form.control}
@@ -253,14 +256,13 @@ export function WorkRecordForm({
             <FormItem>
               <FormLabel>{t.workRecordDialog.startTime} *</FormLabel>
               <FormControl>
-                <Input
-                  type="time"
-                  step="1800"
-                  {...field}
-                  onBlur={handleTimeBlur('startTime')}
+                  <TimePicker
+                    value={field.value}
+                    onChange={field.onChange}
+                    onBlur={() => handleTimeBlur('startTime')({ target: { value: field.value } } as any)}
+                    placeholder={t.workRecordDialog.selectTime || "Select time"}
                 />
               </FormControl>
-              <FormDescription>{t.workRecordDialog.timeRoundedTo30}</FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -274,11 +276,11 @@ export function WorkRecordForm({
             <FormItem>
               <FormLabel>{t.workRecordDialog.endTime} *</FormLabel>
               <FormControl>
-                <Input
-                  type="time"
-                  step="1800"
-                  {...field}
-                  onBlur={handleTimeBlur('endTime')}
+                  <TimePicker
+                    value={field.value}
+                    onChange={field.onChange}
+                    onBlur={() => handleTimeBlur('endTime')({ target: { value: field.value } } as any)}
+                    placeholder={t.workRecordDialog.selectTime || "Select time"}
                 />
               </FormControl>
               {showOvernightHelper && (
@@ -287,11 +289,11 @@ export function WorkRecordForm({
                   {t.workRecordDialog.overnightShift}
                 </FormDescription>
               )}
-              <FormDescription>{t.workRecordDialog.timeRoundedTo30}</FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
+        </div>
 
         {/* Description */}
         <FormField

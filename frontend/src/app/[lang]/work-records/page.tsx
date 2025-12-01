@@ -564,6 +564,8 @@ export default function WorkRecordsPage() {
                     })
                   }
                   initialFocus
+                  showTodayButton
+                  todayButtonLabel={t.common.today || "Today"}
                 />
               </PopoverContent>
             </Popover>
@@ -605,6 +607,8 @@ export default function WorkRecordsPage() {
                     })
                   }
                   initialFocus
+                  showTodayButton
+                  todayButtonLabel={t.common.today || "Today"}
                 />
               </PopoverContent>
             </Popover>

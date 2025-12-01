@@ -38,8 +38,8 @@
   
   --sidebar: var(--secondary);
   --sidebar-foreground: var(--foreground);
-  --sidebar-primary: oklch(0.90 0.015 266); /* LIGHT MODE: Výraznejší, ale stále svetlý sivomodrý akcent */
-  --sidebar-primary-foreground: var(--foreground);
+  --sidebar-primary: oklch(0.92 0.04 250); /* LIGHT MODE: Soft blue background for active */
+  --sidebar-primary-foreground: oklch(0.35 0.12 250); /* LIGHT MODE: Darker blue text */
   --sidebar-accent: var(--accent);
   --sidebar-accent-foreground: var(--foreground);
   --sidebar-border: var(--border);
@@ -94,8 +94,8 @@
 
   --sidebar: var(--secondary);
   --sidebar-foreground: var(--foreground);
-  --sidebar-primary: oklch(0.40 0.08 266); /* DARK MODE: Viditeľný, ale stále decentný modro-fialový akcent */
-  --sidebar-primary-foreground: var(--foreground);
+  --sidebar-primary: oklch(0.30 0.08 250); /* DARK MODE: Darker blue background for active */
+  --sidebar-primary-foreground: oklch(0.85 0.12 250); /* DARK MODE: Lighter blue text */
   --sidebar-accent: var(--accent);
   --sidebar-accent-foreground: var(--foreground);
   --sidebar-border: var(--border);

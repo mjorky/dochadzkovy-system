@@ -24,7 +24,7 @@
   "sidebar": {
     "title": "Dochádzka",
     "workRecords": "Pracovné záznamy",
-    "myBalances": "Moje zostatky",
+    "myBalances": "Prehľad",
     "data": "Dáta",
     "overtime": "Nadčasy",
     "reports": "Reporty",
@@ -50,7 +50,7 @@
     "reportsDescription": "Generovanie a zobrazenie dochádzkových reportov.",
     "workListDescription": "Štatistiky hodín podľa projektov.",
     "workReportDescription": "Mesiačný dochádzkový report.",
-    "balancesDescription": "Zobrazenie zostatkov dovolenky a voľna.",
+    "balancesDescription": "Zostatky dovolenky, voľno a štatistiky projektov.",
     "dataDescription": "Import a export systémových dát.",
     "requests": "Moje žiadosti",
     "requestsDescription": "Zobrazenie a správa vašich žiadostí o voľno.",
@@ -90,6 +90,7 @@
     "none": "Žiadne",
     "yes": "Áno",
     "no": "Nie",
+    "today": "Dnes",
     "error": "Chyba",
     "success": "Úspech",
     "warning": "Upozornenie",
@@ -160,6 +161,7 @@
     "workType": "Typ práce",
     "startTime": "Čas začiatku",
     "endTime": "Čas konca",
+    "selectTime": "Vybrať čas",
     "description": "Popis",
     "kilometers": "Kilometre",
     "tripFlag": "Príznak cesty",
@@ -289,7 +291,7 @@
     }
   },
   "balances": {
-    "title": "Moje zostatky",
+    "title": "Prehľad",
     "currentBalances": "Aktuálne zostatky",
     "vacation": "Dovolenkový fond",
     "sickLeave": "PN fond",
@@ -302,6 +304,22 @@
     "doctor": "Lekár",
     "accompanying": "Sprevádzanie",
     "disabledChildAcc": "Sprevádzanie ZŤP dieťaťa"
+  },
+  "projectStatistics": {
+    "title": "Štatistika projektov",
+    "description": "Prehľad odpracovaných hodín podľa projektov",
+    "fromDate": "Od",
+    "toDate": "Do",
+    "projectNumber": "Č. projektu",
+    "projectName": "Názov projektu",
+    "productiveSK": "Prod SK",
+    "nonProductiveSK": "NonProd SK",
+    "productiveZ": "Prod Z",
+    "nonProductiveZ": "NonProd Z",
+    "totalHours": "Spolu hodín",
+    "manDays": "MD",
+    "total": "Spolu",
+    "noData": "Žiadne dáta pre vybrané obdobie"
   },
   "reports": {
     "title": "Reporty",

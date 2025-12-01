@@ -179,7 +179,14 @@ export default function RequestsPage({ dict }: { dict: Dictionary }) {
                                             </Button>
                                         </PopoverTrigger>
                                         <PopoverContent className="w-auto p-0">
-                                            <Calendar mode="single" selected={formData.dateFrom} onSelect={(date) => setFormData({ ...formData, dateFrom: date })} initialFocus />
+                                            <Calendar 
+                                                mode="single" 
+                                                selected={formData.dateFrom} 
+                                                onSelect={(date) => setFormData({ ...formData, dateFrom: date })} 
+                                                initialFocus 
+                                                showTodayButton
+                                                todayButtonLabel={dict.common?.today || "Today"}
+                                            />
                                         </PopoverContent>
                                     </Popover>
                                 </div>
@@ -194,7 +201,14 @@ export default function RequestsPage({ dict }: { dict: Dictionary }) {
                                             </Button>
                                         </PopoverTrigger>
                                         <PopoverContent className="w-auto p-0">
-                                            <Calendar mode="single" selected={formData.dateTo} onSelect={(date) => setFormData({ ...formData, dateTo: date })} initialFocus />
+                                            <Calendar 
+                                                mode="single" 
+                                                selected={formData.dateTo} 
+                                                onSelect={(date) => setFormData({ ...formData, dateTo: date })} 
+                                                initialFocus 
+                                                showTodayButton
+                                                todayButtonLabel={dict.common?.today || "Today"}
+                                            />
                                         </PopoverContent>
                                     </Popover>
                                 </div>
