@@ -199,10 +199,10 @@ export function ProjectsTable({
   }
 
   return (
-    <div className="border border-border rounded-xl overflow-hidden shadow-sm bg-card">
+    <div className="rounded-md border border-border max-h-[600px] overflow-y-auto relative bg-background flex flex-col">
       <Table>
-        <TableHeader className="bg-muted/40">
-          <TableRow className="hover:bg-transparent border-b border-border">
+        <TableHeader>
+          <TableRow className="hover:bg-transparent">
             {/* NUMBER */}
             <TableHead className="w-[120px]">
               <Button
@@ -390,8 +390,8 @@ export function ProjectsTable({
         </TableHeader>
         <TableBody>
           {sortedProjects.map((project) => (
-            <TableRow key={project.id} className="group hover:bg-muted/30 transition-colors border-border">
-              <TableCell className="font-mono text-sm font-medium">{project.number}</TableCell>
+            <TableRow key={project.id} className="group">
+              <TableCell className="font-semibold">{project.number}</TableCell>
               <TableCell className="font-medium text-foreground">{project.name}</TableCell>
               <TableCell className="text-muted-foreground">{project.country?.name || project.country?.countryCode}</TableCell>
               <TableCell className="text-muted-foreground">{project.manager.fullName}</TableCell>
@@ -437,6 +437,9 @@ export function ProjectsTable({
           )}
         </TableBody>
       </Table>
+      <div className="p-2 border-t border-border bg-muted/20 text-xs text-muted-foreground text-center shrink-0">
+        {t.workRecords.showing} {sortedProjects.length} {t.projects.countSuffix}
+      </div>
     </div>
   )
 }

@@ -258,8 +258,8 @@ export function HolidayManager({ lang }: { lang: string }) {
                     {/* Scrollable Table Container */}
                     <div className="rounded-md border border-border max-h-[500px] overflow-y-auto relative bg-background flex flex-col">
                         <Table>
-                            <TableHeader className="sticky top-0 bg-muted/90 backdrop-blur-sm z-10 shadow-sm">
-                                <TableRow className="hover:bg-transparent border-border">
+                            <TableHeader>
+                                <TableRow className="hover:bg-transparent">
                                     <TableHead className="w-[200px]">
                                         <ColumnSortHeader
                                             title={t.workRecordDialog.date || "Date"}
@@ -289,7 +289,7 @@ export function HolidayManager({ lang }: { lang: string }) {
                                     sortedHolidays.map((holiday) => (
                                         <TableRow
                                             key={holiday.Den}
-                                            className="hover:bg-muted/60 active:bg-muted transition-colors border-border group"
+                                            className="group"
                                         >
                                             <TableCell className="font-medium text-foreground/90 tabular-nums">
                                                 {format(parseISO(holiday.Den), "d. MMMM yyyy", {
@@ -370,6 +370,8 @@ export function HolidayManager({ lang }: { lang: string }) {
                                     selected={selectedDate}
                                     onSelect={setSelectedDate}
                                     initialFocus
+                                    showTodayButton
+                                    todayButtonLabel={t.common.today || "Today"}
                                 />
                             </PopoverContent>
                         </Popover>
@@ -426,6 +428,8 @@ export function HolidayManager({ lang }: { lang: string }) {
                                     selected={selectedDate}
                                     onSelect={setSelectedDate}
                                     initialFocus
+                                    showTodayButton
+                                    todayButtonLabel={t.common.today || "Today"}
                                 />
                             </PopoverContent>
                         </Popover>

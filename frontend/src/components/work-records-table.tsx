@@ -184,10 +184,10 @@ export function WorkRecordsTable({
   };
 
   return (
-    <div className="min-w-[1200px] border border-border rounded-xl overflow-hidden shadow-sm bg-card">
+    <div className="rounded-md border border-border max-h-[600px] overflow-y-auto relative bg-background flex flex-col">
       <Table>
-        <TableHeader className="bg-muted/40">
-          <TableRow className="hover:bg-transparent border-b border-border">
+        <TableHeader>
+          <TableRow className="hover:bg-transparent">
             {/* DATE */}
             <TableHead className="w-[130px]">
               <Button
@@ -266,7 +266,7 @@ export function WorkRecordsTable({
                                 onFilterChange({ ...filters, selectedProjects: newProjs });
                               }}
                             />
-                            <Label htmlFor={`proj-${proj.id}`} className="text-sm font-mono font-normal leading-none cursor-pointer">{proj.number}</Label>
+                            <Label htmlFor={`proj-${proj.id}`} className="text-sm font-normal leading-none cursor-pointer">{proj.number}</Label>
                           </div>
                         )) : <div className="text-xs text-muted-foreground py-2">{t.common.none}</div>}
                       </div>
@@ -505,26 +505,26 @@ export function WorkRecordsTable({
             <TableRow
               key={record.id}
               className={cn(
-                "group hover:bg-muted/30 transition-colors border-border",
+                "group",
                 record.isLocked && 'bg-muted/10 opacity-70'
               )}
             >
               {/* Table Rows Content (rovnaké ako predtým) */}
               <TableCell className="whitespace-nowrap font-medium text-foreground">{formatDate(record.date)}</TableCell>
               <TableCell className="whitespace-nowrap text-muted-foreground">{record.absenceType}</TableCell>
-              <TableCell className="font-mono text-sm">{record.project ?? '—'}</TableCell>
+              <TableCell className="text-muted-foreground">{record.project ?? '—'}</TableCell>
               <TableCell className="text-muted-foreground">{record.productivityType ?? '—'}</TableCell>
               <TableCell className="text-muted-foreground">{record.workType ?? '—'}</TableCell>
-              <TableCell className="whitespace-nowrap font-mono text-sm">{formatTime(record.startTime)}</TableCell>
-              <TableCell className="whitespace-nowrap font-mono text-sm">
+              <TableCell className="whitespace-nowrap tabular-nums">{formatTime(record.startTime)}</TableCell>
+              <TableCell className="whitespace-nowrap tabular-nums">
                 <div className="flex items-center gap-2">
                   {formatTime(record.endTime)}
                   {record.isOvernightShift && <Moon className="h-3.5 w-3.5 text-blue-500" />}
                 </div>
               </TableCell>
-              <TableCell className="text-right font-mono font-medium">{record.hours.toFixed(2)}</TableCell>
+              <TableCell className="text-right font-semibold tabular-nums">{record.hours.toFixed(2)}</TableCell>
               <TableCell className="max-w-[200px] truncate text-muted-foreground" title={record.description || ''}>{record.description || '—'}</TableCell>
-              <TableCell className="text-right font-mono text-sm">{record.km}</TableCell>
+              <TableCell className="text-right tabular-nums">{record.km}</TableCell>
               <TableCell className="text-center">
                 {record.isTripFlag ? <Badge variant="outline" className="bg-blue-50/50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-800">{t.common.yes}</Badge> : <span className="text-muted-foreground text-xs">-</span>}
               </TableCell>
@@ -556,6 +556,9 @@ export function WorkRecordsTable({
           ))}
         </TableBody>
       </Table>
+      <div className="p-2 border-t border-border bg-muted/20 text-xs text-muted-foreground text-center shrink-0">
+        {t.workRecords.showing} {sortedRecords.length} {t.workRecords.records}
+      </div>
     </div>
   );
 }

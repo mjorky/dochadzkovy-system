@@ -181,10 +181,10 @@ export function EmployeeTable({
   };
 
   return (
-    <div className="border border-border rounded-xl overflow-hidden shadow-sm bg-card">
+    <div className="rounded-md border border-border max-h-[600px] overflow-y-auto relative bg-background flex flex-col">
       <Table>
-        <TableHeader className="bg-muted/40">
-          <TableRow className="hover:bg-transparent border-b border-border">
+        <TableHeader>
+          <TableRow className="hover:bg-transparent">
             {/* NAME + SEARCH */}
             <TableHead className="min-w-[200px]">
               <ColumnFilterHeader
@@ -331,9 +331,9 @@ export function EmployeeTable({
 
         <TableBody>
           {sortedEmployees.map((employee) => (
-            <TableRow key={employee.id} className="group hover:bg-muted/30 transition-colors border-border">
+            <TableRow key={employee.id} className="group">
               <TableCell className="font-medium text-foreground">{employee.fullName}</TableCell>
-              <TableCell className="font-mono text-sm">{employee.vacationDays.toFixed(1)}</TableCell>
+              <TableCell className="tabular-nums">{employee.vacationDays.toFixed(1)}</TableCell>
               <TableCell>
                 {employee.isAdmin ? (
                   <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-300 dark:border-green-800 font-normal">
@@ -377,6 +377,9 @@ export function EmployeeTable({
           )}
         </TableBody>
       </Table>
+      <div className="p-2 border-t border-border bg-muted/20 text-xs text-muted-foreground text-center shrink-0">
+        {t.workRecords.showing} {sortedEmployees.length} {t.employees.countSuffix}
+      </div>
     </div>
   );
 }

@@ -447,10 +447,10 @@ export default function WorkReportPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="rounded-md border overflow-x-auto">
+              <div className="rounded-md border border-border max-h-[500px] overflow-y-auto relative bg-background flex flex-col">
                 <Table>
                   <TableHeader>
-                    <TableRow className="bg-muted/50">
+                    <TableRow className="hover:bg-transparent">
                       <TableHead className="whitespace-nowrap">
                         {t.reports.projectNo}
                       </TableHead>
@@ -499,8 +499,8 @@ export default function WorkReportPage() {
                     ) : (
                       <>
                         {projectItems.map((item: any, idx: number) => (
-                          <TableRow key={idx}>
-                            <TableCell className="font-mono text-xs whitespace-nowrap">
+                          <TableRow key={idx} className="group">
+                            <TableCell className="font-medium whitespace-nowrap">
                               {item.projectNumber}
                             </TableCell>
                             <TableCell
@@ -568,6 +568,9 @@ export default function WorkReportPage() {
                     )}
                   </TableBody>
                 </Table>
+                <div className="p-2 border-t border-border bg-muted/20 text-xs text-muted-foreground text-center shrink-0">
+                  {t.workRecords.showing} {projectItems.length} {t.projects.countSuffix}
+                </div>
               </div>
             </CardContent>
           </Card>

@@ -16,6 +16,7 @@ interface DatePickerProps {
   captionLayout?: "dropdown" | "dropdown-buttons" | "buttons";
   fromYear?: number;
   toYear?: number;
+  todayLabel?: string;
 }
 
 export function DatePicker({
@@ -26,6 +27,7 @@ export function DatePicker({
   captionLayout = "dropdown-buttons",
   fromYear,
   toYear,
+  todayLabel = 'Today',
 }: DatePickerProps) {
   // Support both 'date' and 'value' props for compatibility
   const selectedDate = date ?? value ?? null;
@@ -63,6 +65,8 @@ export function DatePicker({
           captionLayout={captionLayout}
           fromYear={fromYear}
           toYear={toYear}
+          showTodayButton
+          todayButtonLabel={todayLabel}
         />
       </PopoverContent>
     </Popover>

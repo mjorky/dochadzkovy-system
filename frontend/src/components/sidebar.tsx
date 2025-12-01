@@ -182,10 +182,13 @@ export function Sidebar({ lang }: SidebarProps) {
             if (item.adminOnly && !user?.isAdmin) {
               return null;
             }
+            // Remove language prefix from pathname for comparison
+            const pathWithoutLang = pathname.replace(/^\/[a-z]{2}/, '') || '/';
             const isActive =
-              pathname === item.href ||
+              pathWithoutLang === item.href ||
+              pathWithoutLang.startsWith(item.href + '/') ||
               (item.submenu &&
-                item.submenu.some((sub) => pathname === sub.href));
+                item.submenu.some((sub) => pathWithoutLang === sub.href || pathWithoutLang.startsWith(sub.href + '/')));
             const Icon = item.icon;
             const isExpanded = expandedMenu === item.key;
             return (
@@ -196,13 +199,16 @@ export function Sidebar({ lang }: SidebarProps) {
                       onClick={() => handleMenuClick(item.key)}
                       variant={isActive ? "secondary" : "ghost"}
                       className={cn(
-                        "w-full justify-between gap-3",
+                        "w-full justify-between gap-3 relative transition-all",
                         isActive &&
-                        "bg-sidebar-primary text-sidebar-primary-foreground font-medium hover:bg-sidebar-primary/90",
+                        "bg-sidebar-primary text-sidebar-primary-foreground font-semibold hover:bg-sidebar-primary/90 shadow-sm",
                         !isActive &&
                         "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
                       )}
                     >
+                      {isActive && (
+                        <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-7 bg-primary rounded-r-full shadow-md" />
+                      )}
                       <span className="flex items-center gap-3">
                         <Icon className="h-5 w-5" />
                         <span>
@@ -219,22 +225,25 @@ export function Sidebar({ lang }: SidebarProps) {
                     {isExpanded && (
                       <ul className="space-y-1 mt-2 ml-4">
                         {item.submenu.map((subitem) => {
-                          const isSubActive = pathname === subitem.href;
+                          const isSubActive = pathWithoutLang === subitem.href || pathWithoutLang.startsWith(subitem.href + '/');
                           const SubIcon = subitem.icon;
                           return (
                             <li key={subitem.href}>
                               <Button
                                 variant={isSubActive ? "secondary" : "ghost"}
                                 className={cn(
-                                  "w-full justify-start gap-3 text-sm",
+                                  "w-full justify-start gap-3 text-sm relative transition-all",
                                   isSubActive &&
-                                  "bg-sidebar-primary text-sidebar-primary-foreground font-medium hover:bg-sidebar-primary/90",
+                                  "bg-sidebar-primary text-sidebar-primary-foreground font-semibold hover:bg-sidebar-primary/90 shadow-sm",
                                   !isSubActive &&
                                   "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
                                 )}
                                 asChild
                               >
                                 <Link href={`/${lang}${subitem.href}`}>
+                                  {isSubActive && (
+                                    <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-6 bg-primary rounded-r-full shadow-md" />
+                                  )}
                                   <span className="flex items-center gap-3 flex-1">
                                     {SubIcon && <SubIcon className="h-4 w-4" />}
                                     <span>
@@ -261,19 +270,22 @@ export function Sidebar({ lang }: SidebarProps) {
                       </ul>
                     )}
                   </div>
-                ) : (
+                )                 : (
                   <Button
                     variant={isActive ? "secondary" : "ghost"}
                     className={cn(
-                      "w-full justify-start gap-3",
+                      "w-full justify-start gap-3 relative transition-all",
                       isActive &&
-                      "bg-sidebar-primary text-sidebar-primary-foreground font-medium hover:bg-sidebar-primary/90",
+                      "bg-sidebar-primary text-sidebar-primary-foreground font-semibold hover:bg-sidebar-primary/90 shadow-sm",
                       !isActive &&
                       "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
                     )}
                     asChild
                   >
                     <Link href={`/${lang}${item.href}`}>
+                      {isActive && (
+                        <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-7 bg-primary rounded-r-full shadow-md" />
+                      )}
                       <Icon className="h-5 w-5" />
                       <span>
                         {dict.sidebar[item.key as keyof typeof dict.sidebar]}

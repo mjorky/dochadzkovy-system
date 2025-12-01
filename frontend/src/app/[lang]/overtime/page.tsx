@@ -244,8 +244,8 @@ function HistoryTable({
   return (
     <div className="rounded-md border border-border max-h-[500px] overflow-y-auto relative bg-background flex flex-col">
       <Table>
-        <TableHeader className="sticky top-0 bg-muted/90 backdrop-blur-sm z-10 shadow-sm">
-          <TableRow className="hover:bg-transparent border-border">
+        <TableHeader>
+          <TableRow className="hover:bg-transparent">
             {/* DATE Column */}
             <TableHead className="w-[140px]">
               <ColumnFilterHeader
@@ -447,7 +447,7 @@ function HistoryTable({
               <TableRow
                 key={i}
                 onClick={() => onRowClick(record)}
-                className="cursor-pointer hover:bg-muted/60 active:bg-muted transition-colors border-border group"
+                className="cursor-pointer group"
               >
                 <TableCell className="font-medium text-foreground/90 tabular-nums">
                   {format(parseISO(record.date), "dd.MM.yyyy")}
@@ -463,7 +463,7 @@ function HistoryTable({
                 </TableCell>
                 <TableCell
                   className={cn(
-                    "text-right font-mono font-medium tabular-nums",
+                    "text-right font-semibold tabular-nums",
                     record.hours > 0
                       ? "text-green-600 dark:text-green-500"
                       : "text-destructive",
@@ -590,7 +590,7 @@ function CorrectionForm({
           </h3>
           <Badge
             variant="outline"
-            className="font-mono text-sm px-3 py-1 bg-background"
+            className="text-sm px-3 py-1 bg-background"
           >
             {t.overtime.currentBalance}:{" "}
             <span
@@ -681,6 +681,8 @@ function CorrectionForm({
                 selected={date}
                 onSelect={setDate}
                 initialFocus
+                showTodayButton
+                todayButtonLabel={t.common.today || "Today"}
               />
             </PopoverContent>
           </Popover>
@@ -696,7 +698,7 @@ function CorrectionForm({
                 Day Balance ({format(date, "dd.MM")}):
               </span>
             </div>
-            <div className="flex items-center gap-3 font-mono">
+            <div className="flex items-center gap-3 tabular-nums">
               <span className="text-muted-foreground line-through decoration-destructive/50">
                 {currentDayBalance.toFixed(2)}
               </span>
@@ -727,7 +729,7 @@ function CorrectionForm({
           <span className="text-muted-foreground font-medium">
             New Total Balance (Year)
           </span>
-          <div className="flex items-center gap-2 font-mono font-bold">
+          <div className="flex items-center gap-2 tabular-nums font-bold">
             <span className="text-foreground/60">
               {totalBalance.toFixed(2)}
             </span>
