@@ -29,6 +29,11 @@ export const getSitePages = (t: Dictionary): Record<string, PageData> => ({
     description: t.sidebar.projectsDescription,
     label: t.projects.title,
   },
+  "/admin/holidays": {
+    title: t.holidays.title,
+    description: t.holidays.description,
+    label: t.sidebar.holidays,
+  },
   "/work-records": {
     title: t.workRecords.title,
     description: t.sidebar.workRecordsDescription,
@@ -59,6 +64,16 @@ export const getSitePages = (t: Dictionary): Record<string, PageData> => ({
     title: t.balances.title,
     description: t.sidebar.balancesDescription,
     label: t.balances.title,
+  },
+  "/requests": {
+    title: t.approvalRequests.title,
+    description: t.sidebar.requestsDescription,
+    label: t.sidebar.requests,
+  },
+  "/admin/approvals": {
+    title: t.approvalRequests.approvalsTitle,
+    description: t.sidebar.approvalsDescription,
+    label: t.sidebar.approvals,
   },
   "/data": {
     title: t.data.title,

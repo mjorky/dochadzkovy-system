@@ -197,8 +197,30 @@ model Zamestnanci {
   Projects                                   Projects[]
   UserCredentials                            UserCredentials?
   ZamestnanecTyp                             ZamestnanecTyp   @relation(fields: [TypZamestnanca], references: [Typ], onDelete: NoAction, onUpdate: NoAction)
+  ManagerID                                  BigInt?
+  Manager                                    Zamestnanci?     @relation("ManagerSubordinates", fields: [ManagerID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
+  Subordinates                               Zamestnanci[]    @relation("ManagerSubordinates")
+  ApprovalRequests                           ApprovalRequest[] @relation("EmployeeRequests")
+  ReviewedRequests                           ApprovalRequest[] @relation("ManagerReviews")
 
   @@unique([Meno, Priezvisko])
+}
+
+model ApprovalRequest {
+  ID            BigInt      @id @default(autoincrement())
+  EmployeeID    BigInt
+  Type          String      @db.VarChar(50) // "Vacation", "Overtime", "Absence"
+  DateFrom      DateTime    @db.Date
+  DateTo        DateTime    @db.Date
+  Hours         Float?      // For overtime or partial days
+  Note          String?     @db.VarChar(255)
+  Status        String      @default("PENDING") @db.VarChar(20) // PENDING, APPROVED, REJECTED
+  ApproverID    BigInt?
+  CreatedAt     DateTime    @default(now())
+  UpdatedAt     DateTime    @updatedAt
+
+  Employee      Zamestnanci @relation("EmployeeRequests", fields: [EmployeeID], references: [ID], onDelete: Cascade)
+  Approver      Zamestnanci? @relation("ManagerReviews", fields: [ApproverID], references: [ID], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model UserCredentials {

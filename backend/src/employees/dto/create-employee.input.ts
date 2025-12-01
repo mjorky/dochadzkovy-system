@@ -39,5 +39,10 @@ export class CreateEmployeeInput {
   @Field(() => Boolean)
   @IsBoolean()
   isAdmin: boolean;
+
+  @Field({ nullable: true })
+  @IsOptional()
+  @IsString()
+  managerId?: string;
 }
 
